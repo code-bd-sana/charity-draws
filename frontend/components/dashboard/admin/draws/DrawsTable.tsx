@@ -15,7 +15,7 @@ interface DrawData {
 
 const MOCK_DRAWS: DrawData[] = [
   { id: "1", name: "Sniper Rifle Set", host: "Tactical Gear UK", hostInitials: "TG", type: "Auto", scheduledTime: "30 Jun 2025 14:00", totalTickets: 420, status: "Scheduled" },
-  { id: "2", name: "VFC HK416 Bundle", host: "Airsoft World", hostInitials: "AW", type: "Auto", scheduledTime: "15 Jul 2025 20:00", totalTickets: 185, status: "Scheduled" },
+  { id: "2", name: "VFC HK416 Bundle", host: "Charity World", hostInitials: "AW", type: "Auto", scheduledTime: "15 Jul 2025 20:00", totalTickets: 185, status: "Scheduled" },
   { id: "3", name: "Tactical Pistol Set", host: "Elite Shooters", hostInitials: "ES", type: "Manual", scheduledTime: "24 May 2025 18:00", totalTickets: 250, status: "Completed" },
   { id: "4", name: "Night Vision Bundle", host: "Strike Force Co", hostInitials: "SF", type: "Auto", scheduledTime: "Now", totalTickets: 89, status: "In Progress" },
 ];

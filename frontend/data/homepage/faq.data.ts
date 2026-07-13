@@ -3,8 +3,8 @@ import { FaqItem } from "../../types/faq.types";
 export const faqData: FaqItem[] = [
   {
     id: "faq-1",
-    question: "Is Airsoft Draws legal?",
-    answer: "Yes. Airsoft Draws operates as a prize competition in compliance with UK law. Every ticket entry requires either answering a skill-based question or verifying eligibility, which separates it legally from standard gambling or lotteries.",
+    question: "Is Charity Draws legal?",
+    answer: "Yes. Charity Draws operates as a prize competition in compliance with UK law. Every ticket entry requires either answering a skill-based question or verifying eligibility, which separates it legally from standard gambling or lotteries.",
   },
   {
     id: "faq-2",

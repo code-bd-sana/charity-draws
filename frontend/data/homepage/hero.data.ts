@@ -14,8 +14,8 @@ export interface HeroData {
 }
 
 export const heroData: HeroData = {
-  badgeText: "AIRSOFT GEAR COMPETITIONS",
-  headingText: "Win Premium Airsoft Gear For Less",
+  badgeText: "CHARITY GEAR COMPETITIONS",
+  headingText: "Win Premium Charity Gear For Less",
   paragraphText: "Enter draws from just £1 per ticket. Fair, transparent, and escrow-protected. Over £180k+ in prizes already won by our community.",
   primaryCtaLabel: "Browse Live Draws",
   primaryCtaHref: "#live-draws",

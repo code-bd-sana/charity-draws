@@ -24,7 +24,7 @@ const MOCK_PAYOUTS: PayoutData[] = [
     status: "Pending", earningsTotal: "£12,400.00", commission: "-£1,240.00", netPayout: "£2,400.00" 
   },
   { 
-    id: "2", host: "Airsoft World", hostInitials: "AW", amount: "£1,900.00", 
+    id: "2", host: "Charity World", hostInitials: "AW", amount: "£1,900.00", 
     method: "Bank Transfer", account: "HSBC ****1192", date: "14 Jun 2025", 
     status: "Approved", earningsTotal: "£10,000.00", commission: "-£1,000.00", netPayout: "£1,900.00" 
   },

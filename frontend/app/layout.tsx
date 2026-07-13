@@ -15,9 +15,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Airsoft Draws | Premium Airsoft Gear Competitions',
+  title: 'Charity Draws | Premium Charity Gear Competitions',
   description:
-    'Win premium airsoft gear for less. Enter draws from just £1 per ticket. Transparent, fair, and secure prize draws.',
+    'Win premium charity gear for less. Enter draws from just £1 per ticket. Transparent, fair, and secure prize draws.',
 };
 
 export default function RootLayout({
@@ -33,9 +33,9 @@ export default function RootLayout({
           position="bottom-right"
           toastOptions={{
             style: {
-              background: '#161810',
-              border: '1px solid #2d3c13',
-              color: '#e8edd4',
+              background: '#FFFFFF',
+              border: '1px solid #E5E7EB',
+              color: '#111827',
             },
             className: 'font-sans text-[14px]',
           }}

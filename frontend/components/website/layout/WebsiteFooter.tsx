@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { FOOTER_SECTIONS, BRAND_NAME } from "../../../lib/constants";
 import Image from 'next/image';
-import logo from '../../../public/logo3.png';
+import logo from '../../../public/final_logo.jpg';
 
 /**
  * Global website footer matching the Figma Frame 46 design specification.
@@ -49,17 +49,17 @@ export default function WebsiteFooter() {
           <div className="lg:col-span-2 flex flex-col gap-5">
           <Link href="/" className="flex items-center select-none group py-0.5">
             <Image
-              alt="Airsoft Draws Logo"
+              alt="Charity Draws Logo"
               src={logo}
               height={150}
               width={150}
               priority
-              className="object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md brightness-110 contrast-125"
+              className="object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md brightness-110"
             />
           </Link>
 
             <p className="font-sans text-xs text-text-muted leading-relaxed max-w-sm">
-              The premier marketplace for airsoft gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes from just £1. Transparent escrow payouts for secure hosting.
+              The premier marketplace for charity gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes from just £1. Transparent escrow payouts for secure hosting.
             </p>
 
             {/* Social Icons row */}

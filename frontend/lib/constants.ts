@@ -1,6 +1,6 @@
 import { NavLink, SocialLink } from "../types/common.types";
 
-export const BRAND_NAME = "Airsoft Draws";
+export const BRAND_NAME = "Charity Draws";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },

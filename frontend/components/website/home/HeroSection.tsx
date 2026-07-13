@@ -20,10 +20,10 @@ export default function HeroSection() {
   } = heroData;
 
   // Split title for styling
-  // "Win Premium Airsoft Gear For Less" -> highlight "Airsoft Gear"
+  // "Win Premium Charity Gear For Less" -> highlight "Charity Gear"
   const titleParts = {
     start: "Win Premium",
-    highlight: "Airsoft Gear",
+    highlight: "Charity Gear",
     end: "For Less",
   };
 

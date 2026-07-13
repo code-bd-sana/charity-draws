@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useAuthUser } from '../../../hooks/useAuthHooks';
 import { NAV_LINKS } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
-import logo from '../../../public/logo3.png';
+import logo from '../../../public/final_logo.jpg';
 import PrimaryButton from '../shared/PrimaryButton';
 
 /**
@@ -50,15 +50,15 @@ export default function WebsiteNavbar() {
           {/* Branding Logo */}
           <Link href='/' className='flex items-center gap-2 select-none group py-0.5'>
             <Image
-              alt='Airsoft Draws Logo'
+              alt='Charity Draws Logo'
               src={logo}
               height={150}
               width={150}
               priority
-              className='w-20 sm:w-24 md:w-[130px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md brightness-110 contrast-125'
+              className='w-20 sm:w-24 md:w-[130px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md brightness-110'
             />
-            <span className='font-sans font-bold text-sm sm:text-lg md:text-xl tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-[#a8b488] whitespace-nowrap'>
-              Airsoft Draws
+            <span className='font-sans font-bold text-sm sm:text-lg md:text-xl tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-text-brand whitespace-nowrap'>
+              Charity Draws
             </span>
           </Link>
           {/* Desktop Navigation Links */}
