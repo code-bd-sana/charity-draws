@@ -116,7 +116,7 @@ export default function EarlyAccessForm() {
 
           {/* General Error Notice */}
           {generalError && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-button p-3 text-center">
+            <div className="bg-red-950/40 border border-red-500/30 text-red-400 text-xs rounded-button p-3 text-center">
               {generalError}
             </div>
           )}

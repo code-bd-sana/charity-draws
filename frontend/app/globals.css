@@ -2,23 +2,23 @@
 
 :root {
   /* Semantic Colors */
-  --color-bg: #FFFFFF;
-  --color-surface: #F9FAFB;
-  --color-elevated: #F3F4F6;
-  --color-accent-bg: #F3E8FF;
+  --color-bg: #0D0D0B;
+  --color-surface: #111210;
+  --color-elevated: #161810;
+  --color-accent-bg: #1A230A;
   
-  --color-primary: #9c36f1;
-  --color-primary-hover: #b561fa;
-  --color-primary-text: #ffffff;
+  --color-primary: #8CB34A;
+  --color-primary-hover: #A0D056;
+  --color-primary-text: #0D0D0B;
   
-  --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #6B7280;
-  --color-text-brand: #9c36f1;
+  --color-text-primary: #E8EDD4;
+  --color-text-secondary: #72943A;
+  --color-text-muted: #B3B8AA;
+  --color-text-brand: #A0D056;
   
-  --color-border: #E5E7EB;
-  --color-border-medium: #D1D5DB;
-  --color-divider: #F3F4F6;
+  --color-border: #2D3C13;
+  --color-border-medium: #43581E;
+  --color-divider: #1A230A;
   
   --color-success: #16A34A;
   --color-success-text: #4ADE80;
@@ -30,8 +30,8 @@
   --radius-badge: 9999px;
   
   /* Shadows */
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(156, 54, 241, 0.25);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 20px rgba(140, 179, 74, 0.15);
   
   /* Fonts */
   --font-sans: var(--font-inter), sans-serif;
@@ -127,4 +127,19 @@ body {
 
 .animate-marquee {
   animation: marquee 20s linear infinite;
+}
+
+/* Print / PDF Export Styles */
+@media print {
+  body {
+    background-color: #0D0D0B !important;
+    color: #E8EDD4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print,
+  nav,
+  aside {
+    display: none !important;
+  }
 }

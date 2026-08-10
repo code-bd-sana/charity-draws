@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useAuthUser } from '../../../hooks/useAuthHooks';
 import { NAV_LINKS } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
-import logo from '../../../public/logo.jpg';
+import logo from '../../../public/logo3.png';
 import PrimaryButton from '../shared/PrimaryButton';
 
 /**
@@ -42,21 +42,24 @@ export default function WebsiteNavbar() {
         className={cn(
           'fixed top-0 left-0 w-full z-45 transition-all duration-300 border-b',
           scrolled
-            ? 'bg-bg/90 backdrop-blur-md border-divider/80 py-2'
-            : 'bg-transparent border-transparent py-4',
+            ? 'bg-bg/90 backdrop-blur-md border-divider/80 py-3'
+            : 'bg-transparent border-transparent py-5',
         )}
       >
         <div className='container-custom flex items-center justify-between'>
           {/* Branding Logo */}
           <Link href='/' className='flex items-center gap-2 select-none group py-0.5'>
             <Image
-              alt='Charity Draws Logo'
+              alt='Airsoft Draws Logo'
               src={logo}
-              height={55}
-              width={55}
+              height={150}
+              width={150}
               priority
-              className='w-14 sm:w-16 md:w-[70px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md mix-blend-multiply contrast-105'
+              className='w-20 sm:w-24 md:w-[130px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md brightness-110 contrast-125'
             />
+            <span className='font-sans font-bold text-sm sm:text-lg md:text-xl tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-[#a8b488] whitespace-nowrap'>
+              Airsoft Draws
+            </span>
           </Link>
           {/* Desktop Navigation Links */}
           <nav className='hidden xl:flex items-center gap-8'>

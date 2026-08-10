@@ -5,16 +5,17 @@ export const CONTACT_INFO_ITEMS: ContactInfoCardItem[] = [
     id: "email",
     title: "Email Support",
     description: "Get in touch via email.",
-    value: "support@charitydraws.com",
-    href: "mailto:support@charitydraws.com",
+    value: "info@airsoftdraws.com",
+    href: "mailto:info@airsoftdraws.com",
     type: "email",
   },
   {
-    id: "chat",
-    title: "Live Chat",
-    description: "Chat with our support crew.",
-    value: "Available 9am–6pm GMT",
-    type: "chat",
+    id: "whatsapp",
+    title: "WhatsApp Support",
+    description: "Chat directly with Airsoft Draws Support on WhatsApp.",
+    value: "+44 (0) 7497 113316",
+    href: "https://wa.me/447497113316?text=Hello%20Airsoft%20Draws%20Support%2C%20I%20have%20an%20inquiry",
+    type: "whatsapp",
   },
   {
     id: "time",
@@ -23,4 +24,5 @@ export const CONTACT_INFO_ITEMS: ContactInfoCardItem[] = [
     value: "Within 24 hours",
     type: "time",
   },
+  
 ];
