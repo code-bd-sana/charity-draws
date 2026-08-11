@@ -12,7 +12,7 @@ export default function ComingSoonHero() {
       <div className="relative w-full max-w-[450px] aspect-[0.95] rounded-[24px] overflow-hidden border border-border shadow-card hover:border-border-medium hover:shadow-glow transition-all duration-300 select-none bg-surface/50">
         <Image
           src="/coming-soon-hero.jpg"
-          alt="Airsoft Draws Coming Soon Logo & Slogans"
+          alt="Charity Draws Coming Soon Logo & Slogans"
           fill
           sizes="(max-w-768px) 100vw, 450px"
           className="object-cover"

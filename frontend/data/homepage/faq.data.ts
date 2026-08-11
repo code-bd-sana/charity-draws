@@ -4,7 +4,7 @@ export const faqData: FaqItem[] = [
   {
     id: "faq-1",
     question: "How are winners selected?",
-    answer: "Once a draw sells out or its timer expires, the winner is selected live on stream using our in-house lottery ball machine streamed live on our <a href=\"https://instagram.com/airsoftdraws\" target=\"_blank\" class=\"text-[#8CB34A] hover:underline\">Instagram</a>."
+    answer: "Once a draw sells out or its timer expires, the winner is selected live on stream using our in-house lottery ball machine streamed live on our <a href=\"https://instagram.com/charitydraws\" target=\"_blank\" class=\"text-[#8CB34A] hover:underline\">Instagram</a>."
   },
   {
     id: "faq-2",
@@ -19,7 +19,7 @@ export const faqData: FaqItem[] = [
   {
     id: "faq-4",
     question: "Do I need a UKARA defense?",
-    answer: "Yes, for any competitions involving airsoft guns (AEGs/GBBs), a valid UKARA defense is required. For non-gun competitions, UKARA is not required. If you win a gun without a valid UKARA, a cash alternative can be provided by the host."
+    answer: "Yes, for any competitions involving charity guns (AEGs/GBBs), a valid UKARA defense is required. For non-gun competitions, UKARA is not required. If you win a gun without a valid UKARA, a cash alternative can be provided by the host."
   },
   {
     id: "faq-5",
@@ -29,7 +29,7 @@ export const faqData: FaqItem[] = [
   {
     id: "faq-6",
     question: "Are the prizes brand new?",
-    answer: "Yes, all prize items hosted on Airsoft Draws are 100% brand new from authorized retailers. Second-hand items are strictly prohibited."
+    answer: "Yes, all prize items hosted on Charity Draws are 100% brand new from authorized retailers. Second-hand items are strictly prohibited."
   },
   {
     id: "faq-7",

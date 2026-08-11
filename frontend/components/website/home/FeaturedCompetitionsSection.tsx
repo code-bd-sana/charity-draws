@@ -90,7 +90,7 @@ export default function FeaturedCompetitionsSection() {
         <SectionHeader
           badgeText="LIVE NOW"
           headingText="Featured Competitions"
-          paragraphText="Browse all our featured competitions. Hosted by Verified Airsoft Businesses."
+          paragraphText="Browse all our featured competitions. Hosted by Verified Charity Businesses."
         />
 
         {/* Competitions Carousel Wrapper */}

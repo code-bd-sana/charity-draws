@@ -21,7 +21,7 @@ export class MailService {
   }
 
   async sendContactFormEmail(dto: ContactFormDto) {
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@airsoftdraws.com';
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@charitydraws.com';
     const subject = `[Contact Form] ${dto.subject || 'New Inquiry from ' + dto.name}`;
 
     try {
@@ -33,7 +33,7 @@ export class MailService {
           subject,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #111210; color: #E8EDD4; border-radius: 12px; border: 1px solid #2D3C13;">
-              <h2 style="color: #8CB34A; margin-top: 0;">New Contact Inquiry — Airsoft Draws</h2>
+              <h2 style="color: #8CB34A; margin-top: 0;">New Contact Inquiry — Charity Draws</h2>
               <hr style="border: 0; border-top: 1px solid #2D3C13; margin: 16px 0;" />
               <p style="margin: 6px 0;"><strong>Name:</strong> ${dto.name}</p>
               <p style="margin: 6px 0;"><strong>Email:</strong> <a href="mailto:${dto.email}" style="color: #8CB34A;">${dto.email}</a></p>
@@ -44,7 +44,7 @@ export class MailService {
                 <p style="margin: 0; white-space: pre-wrap; color: #B3B8AA; font-size: 14px; leading-height: 1.6;">${dto.message}</p>
               </div>
               <hr style="border: 0; border-top: 1px solid #2D3C13; margin: 24px 0 16px 0;" />
-              <p style="font-size: 11px; color: #72943A;">Airsoft Draws Ltd • Sent via Airsoft Draws Contact Form</p>
+              <p style="font-size: 11px; color: #72943A;">Charity Draws Ltd • Sent via Charity Draws Contact Form</p>
             </div>
           `,
         });
@@ -74,10 +74,10 @@ export class MailService {
       await this.transporter.sendMail({
         from: config.mail.from,
         to: email,
-        subject: 'Verify your email - Airsoft Draws',
+        subject: 'Verify your email - Charity Draws',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2>Welcome to Airsoft Draws!</h2>
+            <h2>Welcome to Charity Draws!</h2>
             <p>Please click the button below to verify your email address and activate your account:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${verificationUrl}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Verify Email</a>
@@ -104,7 +104,7 @@ export class MailService {
       await this.transporter.sendMail({
         from: config.mail.from,
         to: email,
-        subject: 'Reset your password - Airsoft Draws',
+        subject: 'Reset your password - Charity Draws',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2>Reset Your Password</h2>

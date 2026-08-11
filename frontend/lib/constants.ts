@@ -1,6 +1,6 @@
 import { NavLink, SocialLink } from "../types/common.types";
 
-export const BRAND_NAME = "Airsoft Draws";
+export const BRAND_NAME = "Charity Draws";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
@@ -14,7 +14,7 @@ export const NAV_LINKS: NavLink[] = [
 
 export const SOCIAL_LINKS: SocialLink[] = [
   { platform: "Facebook", href: "https://www.facebook.com/share/18zThK3JPJ/?mibextid=wwXIfr", iconName: "facebook" },
-  { platform: "Instagram", href: "https://instagram.com/airsoftdraws", iconName: "instagram" },
+  { platform: "Instagram", href: "https://instagram.com/charitydraws", iconName: "instagram" },
 ];
 
 export const FOOTER_SECTIONS = [

@@ -40,7 +40,7 @@ export const config: AppConfig = {
   database: {
     url:
       process.env.DATABASE_URL ||
-      'postgresql://postgres:password@localhost:5432/airsoft_draws?schema=public',
+      'postgresql://postgres:password@localhost:5432/charity_draws?schema=public',
   },
   security: {
     jwtSecret: process.env.JWT_SECRET || 'super-secret-default',
@@ -58,7 +58,7 @@ export const config: AppConfig = {
     port: Number(process.env.SMTP_PORT) || 587,
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASSWORD || '',
-    from: process.env.FROM_EMAIL || 'Airsoft Draws <noreply@airsoftdraws.com>',
+    from: process.env.FROM_EMAIL || 'Charity Draws <noreply@charitydraws.com>',
   },
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:3000',

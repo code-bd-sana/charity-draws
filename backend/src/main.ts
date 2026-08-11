@@ -16,7 +16,7 @@ async function bootstrap() {
   // Enable CORS for Next.js frontend with credentials support
   const allowedOrigins = [
     'http://localhost:3000',
-    'https://airsoft-draws.vercel.app',
+    'https://charity-draws.vercel.app',
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 
@@ -55,9 +55,9 @@ async function bootstrap() {
 
   // Configure Swagger API Documentation
   const config = new DocumentBuilder()
-    .setTitle('🎯 Airsoft Draws API Reference')
+    .setTitle('🎯 Charity Draws API Reference')
     .setDescription(
-      'Welcome to the Airsoft Draws Platform API Documentation.\n\n' +
+      'Welcome to the Charity Draws Platform API Documentation.\n\n' +
         'Here you can find all the public, client, host, and admin endpoints for managing ' +
         'raffles, purchasing tickets, processing payments, tracking winners, and managing subscriptions.\n\n' +
         '### Authorization\n' +
@@ -106,7 +106,7 @@ async function bootstrap() {
       displayRequestDuration: true,
       defaultModelsExpandDepth: 2,
     },
-    customSiteTitle: 'Airsoft Draws API Reference',
+    customSiteTitle: 'Charity Draws API Reference',
     customCss: customCss,
   });
 

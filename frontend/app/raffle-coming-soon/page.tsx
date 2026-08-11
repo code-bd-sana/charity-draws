@@ -7,9 +7,9 @@ import EarlyAccessForm from "../../components/website/coming-soon/EarlyAccessFor
 import InterestBenefits from "../../components/website/coming-soon/InterestBenefits";
 
 export const metadata: Metadata = {
-  title: "Early Access | Airsoft Draws",
+  title: "Early Access | Charity Draws",
   description:
-    "Join the waitlist for the premier airsoft raffle platform. Get launch giveaways, free tokens, and host perks before the public launch.",
+    "Join the waitlist for the premier charity raffle platform. Get launch giveaways, free tokens, and host perks before the public launch.",
 };
 
 /**

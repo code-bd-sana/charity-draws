@@ -49,7 +49,7 @@ export default function WebsiteFooter() {
           <div className="lg:col-span-2 flex flex-col gap-5">
           <Link href="/" className="flex items-center select-none group py-0.5">
             <Image
-              alt="Airsoft Draws Logo"
+              alt="Charity Draws Logo"
               src={logo}
               height={150}
               width={150}
@@ -59,7 +59,7 @@ export default function WebsiteFooter() {
           </Link>
 
             <p className="font-sans text-xs text-text-muted leading-relaxed max-w-sm">
-              The premier marketplace for airsoft gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes.
+              The premier marketplace for charity gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes.
             </p>
 
             {/* Social Icons row */}

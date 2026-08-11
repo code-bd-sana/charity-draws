@@ -48,7 +48,7 @@ export default function DashboardSidebar({ account, isCollapsed = false, onToggl
         {!isCollapsed ? (
           <Link href="/" className="relative h-[44px] w-[140px] shrink-0 select-none block">
             <Image
-              alt="Airsoft Draws Logo"
+              alt="Charity Draws Logo"
               src={logo}
               fill
               className="object-contain"

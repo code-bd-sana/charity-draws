@@ -3,7 +3,7 @@
 The following changes were implemented based on your request:
 
 1. **Featured Competitions Section (`frontend/components/website/home/FeaturedCompetitionsSection.tsx`)**:
-   - Updated the paragraph text to: "Browse all our featured competitions. Hosted by Verified Airsoft Businesses."
+   - Updated the paragraph text to: "Browse all our featured competitions. Hosted by Verified Charity Businesses."
    - Removed the categories filtering tabs, as this area is strictly for high-tier businesses to promote their competitions.
    - Renamed the "View All Competitions" button to "See All Competitions".
 

@@ -69,7 +69,7 @@ export default function HeroSection() {
 
   const titleParts = {
     start: "Win Premium",
-    highlight: "Airsoft Gear",
+    highlight: "Charity Gear",
     end: "For Less",
   };
 

@@ -7,9 +7,9 @@ import PricingComparisonSection from "../../components/website/pricing/PricingCo
 import PricingFaqSection from "../../components/website/pricing/PricingFaqSection";
 
 export const metadata: Metadata = {
-  title: "Pricing & Plans | Airsoft Draws",
+  title: "Pricing & Plans | Charity Draws",
   description:
-    "Choose the right hosting plan for your airsoft competitions. Start free or unlock advanced host dashboard access, custom branding, and priority payouts.",
+    "Choose the right hosting plan for your charity competitions. Start free or unlock advanced host dashboard access, custom branding, and priority payouts.",
 };
 
 /**

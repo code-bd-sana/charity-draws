@@ -5,8 +5,8 @@ import WebsiteNavbar from "../../components/website/layout/WebsiteNavbar";
 import WebsiteFooter from "../../components/website/layout/WebsiteFooter";
 
 export const metadata: Metadata = {
-  title: "Host Rules & Guidelines | Airsoft Draws",
-  description: "Official rules and compliance guidelines for verified hosts on Airsoft Draws.",
+  title: "Host Rules & Guidelines | Charity Draws",
+  description: "Official rules and compliance guidelines for verified hosts on Charity Draws.",
 };
 
 const hostRules = [
@@ -20,7 +20,7 @@ const hostRules = [
       </svg>
     ),
     description:
-      "All items offered as prizes must be exactly as described in the competition listing. The prize must be brand new and unused, it can be opened for photo and marketing purposes. All Airsoft Replicas must comply with the VCRA and the winner must provide a valid UKARA or equivalent defence.",
+      "All items offered as prizes must be exactly as described in the competition listing. The prize must be brand new and unused, it can be opened for photo and marketing purposes. All Charity Replicas must comply with the VCRA and the winner must provide a valid UKARA or equivalent defence.",
     highlights: ["Brand New & Unused", "VCRA Compliance", "Mandatory UKARA Defence Check"],
   },
   {
@@ -33,8 +33,8 @@ const hostRules = [
       </svg>
     ),
     description:
-      "All main draws will be drawn using Airsoft Draws approved lottery ball machine, as a host you may select an auto draw to which our system will randomly select a winner following the completion of the competition. All Live draws will be conducted live on Airsoft Draws Instagram and will be posted for replays.",
-    highlights: ["Airsoft Draws Lottery Machine", "Instagram Live Stream", "Auto-Draw System Available"],
+      "All main draws will be drawn using Charity Draws approved lottery ball machine, as a host you may select an auto draw to which our system will randomly select a winner following the completion of the competition. All Live draws will be conducted live on Charity Draws Instagram and will be posted for replays.",
+    highlights: ["Charity Draws Lottery Machine", "Instagram Live Stream", "Auto-Draw System Available"],
   },
   {
     number: "03",
@@ -46,7 +46,7 @@ const hostRules = [
       </svg>
     ),
     description:
-      "Hosts are required to dispatch physical prizes within 7 working days of the winner being verified. Tracking information must be provided. Any loss or damaged prizes are the responsibility of the host to rectify and are not the responsibility of Airsoft Draws LTD.",
+      "Hosts are required to dispatch physical prizes within 7 working days of the winner being verified. Tracking information must be provided. Any loss or damaged prizes are the responsibility of the host to rectify and are not the responsibility of Charity Draws LTD.",
     highlights: ["Dispatch within 7 Working Days", "Tracked Courier Only", "Host Full Liability for Transit"],
   },
   {
@@ -108,7 +108,7 @@ export default function HostRulesPage() {
             </h1>
 
             <p className="font-sans text-sm sm:text-base text-[#B3B8AA] leading-relaxed max-w-3xl">
-              As a Verified Host on Airsoft Draws, you are expected to maintain the highest standards of integrity, transparency, and customer service. Please review our mandatory operational rules below prior to listing a competition.
+              As a Verified Host on Charity Draws, you are expected to maintain the highest standards of integrity, transparency, and customer service. Please review our mandatory operational rules below prior to listing a competition.
             </p>
           </div>
 

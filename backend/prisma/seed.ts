@@ -119,9 +119,9 @@ async function main() {
     hostProfile = await prisma.hostProfile.create({
       data: {
         userId: hostUser.id,
-        businessName: 'Airsoft Tactical Armory',
-        slug: 'airsoft-tactical-armory',
-        bio: 'Official verified supplier of custom airsoft builds.',
+        businessName: 'Charity Tactical Armory',
+        slug: 'charity-tactical-armory',
+        bio: 'Official verified supplier of custom charity builds.',
         isVerified: true,
         walletBalance: 150.00,
       },
