@@ -8,7 +8,7 @@ interface ConfirmBlockModalProps {
   onConfirm: () => void;
   isLoading?: boolean;
   isBlocked: boolean;
-  userIdentifier: string; // email, name or ID to display
+  userIdentifier: string;
 }
 
 export default function ConfirmBlockModal({ 
@@ -22,27 +22,28 @@ export default function ConfirmBlockModal({
   if (!isOpen) return null;
 
   const actionText = isBlocked ? "Unblock" : "Block";
-  const actionColor = isBlocked ? "text-[#4ADE80]" : "text-[#f76b6b]";
-  const buttonBg = isBlocked ? "bg-[#083b18] hover:bg-[#0a4a1f] border-[#4ADE80]/30" : "bg-[#7F1D1D] hover:bg-[#991b1b] border-[#EF4444]/30";
-  const buttonText = isBlocked ? "text-[#4ADE80]" : "text-[#f76b6b]";
+  const actionColor = isBlocked ? "text-emerald-700 font-bold" : "text-red-700 font-bold";
+  const buttonBg = isBlocked 
+    ? "bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700" 
+    : "bg-red-50 hover:bg-red-100 border-red-200 text-red-700";
 
   return (
     <>
       <div 
-        className="fixed inset-0 z-50 bg-[#0D0D0B]/80 backdrop-blur-sm transition-opacity" 
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity" 
         onClick={!isLoading ? onClose : undefined} 
       />
       
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[400px] bg-[#161810] border border-[#2D3C13] rounded-[16px] shadow-2xl z-50 animate-fadeIn flex flex-col p-8">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[400px] bg-surface border border-border rounded-card shadow-card z-50 animate-fadeIn flex flex-col p-8 select-none">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading font-bold text-[20px] text-[#E8EDD4]">
+          <h2 className="font-heading font-bold text-[20px] text-text-primary">
             Confirm Action
           </h2>
           <button 
             onClick={!isLoading ? onClose : undefined}
-            className="text-[#5A752A] hover:text-[#E8EDD4] transition-colors"
+            className="text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             disabled={isLoading}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -53,19 +54,19 @@ export default function ConfirmBlockModal({
 
         {/* Content */}
         <div className="flex flex-col gap-4 mb-8">
-          <p className="font-sans text-[14px] text-[#E8EDD4] leading-relaxed">
+          <p className="font-sans text-[14px] text-text-primary leading-relaxed font-medium">
             Are you sure you want to <strong className={actionColor}>{actionText.toLowerCase()}</strong> this user?
           </p>
-          <div className="bg-[#111210] border border-[#2D3C13] rounded-[8px] p-4">
-            <span className="font-sans text-[13px] text-[#72943A] block mb-1">User / Host:</span>
-            <span className="font-sans font-medium text-[14px] text-[#E8EDD4] break-all">{userIdentifier}</span>
+          <div className="bg-bg border border-border rounded-button p-4">
+            <span className="font-sans text-[12px] text-text-muted block mb-1 font-semibold">User / Host:</span>
+            <span className="font-sans font-bold text-[14px] text-text-brand break-all">{userIdentifier}</span>
           </div>
           {isBlocked ? (
-            <p className="font-sans text-[12px] text-[#72943A]">
+            <p className="font-sans text-[12px] text-text-muted font-medium">
               Unblocking will restore their access to the platform immediately.
             </p>
           ) : (
-            <p className="font-sans text-[12px] text-[#72943A]">
+            <p className="font-sans text-[12px] text-text-muted font-medium">
               Blocking will immediately prevent them from logging in and accessing the platform.
             </p>
           )}
@@ -76,14 +77,14 @@ export default function ConfirmBlockModal({
           <button 
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 h-[44px] rounded-[8px] bg-transparent border border-[#2D3C13] hover:border-[#5A752A] text-[#E8EDD4] font-heading font-medium text-[14px] transition-colors flex items-center justify-center disabled:opacity-50"
+            className="flex-1 h-[44px] rounded-button bg-surface border border-border hover:bg-accent-bg text-text-primary font-sans font-semibold text-[14px] transition-colors flex items-center justify-center disabled:opacity-50 cursor-pointer"
           >
             Cancel
           </button>
           <button 
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 h-[44px] rounded-[8px] border font-heading font-medium text-[14px] transition-colors flex items-center justify-center disabled:opacity-50 ${buttonBg} ${buttonText}`}
+            className={`flex-1 h-[44px] rounded-button border font-sans font-semibold text-[14px] transition-all flex items-center justify-center disabled:opacity-50 cursor-pointer shadow-sm ${buttonBg}`}
           >
             {isLoading ? "Processing..." : `Yes, ${actionText}`}
           </button>

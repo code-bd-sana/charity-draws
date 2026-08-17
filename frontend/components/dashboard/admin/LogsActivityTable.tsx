@@ -36,11 +36,11 @@ export default function LogsActivityTable() {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Success":
-        return "border-[#4ADE80]/30 bg-[#083b18] text-[#4ADE80]";
+        return "border-emerald-200 bg-emerald-50 text-emerald-700";
       case "Failed":
-        return "border-[#DC2626]/30 bg-[#7f1d1d] text-[#EF4444]";
+        return "border-red-200 bg-red-50 text-red-700";
       default:
-        return "border-[#2D3C13] bg-[#111210] text-[#72943A]";
+        return "border-border bg-accent-bg text-text-brand";
     }
   };
 
@@ -73,12 +73,12 @@ export default function LogsActivityTable() {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full mt-2 animate-fadeIn">
+    <div className="flex flex-col gap-6 w-full mt-2 animate-fadeIn select-none">
       
       {/* Top Controls Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-4 rounded-card border border-border shadow-card">
         {/* Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 shrink-0 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto shrink-0 no-scrollbar">
           {filters.map((filter) => (
             <button
               key={filter}
@@ -86,10 +86,10 @@ export default function LogsActivityTable() {
                 setActiveFilter(filter);
                 setPage(1);
               }}
-              className={`px-4 py-2 rounded-full font-sans font-medium text-[12px] whitespace-nowrap transition-colors cursor-pointer ${
+              className={`px-4 py-2 rounded-badge font-sans font-semibold text-[12px] whitespace-nowrap transition-all cursor-pointer ${
                 activeFilter === filter
-                  ? "bg-transparent border border-[#8CB34A] text-[#E8EDD4]"
-                  : "bg-transparent border border-[#2D3C13] text-[#72943A] hover:bg-[#1A230A] hover:text-[#A0D056]"
+                  ? "bg-primary border-primary text-primary-text font-bold shadow-sm"
+                  : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
               }`}
             >
               {filter}
@@ -105,9 +105,9 @@ export default function LogsActivityTable() {
               placeholder="Search logs by keyword..." 
               value={searchInput}
               onChange={handleSearchChange}
-              className="w-full h-[36px] bg-[#111210] border border-[#2D3C13] rounded-[8px] pl-4 pr-10 text-[13px] text-[#E8EDD4] placeholder:text-[#5A752A] outline-none focus:border-[#8CB34A] transition-colors font-sans"
+              className="w-full h-[38px] bg-bg border border-border rounded-button pl-4 pr-10 text-[13px] text-text-primary placeholder:text-text-muted outline-none focus:border-primary transition-colors font-sans"
             />
-            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#72943A] hover:text-[#8CB34A] cursor-pointer">
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-brand cursor-pointer">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
@@ -117,79 +117,79 @@ export default function LogsActivityTable() {
       </div>
 
       {/* Table Container */}
-      <div className="w-full bg-[#161810] border border-[#2D3C13] rounded-[16px] overflow-hidden overflow-x-auto">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto">
         <table className="w-full min-w-[1050px] text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#2D3C13] bg-[#111210]">
-              <th className="py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[18%]">TIMESTAMP</th>
-              <th className="py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[20%]">ACTOR</th>
-              <th className="py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[35%]">ACTION DESCRIPTION</th>
-              <th className="py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[15%]">IP ADDRESS</th>
-              <th className="py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[12%] text-right">STATUS</th>
+            <tr className="border-b border-border bg-accent-bg/50">
+              <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[18%]">TIMESTAMP</th>
+              <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[20%]">ACTOR</th>
+              <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[35%]">ACTION DESCRIPTION</th>
+              <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[15%]">IP ADDRESS</th>
+              <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[12%] text-right">STATUS</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, idx) => (
-                <tr key={idx} className="border-b border-[#2D3C13] last:border-b-0 animate-pulse">
+                <tr key={idx} className="border-b border-divider last:border-b-0 animate-pulse">
                   <td className="py-5 px-6">
-                    <div className="h-4 w-28 bg-[#1C2012] rounded" />
+                    <div className="h-4 w-28 bg-accent-bg rounded" />
                   </td>
                   <td className="py-5 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-[#1C2012] shrink-0" />
-                      <div className="h-4 w-24 bg-[#1C2012] rounded" />
+                      <div className="w-7 h-7 rounded-full bg-accent-bg shrink-0" />
+                      <div className="h-4 w-24 bg-accent-bg rounded" />
                     </div>
                   </td>
                   <td className="py-5 px-6">
-                    <div className="h-4 w-80 bg-[#1C2012] rounded" />
+                    <div className="h-4 w-80 bg-accent-bg rounded" />
                   </td>
                   <td className="py-5 px-6">
-                    <div className="h-4 w-24 bg-[#1C2012] rounded" />
+                    <div className="h-4 w-24 bg-accent-bg rounded" />
                   </td>
                   <td className="py-5 px-6 text-right">
-                    <div className="h-6 w-14 bg-[#1C2012] rounded-full ml-auto" />
+                    <div className="h-6 w-14 bg-accent-bg rounded-full ml-auto" />
                   </td>
                 </tr>
               ))
             ) : isError ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-[#f76b6b] font-sans text-sm">
+                <td colSpan={5} className="py-8 text-center text-red-600 font-sans text-sm font-semibold">
                   Failed to load logs. Please try again.
                 </td>
               </tr>
             ) : logs.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-[#72943A] font-sans text-sm">
+                <td colSpan={5} className="py-8 text-center text-text-muted font-sans text-sm font-medium">
                   No log entries found.
                 </td>
               </tr>
             ) : (
               logs.map((log, i) => (
-                <tr key={log.id} className={`${i !== logs.length - 1 ? 'border-b border-[#2D3C13]' : ''} hover:bg-[#1A230A] transition-colors`}>
+                <tr key={log.id} className={`${i !== logs.length - 1 ? 'border-b border-divider' : ''} hover:bg-accent-bg/30 transition-colors`}>
                   <td className="py-5 px-6">
-                    <span className="font-sans text-[13px] text-[#72943A]">
+                    <span className="font-sans text-[13px] text-text-muted font-medium">
                       {format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss')}
                     </span>
                   </td>
                   <td className="py-5 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-[#1A230A] border border-[#43581E] flex items-center justify-center shrink-0">
-                        <span className="font-sans font-medium text-[10px] text-[#8CB34A]">{log.actor.initials}</span>
+                      <div className="w-7 h-7 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0">
+                        <span className="font-sans font-bold text-[10px] text-text-brand">{log.actor.initials}</span>
                       </div>
-                      <span className="font-sans font-medium text-[13px] text-[#E8EDD4] truncate max-w-[150px]" title={log.actor.name}>
+                      <span className="font-sans font-semibold text-[13px] text-text-primary truncate max-w-[150px]" title={log.actor.name}>
                         {log.actor.name}
                       </span>
                     </div>
                   </td>
                   <td className="py-5 px-6">
-                    <span className="font-sans text-[13px] text-[#72943A] leading-relaxed">{log.description}</span>
+                    <span className="font-sans text-[13px] text-text-primary leading-relaxed font-medium">{log.description}</span>
                   </td>
                   <td className="py-5 px-6">
-                    <span className="font-sans text-[13px] text-[#72943A]">{log.ip}</span>
+                    <span className="font-sans text-[13px] text-text-muted font-medium">{log.ip}</span>
                   </td>
                   <td className="py-5 px-6 text-right">
-                    <span className={`px-3 py-1 rounded-full border font-sans font-medium text-[10px] whitespace-nowrap ${getStatusStyle(log.status)}`}>
+                    <span className={`px-3 py-1 rounded-badge border font-sans font-semibold text-[10px] whitespace-nowrap shadow-sm ${getStatusStyle(log.status)}`}>
                       {log.status}
                     </span>
                   </td>
@@ -200,11 +200,11 @@ export default function LogsActivityTable() {
         </table>
         
         {/* Footer actions */}
-        <div className="flex items-center justify-between p-6 bg-[#161810]">
+        <div className="flex items-center justify-between p-6 bg-surface border-t border-divider">
           <button 
             onClick={handleExportCSV}
             disabled={logs.length === 0}
-            className="flex items-center justify-center gap-2 h-[36px] px-4 rounded-[8px] bg-transparent border border-[#2D3C13] hover:border-[#43581E] text-[#72943A] hover:text-[#E8EDD4] font-sans font-medium text-[12px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex items-center justify-center gap-2 h-[36px] px-4 rounded-button bg-accent-bg border border-border-medium hover:bg-primary hover:text-white text-text-brand font-sans font-semibold text-[12px] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -218,17 +218,17 @@ export default function LogsActivityTable() {
               <button 
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-2.5 h-8 rounded-[6px] border border-[#2D3C13] hover:border-[#43581E] disabled:opacity-30 disabled:cursor-not-allowed bg-transparent text-[#72943A] hover:text-[#E8EDD4] font-sans font-medium text-[12px] flex items-center justify-center transition-colors cursor-pointer"
+                className="px-3 h-8 rounded-button border border-border hover:bg-accent-bg disabled:opacity-30 disabled:cursor-not-allowed bg-surface text-text-primary font-sans font-semibold text-[12px] flex items-center justify-center transition-colors cursor-pointer"
               >
                 Prev
               </button>
-              <span className="text-[#5A752A] px-2 font-sans text-xs">
+              <span className="text-text-muted px-2 font-sans text-xs font-medium">
                 Page {page} of {totalPages}
               </span>
               <button 
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-2.5 h-8 rounded-[6px] border border-[#2D3C13] hover:border-[#43581E] disabled:opacity-30 disabled:cursor-not-allowed bg-transparent text-[#72943A] hover:text-[#E8EDD4] font-sans font-medium text-[12px] flex items-center justify-center transition-colors cursor-pointer"
+                className="px-3 h-8 rounded-button border border-border hover:bg-accent-bg disabled:opacity-30 disabled:cursor-not-allowed bg-surface text-text-primary font-sans font-semibold text-[12px] flex items-center justify-center transition-colors cursor-pointer"
               >
                 Next
               </button>
