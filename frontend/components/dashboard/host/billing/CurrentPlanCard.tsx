@@ -25,22 +25,22 @@ export default function CurrentPlanCard() {
   };
 
   if (isLoading) {
-    return <div className="p-[24px] text-white">Loading subscription...</div>;
+    return <div className="p-6 text-text-muted font-sans font-medium text-sm animate-pulse">Loading subscription...</div>;
   }
 
   if (!subscription || subscription.status !== 'ACTIVE') {
     return (
-      <div className="w-full bg-[#1a230a] border border-[#2d3c13] rounded-[16px] p-[24px] lg:p-[32px] flex flex-col sm:flex-row sm:items-center justify-between gap-[24px]">
-        <div className="flex flex-col gap-[8px]">
-          <h2 className="font-heading font-medium text-[20px] text-[#e8edd4]">
+      <div className="w-full bg-surface border border-border rounded-card p-6 lg:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-card">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-heading font-bold text-lg md:text-xl text-text-primary">
             No Active Subscription
           </h2>
-          <p className="font-sans font-medium text-[14px] text-[#ff4d4f]">
+          <p className="font-sans font-semibold text-xs md:text-sm text-red-600">
             {subscription?.status === 'CANCELLED' ? 'Your subscription was cancelled.' : 'You do not have an active plan.'}
           </p>
         </div>
-        <div className="flex items-center gap-[24px]">
-          <a href="/pricing" className="h-[40px] flex items-center justify-center px-[24px] bg-[#8cb34a] hover:bg-[#72943A] rounded-[8px] font-sans font-semibold text-[13px] text-[#1a230a] transition-colors">
+        <div className="flex items-center gap-6">
+          <a href="/pricing" className="h-10 flex items-center justify-center px-6 bg-primary hover:bg-primary-hover rounded-button font-heading font-bold text-xs md:text-sm text-primary-text transition-all shadow-glow cursor-pointer">
             Subscribe Now
           </a>
         </div>
@@ -56,29 +56,29 @@ export default function CurrentPlanCard() {
   const tx = subscription.transaction;
 
   return (
-    <div className="w-full bg-[#1a230a] border border-[#2d3c13] rounded-[16px] p-[24px] lg:p-[32px] flex flex-col sm:flex-row sm:items-center justify-between gap-[24px]">
+    <div className="w-full bg-surface border border-border rounded-card p-6 lg:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-card">
       
       {/* Plan Details */}
-      <div className="flex flex-col gap-[8px]">
-        <h2 className="font-heading font-medium text-[20px] text-[#e8edd4]">
+      <div className="flex flex-col gap-2">
+        <h2 className="font-heading font-bold text-lg md:text-xl text-text-primary">
           Current Plan: {subscription.plan.name}
         </h2>
-        <p className="font-sans font-medium text-[14px] text-[#8cb34a]">
+        <p className="font-sans font-bold text-sm md:text-base text-text-brand">
           £{subscription.plan.price}/month · Renews {formattedEndDate} ({remainingDays} days left)
         </p>
-        <div className="font-sans text-[12px] text-text-muted mt-2 space-y-1">
-          <p><strong>Start Date:</strong> {formattedStartDate}</p>
-          <p><strong>Payment Status:</strong> {tx?.status || 'COMPLETED'}</p>
-          {tx?.gatewayTransactionId && <p><strong>Transaction ID:</strong> {tx.gatewayTransactionId}</p>}
+        <div className="font-sans text-xs text-text-muted mt-2 space-y-1 font-medium">
+          <p><strong className="text-text-secondary">Start Date:</strong> {formattedStartDate}</p>
+          <p><strong className="text-text-secondary">Payment Status:</strong> <span className="text-emerald-700 font-bold">{tx?.status || 'COMPLETED'}</span></p>
+          {tx?.gatewayTransactionId && <p><strong className="text-text-secondary">Transaction ID:</strong> <span className="font-mono">{tx.gatewayTransactionId}</span></p>}
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-[24px]">
+      <div className="flex items-center gap-6">
         <button 
           onClick={handleCancel} 
           disabled={isCancelling}
-          className="font-sans font-medium text-[13px] text-[#ff4d4f] hover:text-[#ff7875] transition-colors disabled:opacity-50"
+          className="font-sans font-semibold text-xs md:text-sm text-red-600 hover:text-red-700 transition-colors cursor-pointer disabled:opacity-50"
         >
           {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
         </button>

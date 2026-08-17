@@ -16,7 +16,7 @@ const steps = [
 
 export default function CreateRaffleStepper({ currentStep, totalSteps }: CreateRaffleStepperProps) {
   return (
-    <div className="w-full flex items-start justify-between relative mb-[40px] px-[20px]">
+    <div className="w-full flex items-start justify-between relative mb-8 px-4 select-none">
       {steps.map((label, index) => {
         const stepNum = index + 1;
         const isCompleted = stepNum < currentStep;
@@ -27,13 +27,13 @@ export default function CreateRaffleStepper({ currentStep, totalSteps }: CreateR
         return (
           <React.Fragment key={label}>
             {/* Step Item */}
-            <div className="flex flex-col items-center gap-[12px] relative z-10 w-[80px] shrink-0">
+            <div className="flex flex-col items-center gap-2.5 relative z-10 w-20 shrink-0">
               <div
                 className={cn(
-                  "w-[32px] h-[32px] rounded-full flex items-center justify-center font-sans font-medium text-[13px] transition-colors border",
-                  isCompleted && "bg-[#161810] border-[#43581e] text-[#8cb34a]",
-                  isActive && "bg-[#8cb34a] border-[#8cb34a] text-[#0d0d0b]",
-                  isPending && "bg-[#161810] border-[#2d3c13] text-[#43581e]"
+                  "w-8 h-8 rounded-full flex items-center justify-center font-sans text-xs transition-all border shadow-sm",
+                  isCompleted && "bg-accent-bg border-border-medium text-text-brand font-bold",
+                  isActive && "bg-primary border-primary text-primary-text font-bold shadow-glow scale-110",
+                  isPending && "bg-bg border-border text-text-muted font-medium"
                 )}
               >
                 {isCompleted ? (
@@ -46,8 +46,8 @@ export default function CreateRaffleStepper({ currentStep, totalSteps }: CreateR
               </div>
               <span
                 className={cn(
-                  "font-sans font-medium text-[11px] text-center whitespace-nowrap",
-                  (isCompleted || isActive) ? "text-[#e8edd4]" : "text-[#43581e]"
+                  "font-sans text-[11px] text-center whitespace-nowrap transition-colors",
+                  (isCompleted || isActive) ? "text-text-primary font-bold" : "text-text-muted font-medium"
                 )}
               >
                 {stepNum}. {label}
@@ -56,11 +56,11 @@ export default function CreateRaffleStepper({ currentStep, totalSteps }: CreateR
 
             {/* Connecting Line */}
             {!isLast && (
-              <div className="flex-1 h-[2px] mt-[15px] mx-[8px] shrink">
+              <div className="flex-1 h-0.5 mt-4 mx-2 shrink">
                 <div 
                   className={cn(
                     "w-full h-full transition-colors",
-                    isCompleted ? "bg-[#2d3c13]" : "bg-[#1a230a]"
+                    isCompleted ? "bg-primary" : "bg-border"
                   )}
                 />
               </div>

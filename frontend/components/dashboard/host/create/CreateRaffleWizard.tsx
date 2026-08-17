@@ -136,14 +136,14 @@ export default function CreateRaffleWizard() {
 
   if (isSubLoading) {
     return (
-      <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] min-h-[400px] flex flex-col items-center justify-center p-[32px]">
+      <div className="w-full bg-surface border border-border rounded-card min-h-[400px] flex flex-col items-center justify-center p-8 shadow-card select-none">
         <div className="relative flex items-center justify-center w-24 h-24 mb-8">
-          <div className="absolute inset-0 rounded-full border-[3px] border-[#2d3c13] opacity-20"></div>
-          <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#8cb34a] border-r-[#8cb34a] animate-spin" style={{ animationDuration: '1s' }}></div>
-          <div className="w-4 h-4 bg-[#8cb34a] rounded-full animate-pulse shadow-[0_0_15px_#8cb34a]"></div>
+          <div className="absolute inset-0 rounded-full border-[3px] border-border-medium opacity-40"></div>
+          <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-primary border-r-primary animate-spin" style={{ animationDuration: '1s' }}></div>
+          <div className="w-4 h-4 bg-primary rounded-full animate-pulse shadow-glow"></div>
         </div>
-        <h3 className="text-[#8cb34a] text-xl font-semibold mb-2">Verifying Subscription</h3>
-        <p className="text-[#8c9477] text-sm max-w-[280px] text-center animate-pulse">
+        <h3 className="text-text-brand text-xl font-bold mb-2">Verifying Subscription</h3>
+        <p className="text-text-muted text-sm max-w-[280px] text-center animate-pulse font-medium">
           Please wait a moment while we securely check your host status...
         </p>
       </div>
@@ -152,21 +152,21 @@ export default function CreateRaffleWizard() {
 
   if (!mySub || mySub.status !== 'ACTIVE') {
     return (
-      <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] p-[32px] text-center">
-        <h2 className="text-[#f76b6b] text-xl mb-4">Active Subscription Required</h2>
-        <p className="text-[#e8edd4] mb-6">You must have an active subscription to create a competition.</p>
-        <button onClick={() => router.push('/dashboard/host/billing')} className="px-6 py-2 bg-[#8cb34a] text-black rounded-lg">View Plans</button>
+      <div className="w-full bg-surface border border-border rounded-card p-8 text-center shadow-card select-none">
+        <h2 className="text-red-600 text-xl font-bold mb-3">Active Subscription Required</h2>
+        <p className="text-text-secondary font-medium mb-6">You must have an active subscription to create a competition.</p>
+        <button onClick={() => router.push('/dashboard/host/billing')} className="px-6 py-2.5 bg-primary hover:bg-primary-hover text-primary-text font-bold rounded-button shadow-glow cursor-pointer transition-all">View Plans</button>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-full px-[10px] md:px-[20px]">
+    <div className="w-full flex flex-col items-center select-none">
+      <div className="w-full px-2 md:px-5">
         <CreateRaffleStepper currentStep={currentStep} totalSteps={6} />
       </div>
 
-      <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] p-[32px] mt-[16px]">
+      <div className="w-full bg-surface border border-border rounded-card p-6 md:p-8 mt-4 shadow-card">
         {currentStep === 1 && (
           <CreateRaffleStep1 formData={formData} updateForm={updateForm} onNext={nextStep} />
         )}
