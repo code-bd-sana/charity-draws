@@ -105,19 +105,19 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className='flex flex-col gap-8 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn'>
+    <div className='flex flex-col gap-8 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none'>
       <div className='flex justify-between items-center'>
         <div>
-          <h1 className='font-heading font-bold text-[32px] text-[#E8EDD4] tracking-[-0.02em]'>
+          <h1 className='font-heading font-bold text-[32px] text-text-primary tracking-tight'>
             Categories Management
           </h1>
-          <p className='font-sans text-[14px] text-[#72943A] mt-1'>
+          <p className='font-sans text-[14px] text-text-muted mt-1 font-medium'>
             Manage public categories displayed on the homepage.
           </p>
         </div>
         <button
           onClick={openAddModal}
-          className='bg-primary hover:bg-[#ff4d79] text-[#0D0D0B] px-5 py-2.5 rounded-[8px] font-heading font-bold text-[14px] transition-colors flex items-center gap-2'
+          className='bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-button font-sans font-semibold text-[14px] transition-all flex items-center gap-2 shadow-sm cursor-pointer'
         >
           <svg
             className='w-4 h-4'
@@ -132,26 +132,26 @@ export default function AdminCategoriesPage() {
         </button>
       </div>
 
-      <div className='w-full bg-[#161810] border border-[#2D3C13] rounded-[16px] overflow-hidden overflow-x-auto'>
+      <div className='w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto'>
         <table className='w-full min-w-[900px] text-left border-collapse'>
           <thead>
-            <tr className='border-b border-[#2D3C13] bg-[#111210]'>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] w-[60px]'>
+            <tr className='border-b border-border bg-accent-bg/50'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider w-[60px]'>
                 Image
               </th>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider'>
                 Name
               </th>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider'>
                 Slug
               </th>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider'>
                 Icon
               </th>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider'>
                 Status
               </th>
-              <th className='py-4 px-6 font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px] text-right'>
+              <th className='py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-right'>
                 Actions
               </th>
             </tr>
@@ -159,13 +159,13 @@ export default function AdminCategoriesPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className='py-8 text-center text-[#72943A]'>
+                <td colSpan={6} className='py-8 text-center text-text-muted font-medium'>
                   Loading categories...
                 </td>
               </tr>
             ) : categories.length === 0 ? (
               <tr>
-                <td colSpan={6} className='py-8 text-center text-[#72943A]'>
+                <td colSpan={6} className='py-8 text-center text-text-muted font-medium'>
                   No categories found.
                 </td>
               </tr>
@@ -173,11 +173,11 @@ export default function AdminCategoriesPage() {
               categories.map((category, i) => (
                 <tr
                   key={category.id}
-                  className={`${i !== categories.length - 1 ? 'border-b border-[#2D3C13]' : ''} hover:bg-[#1A230A] transition-colors`}
+                  className={`${i !== categories.length - 1 ? 'border-b border-divider' : ''} hover:bg-accent-bg/30 transition-colors`}
                 >
                   <td className='py-4 px-6'>
                     {category.image ? (
-                      <div className='w-[40px] h-[40px] rounded-[6px] overflow-hidden border border-[#2D3C13]'>
+                      <div className='w-[40px] h-[40px] rounded-button overflow-hidden border border-border'>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={category.image}
@@ -186,9 +186,9 @@ export default function AdminCategoriesPage() {
                         />
                       </div>
                     ) : (
-                      <div className='w-[40px] h-[40px] rounded-[6px] bg-[#0D0D0B] border border-[#2D3C13] flex items-center justify-center'>
+                      <div className='w-[40px] h-[40px] rounded-button bg-bg border border-border flex items-center justify-center'>
                         <svg
-                          className='w-4 h-4 text-[#5A752A]'
+                          className='w-4 h-4 text-text-muted'
                           fill='none'
                           viewBox='0 0 24 24'
                           stroke='currentColor'
@@ -204,25 +204,25 @@ export default function AdminCategoriesPage() {
                     )}
                   </td>
                   <td className='py-4 px-6'>
-                    <span className='font-sans font-medium text-[14px] text-[#E8EDD4]'>
+                    <span className='font-sans font-semibold text-[14px] text-text-primary'>
                       {category.name}
                     </span>
                   </td>
                   <td className='py-4 px-6'>
-                    <span className='font-sans text-[13px] text-[#72943A]'>{category.slug}</span>
+                    <span className='font-sans text-[13px] text-text-muted font-medium'>{category.slug}</span>
                   </td>
                   <td className='py-4 px-6'>
-                    <span className='font-sans text-[13px] text-[#72943A]'>
+                    <span className='font-sans text-[13px] text-text-muted font-medium'>
                       {category.icon || '-'}
                     </span>
                   </td>
                   <td className='py-4 px-6'>
                     <button
                       onClick={() => toggleStatus(category)}
-                      className={`px-3 py-1 inline-flex text-[10px] leading-5 font-sans font-medium rounded-full border ${
+                      className={`px-3 py-1 inline-flex text-[10px] leading-5 font-sans font-semibold rounded-badge border shadow-sm cursor-pointer ${
                         category.isActive
-                          ? 'border-[#4ADE80]/30 bg-[#083b18] text-[#4ADE80]'
-                          : 'border-[#EF4444]/30 bg-[#7F1D1D] text-[#f76b6b]'
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          : 'border-red-200 bg-red-50 text-red-700'
                       }`}
                     >
                       {category.isActive ? 'Active' : 'Inactive'}
@@ -232,7 +232,7 @@ export default function AdminCategoriesPage() {
                     <div className='flex items-center justify-end gap-4'>
                       <button
                         onClick={() => openEditModal(category)}
-                        className='text-[#5A752A] hover:text-[#E8EDD4] transition-colors'
+                        className='text-text-muted hover:text-text-brand transition-colors cursor-pointer'
                         title='Edit'
                       >
                         <svg
@@ -251,7 +251,7 @@ export default function AdminCategoriesPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(category.id)}
-                        className='text-[#f76b6b] hover:text-[#ef4444] transition-colors'
+                        className='text-text-muted hover:text-red-600 transition-colors cursor-pointer'
                         title='Delete'
                       >
                         <svg
@@ -262,9 +262,9 @@ export default function AdminCategoriesPage() {
                           strokeWidth={2}
                         >
                           <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0'
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
                           />
                         </svg>
                       </button>
@@ -281,17 +281,17 @@ export default function AdminCategoriesPage() {
       {isModalOpen && (
         <>
           <div
-            className='fixed inset-0 z-50 bg-[#0D0D0B]/80 backdrop-blur-sm transition-opacity'
+            className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity'
             onClick={closeModal}
           />
-          <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[500px] bg-[#161810] border border-[#2D3C13] rounded-[16px] shadow-2xl z-50 animate-fadeIn flex flex-col overflow-hidden max-h-[90vh] overflow-y-auto'>
-            <div className='flex items-center justify-between p-6 border-b border-[#2D3C13] bg-[#111210] sticky top-0 z-10'>
-              <h2 className='font-heading font-bold text-[20px] text-[#E8EDD4]'>
+          <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[500px] bg-surface border border-border rounded-card shadow-card z-50 animate-fadeIn flex flex-col overflow-hidden max-h-[90vh] overflow-y-auto'>
+            <div className='flex items-center justify-between p-6 border-b border-border bg-surface sticky top-0 z-10'>
+              <h2 className='font-heading font-bold text-[20px] text-text-primary'>
                 {isEditMode ? 'Edit Category' : 'Add New Category'}
               </h2>
               <button
                 onClick={closeModal}
-                className='text-[#5A752A] hover:text-[#E8EDD4] transition-colors'
+                className='text-text-muted hover:text-text-primary transition-colors cursor-pointer'
               >
                 <svg
                   className='w-5 h-5'
@@ -307,37 +307,37 @@ export default function AdminCategoriesPage() {
 
             <div className='p-6 space-y-5'>
               {error && (
-                <div className='p-3 bg-[#7F1D1D]/20 border border-[#EF4444]/30 text-[#f76b6b] text-sm rounded-[8px] font-sans'>
+                <div className='p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-button font-sans font-semibold'>
                   {error}
                 </div>
               )}
 
               <div>
-                <label className='block text-[13px] font-sans text-[#72943A] mb-1.5'>Name *</label>
+                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>Name *</label>
                 <input
                   type='text'
                   value={currentCategory.name || ''}
                   onChange={(e) => setCurrentCategory({ ...currentCategory, name: e.target.value })}
-                  className='w-full h-[44px] px-4 bg-[#0D0D0B] border border-[#2D3C13] rounded-[8px] focus:outline-none focus:border-[#8CB34A] text-[#E8EDD4] font-sans text-[14px] placeholder:text-[#5A752A] transition-colors'
+                  className='w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-sans text-[14px] placeholder:text-text-muted transition-colors'
                   placeholder='e.g. Rifles'
                 />
               </div>
 
               <div>
-                <label className='block text-[13px] font-sans text-[#72943A] mb-1.5'>
+                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
                   Slug (Optional)
                 </label>
                 <input
                   type='text'
                   value={currentCategory.slug || ''}
                   onChange={(e) => setCurrentCategory({ ...currentCategory, slug: e.target.value })}
-                  className='w-full h-[44px] px-4 bg-[#0D0D0B] border border-[#2D3C13] rounded-[8px] focus:outline-none focus:border-[#8CB34A] text-[#E8EDD4] font-sans text-[14px] placeholder:text-[#5A752A] transition-colors'
+                  className='w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-sans text-[14px] placeholder:text-text-muted transition-colors'
                   placeholder='e.g. rifles'
                 />
               </div>
 
               <div>
-                <label className='block text-[13px] font-sans text-[#72943A] mb-1.5'>
+                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
                   Icon Selection (Optional)
                 </label>
                 <div className='relative'>
@@ -346,7 +346,7 @@ export default function AdminCategoriesPage() {
                     onChange={(e) =>
                       setCurrentCategory({ ...currentCategory, icon: e.target.value })
                     }
-                    className='w-full h-[44px] px-4 bg-[#0D0D0B] border border-[#2D3C13] rounded-[8px] focus:outline-none focus:border-[#8CB34A] text-[#E8EDD4] font-sans text-[14px] transition-colors appearance-none cursor-pointer'
+                    className='w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-sans text-[14px] transition-colors appearance-none cursor-pointer'
                   >
                     <option value=''>Select an icon...</option>
                     {AVAILABLE_ICONS.map((icon) => (
@@ -355,7 +355,7 @@ export default function AdminCategoriesPage() {
                       </option>
                     ))}
                   </select>
-                  <div className='absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-[#5A752A]'>
+                  <div className='absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-text-muted'>
                     <svg className='w-4 h-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                       <path
                         strokeLinecap='round'
@@ -370,7 +370,7 @@ export default function AdminCategoriesPage() {
 
               {/* Image Upload Area */}
               <div>
-                <label className='block text-[13px] font-sans text-[#72943A] mb-1.5'>
+                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
                   Category Image (Optional)
                 </label>
                 <div
@@ -379,10 +379,10 @@ export default function AdminCategoriesPage() {
                       ? document.getElementById('categoryImageInput')?.click()
                       : undefined
                   }
-                  className={`w-full h-[140px] border-2 border-dashed rounded-[8px] flex flex-col items-center justify-center transition-colors relative overflow-hidden group ${
+                  className={`w-full h-[140px] border-2 border-dashed rounded-button flex flex-col items-center justify-center transition-colors relative overflow-hidden group ${
                     currentCategory.image || imageFile
-                      ? 'border-[#2D3C13] bg-[#0D0D0B]'
-                      : 'border-[#2D3C13] hover:border-[#8CB34A] hover:bg-[#1A230A]/50 cursor-pointer bg-[#0D0D0B]'
+                      ? 'border-border bg-bg'
+                      : 'border-border hover:border-primary hover:bg-accent-bg/40 cursor-pointer bg-bg'
                   }`}
                 >
                   {currentCategory.image || imageFile ? (
@@ -404,7 +404,7 @@ export default function AdminCategoriesPage() {
                             ) as HTMLInputElement;
                             if (el) el.value = '';
                           }}
-                          className='h-[32px] px-[12px] bg-[#f76b6b] text-white font-sans font-medium text-[12px] rounded-[6px] hover:bg-[#ef4444] transition-colors'
+                          className='h-[32px] px-[12px] bg-red-600 text-white font-sans font-semibold text-[12px] rounded-button hover:bg-red-700 transition-colors cursor-pointer'
                         >
                           Remove Image
                         </button>
@@ -413,7 +413,7 @@ export default function AdminCategoriesPage() {
                   ) : (
                     <>
                       <svg
-                        className='w-6 h-6 text-[#8CB34A] mb-2'
+                        className='w-6 h-6 text-text-brand mb-2'
                         fill='none'
                         viewBox='0 0 24 24'
                         stroke='currentColor'
@@ -425,7 +425,7 @@ export default function AdminCategoriesPage() {
                           d='M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z'
                         />
                       </svg>
-                      <span className='font-sans font-medium text-[12px] text-[#E8EDD4]'>
+                      <span className='font-sans font-semibold text-[12px] text-text-primary'>
                         Click to upload image
                       </span>
                     </>
@@ -457,27 +457,27 @@ export default function AdminCategoriesPage() {
                   onChange={(e) =>
                     setCurrentCategory({ ...currentCategory, isActive: e.target.checked })
                   }
-                  className='h-4 w-4 rounded border-[#2D3C13] bg-[#0D0D0B] text-primary focus:ring-primary focus:ring-offset-[#161810]'
+                  className='h-4 w-4 rounded border-border bg-bg text-primary focus:ring-primary'
                 />
                 <label
                   htmlFor='isActive'
-                  className='ml-2 block text-[13px] font-sans text-[#E8EDD4]'
+                  className='ml-2 block text-[13px] font-sans text-text-primary font-medium'
                 >
                   Active (visible to public)
                 </label>
               </div>
             </div>
 
-            <div className='p-6 border-t border-[#2D3C13] bg-[#111210] flex justify-end gap-3 sticky bottom-0 z-10'>
+            <div className='p-6 border-t border-border bg-surface flex justify-end gap-3 sticky bottom-0 z-10'>
               <button
                 onClick={closeModal}
-                className='px-5 py-2.5 rounded-[8px] bg-transparent border border-[#2D3C13] hover:border-[#5A752A] text-[#E8EDD4] font-heading font-bold text-[14px] transition-colors'
+                className='px-5 py-2.5 rounded-button bg-surface border border-border hover:bg-accent-bg text-text-primary font-sans font-semibold text-[14px] transition-colors cursor-pointer'
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className='px-5 py-2.5 bg-primary hover:bg-[#ff4d79] text-[#0D0D0B] rounded-[8px] font-heading font-bold text-[14px] transition-colors'
+                className='px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-button font-sans font-semibold text-[14px] transition-all cursor-pointer shadow-sm'
               >
                 Save Category
               </button>

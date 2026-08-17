@@ -9,10 +9,10 @@ export default function UserTicketsPage() {
   const { data: ticketsData, isLoading, isError } = useMyTicketsQuery();
 
   if (isLoading) {
-    return <div className="p-8 text-center text-[#72943A]">Loading tickets...</div>;
+    return <div className="p-8 text-center text-text-muted font-sans font-medium">Loading tickets...</div>;
   }
   if (isError) {
-    return <div className="p-8 text-center text-red-500">Failed to load tickets.</div>;
+    return <div className="p-8 text-center text-red-600 font-sans font-semibold">Failed to load tickets.</div>;
   }
 
   const backendTickets = ticketsData || [];
@@ -20,11 +20,9 @@ export default function UserTicketsPage() {
   const formattedTickets: Ticket[] = backendTickets.map((t: any) => {
     let status: Ticket["status"] = "live";
     if (t.raffle.status === "ENDED") {
-      // Check if user won
       const hasWon = t.winners && t.winners.length > 0;
       status = hasWon ? "drawn-won" : "drawn-lost";
     } else {
-      // If still active but they won an instant win
       const hasInstantWin = t.winners?.some((w: any) => w.winType === 'INSTANT_WIN');
       if (hasInstantWin) {
         status = "instant-win";
@@ -35,7 +33,7 @@ export default function UserTicketsPage() {
       ticketId: `#TKT-${t.ticketNumber}`,
       competitionName: t.raffle.title,
       purchaseDate: format(new Date(t.createdAt), "dd MMM yyyy"),
-      pricePaid: "Paid", // Backend currently doesn't return exact price per ticket easily without transaction join
+      pricePaid: "Paid",
       status,
       raw: t,
     };
@@ -46,45 +44,53 @@ export default function UserTicketsPage() {
   const wonTickets = formattedTickets.filter((t) => t.status === "drawn-won" || t.status === "instant-win").length;
 
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn">
+    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
+      {/* Header */}
+      <div>
+        <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">My Tickets</h1>
+        <p className="font-sans text-sm text-text-muted font-medium">
+          View and manage all your purchased competition tickets.
+        </p>
+      </div>
+
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
         {/* Total Tickets Owned */}
-        <div className="bg-[#161810] border border-[#2D3C13] rounded-[16px] p-6 flex flex-col gap-3">
-          <p className="font-sans text-[11px] font-medium uppercase tracking-[1.1px] text-[#5A752A]">
+        <div className="bg-surface border border-border rounded-card p-6 flex flex-col gap-3 shadow-card hover:border-border-medium hover:shadow-glow transition-all">
+          <p className="font-sans text-[11px] font-bold uppercase tracking-wider text-text-muted">
             Total Tickets Owned
           </p>
-          <p className="font-heading font-bold text-[36px] leading-tight text-[#E8EDD4]">
+          <p className="font-heading font-bold text-[36px] leading-tight text-text-primary">
             {totalOwned}
           </p>
-          <span className="font-sans text-[11px] font-medium text-[#72943A]">
+          <span className="font-sans text-[11px] font-medium text-text-muted">
             All time
           </span>
         </div>
 
         {/* Active Tickets */}
-        <div className="bg-[#161810] border border-[#2D3C13] rounded-[16px] p-6 flex flex-col gap-3">
-          <p className="font-sans text-[11px] font-medium uppercase tracking-[1.1px] text-[#5A752A]">
+        <div className="bg-surface border border-border rounded-card p-6 flex flex-col gap-3 shadow-card hover:border-border-medium hover:shadow-glow transition-all">
+          <p className="font-sans text-[11px] font-bold uppercase tracking-wider text-text-muted">
             Active Tickets
           </p>
-          <p className="font-heading font-bold text-[36px] leading-tight text-[#E8EDD4]">
+          <p className="font-heading font-bold text-[36px] leading-tight text-text-brand">
             {activeTickets}
           </p>
-          <span className="font-sans text-[11px] font-medium text-[#72943A]">
+          <span className="font-sans text-[11px] font-medium text-text-muted">
             Current
           </span>
         </div>
 
         {/* Tickets in Won Competitions */}
-        <div className="bg-[#161810] border border-[#2D3C13] rounded-[16px] p-6 flex flex-col gap-3">
-          <p className="font-sans text-[11px] font-medium uppercase tracking-[1.1px] text-[#5A752A]">
+        <div className="bg-surface border border-border rounded-card p-6 flex flex-col gap-3 shadow-card hover:border-border-medium hover:shadow-glow transition-all">
+          <p className="font-sans text-[11px] font-bold uppercase tracking-wider text-text-muted">
             Tickets in Won Competitions
           </p>
-          <p className="font-heading font-bold text-[36px] leading-tight text-[#E8EDD4]">
+          <p className="font-heading font-bold text-[36px] leading-tight text-emerald-700">
             {wonTickets}
           </p>
-          <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#1A230A] border border-[#2D3C13] w-fit">
-            <span className="font-sans text-[10px] font-medium text-[#4ADE80]">
+          <div className="inline-flex items-center px-2.5 py-0.5 rounded-badge bg-emerald-50 border border-emerald-200 w-fit shadow-sm">
+            <span className="font-sans text-[10px] font-semibold text-emerald-700">
               {wonTickets} prizes won
             </span>
           </div>

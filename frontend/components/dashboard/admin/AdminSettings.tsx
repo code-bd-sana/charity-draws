@@ -74,8 +74,8 @@ export default function AdminSettings() {
         </div>
         
         <div className="flex justify-end mt-2">
-          <button className="h-[40px] px-6 rounded-button bg-accent-bg border border-border-medium hover:bg-primary hover:text-white text-text-brand font-sans font-semibold text-[13px] transition-all cursor-pointer shadow-sm">
-            Update Password
+          <button className="group h-[40px] px-6 rounded-button bg-accent-bg border border-border-medium hover:bg-primary transition-all cursor-pointer shadow-sm">
+            <span className="text-text-brand group-hover:text-white font-sans font-semibold text-[13px] transition-colors">Update Password</span>
           </button>
         </div>
       </div>

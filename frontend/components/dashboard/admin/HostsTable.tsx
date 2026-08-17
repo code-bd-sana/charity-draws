@@ -170,12 +170,12 @@ export default function HostsTable() {
         <button 
           onClick={handleExportCSV}
           disabled={!data?.hosts || data.hosts.length === 0}
-          className="h-[40px] px-4 bg-accent-bg border border-border-medium hover:bg-primary hover:text-white rounded-button flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shrink-0 shadow-sm"
+          className="group h-[40px] px-4 bg-accent-bg border border-border-medium hover:bg-primary rounded-button flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shrink-0 shadow-sm"
         >
-          <svg className="w-4 h-4 text-text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-4 h-4 text-text-brand group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
           </svg>
-          <span className="font-sans font-semibold text-[13px] text-text-brand">Export CSV</span>
+          <span className="font-sans font-semibold text-[13px] text-text-brand group-hover:text-white transition-colors">Export CSV</span>
         </button>
       </div>
 

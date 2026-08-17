@@ -41,21 +41,21 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
   const scheduledTime = draw.endDate ? format(new Date(draw.endDate), "dd MMM yyyy HH:mm") : "N/A";
 
   return (
-    <div className="w-full bg-[#161810] border border-[#2D3C13] rounded-[16px] flex flex-col mt-6 animate-fadeIn overflow-hidden">
+    <div className="w-full bg-surface border border-border rounded-card flex flex-col mt-6 animate-fadeIn overflow-hidden shadow-card select-none">
       
       {/* Header Area */}
-      <div className="flex flex-col p-6 pb-0 border-b border-[#2D3C13]">
+      <div className="flex flex-col p-6 pb-0 border-b border-border">
         
         {/* Title & Actions */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="font-heading font-bold text-[20px] text-[#E8EDD4]">{draw.title}</h2>
+            <h2 className="font-heading font-bold text-[20px] text-text-primary">{draw.title}</h2>
             {/* Status Pills */}
             <div className="flex gap-2">
-              <span className="px-3 py-1 rounded-full border border-[#D97706]/30 bg-[#78350F] text-[#F59E0B] font-sans font-medium text-[10px]">
+              <span className="px-3 py-1 rounded-badge border border-amber-200 bg-amber-50 text-amber-700 font-sans font-semibold text-[10px] shadow-sm">
                 {statusString}
               </span>
-              <span className="px-3 py-1 rounded-full border border-[#4ADE80]/30 bg-[#083b18] text-[#4ADE80] font-sans font-medium text-[10px]">
+              <span className="px-3 py-1 rounded-badge border border-emerald-200 bg-emerald-50 text-emerald-700 font-sans font-semibold text-[10px] shadow-sm">
                 {drawType}
               </span>
             </div>
@@ -71,7 +71,7 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
 
               if (hasWinner) {
                 return (
-                  <span className="px-3.5 py-1.5 rounded-[8px] border border-[#4ADE80]/30 bg-[#4ADE80]/10 text-[#4ADE80] font-sans font-semibold text-xs flex items-center gap-1.5">
+                  <span className="px-3.5 py-1.5 rounded-badge border border-emerald-200 bg-emerald-50 text-emerald-700 font-sans font-semibold text-xs flex items-center gap-1.5 shadow-sm">
                     <span>✓</span> Winner Selected
                   </span>
                 );
@@ -81,7 +81,7 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
                 return (
                   <button
                     onClick={() => setIsWinnerModalOpen(true)}
-                    className="px-4 py-2 rounded-[8px] bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] font-sans font-bold text-xs shadow-[0_0_15px_rgba(140,179,74,0.35)] transition-all flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-button bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>🏆</span>
                     <span>Select Winner</span>
@@ -90,14 +90,14 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
               }
 
               return (
-                <span className="px-3 py-1.5 rounded-[6px] border border-[#2D3C13] bg-[#0D0D0B] text-[#5A752A] font-sans text-xs">
+                <span className="px-3 py-1.5 rounded-badge border border-border bg-bg text-text-muted font-sans font-medium text-xs">
                   Live (In Progress)
                 </span>
               );
             })()}
             <button 
               onClick={onClose}
-              className="text-[#5A752A] hover:text-[#E8EDD4] transition-colors"
+              className="text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -107,27 +107,27 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
         </div>
 
         {/* Subtitle */}
-        <div className="font-sans text-[12px] text-[#72943A] mb-8">
-          Host: {hostName} | End Date: {scheduledTime}
+        <div className="font-sans text-[12px] text-text-muted font-medium mb-8">
+          Host: <span className="text-text-primary font-semibold">{hostName}</span> | End Date: <span className="text-text-primary font-semibold">{scheduledTime}</span>
         </div>
 
         {/* 4 Stat Boxes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#111210] border border-[#2D3C13] rounded-[8px] p-4 flex flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]">Total Tickets</span>
-            <span className="font-heading font-bold text-[20px] text-[#E8EDD4]">{draw.totalTickets}</span>
+          <div className="bg-bg border border-border rounded-button p-4 flex flex-col gap-1">
+            <span className="font-sans text-[10px] font-semibold text-text-muted uppercase tracking-wider">Total Tickets</span>
+            <span className="font-heading font-bold text-[20px] text-text-primary">{draw.totalTickets}</span>
           </div>
-          <div className="bg-[#111210] border border-[#2D3C13] rounded-[8px] p-4 flex flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]">Sold Tickets</span>
-            <span className="font-heading font-bold text-[20px] text-[#4ADE80]">{draw.ticketsSold || 0}</span>
+          <div className="bg-bg border border-border rounded-button p-4 flex flex-col gap-1">
+            <span className="font-sans text-[10px] font-semibold text-text-muted uppercase tracking-wider">Sold Tickets</span>
+            <span className="font-heading font-bold text-[20px] text-emerald-700">{draw.ticketsSold || 0}</span>
           </div>
-          <div className="bg-[#111210] border border-[#2D3C13] rounded-[8px] p-4 flex flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]">Price Per Ticket</span>
-            <span className="font-heading font-bold text-[20px] text-[#E8EDD4]">£{Number(draw.pricePerTicket).toFixed(2)}</span>
+          <div className="bg-bg border border-border rounded-button p-4 flex flex-col gap-1">
+            <span className="font-sans text-[10px] font-semibold text-text-muted uppercase tracking-wider">Price Per Ticket</span>
+            <span className="font-heading font-bold text-[20px] text-text-primary">£{Number(draw.pricePerTicket).toFixed(2)}</span>
           </div>
-          <div className="bg-[#111210] border border-[#2D3C13] rounded-[8px] p-4 flex flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium text-[#5A752A] uppercase tracking-[1px]">Draw Type</span>
-            <span className="font-heading font-bold text-[20px] text-[#A0D056]">{drawType}</span>
+          <div className="bg-bg border border-border rounded-button p-4 flex flex-col gap-1">
+            <span className="font-sans text-[10px] font-semibold text-text-muted uppercase tracking-wider">Draw Type</span>
+            <span className="font-heading font-bold text-[20px] text-text-brand">{drawType}</span>
           </div>
         </div>
 
@@ -135,30 +135,30 @@ export default function DrawDetailsPanel({ draw, onClose }: DrawDetailsPanelProp
         <div className="flex items-center gap-2 mb-6">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`flex-1 h-[40px] rounded-[8px] font-sans font-medium text-[13px] transition-colors ${
+            className={`flex-1 h-[40px] rounded-button font-sans font-semibold text-[13px] transition-all cursor-pointer ${
               activeTab === "overview"
-                ? "border border-[#8CB34A] text-[#E8EDD4]"
-                : "text-[#72943A] hover:text-[#A0D056]"
+                ? "bg-primary border-primary text-white shadow-sm"
+                : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab("entries")}
-            className={`flex-1 h-[40px] rounded-[8px] font-sans font-medium text-[13px] transition-colors ${
+            className={`flex-1 h-[40px] rounded-button font-sans font-semibold text-[13px] transition-all cursor-pointer ${
               activeTab === "entries"
-                ? "border border-[#8CB34A] text-[#E8EDD4]"
-                : "text-[#72943A] hover:text-[#A0D056]"
+                ? "bg-primary border-primary text-white shadow-sm"
+                : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
             }`}
           >
             Entries
           </button>
           <button
             onClick={() => setActiveTab("audit")}
-            className={`flex-1 h-[40px] rounded-[8px] font-sans font-medium text-[13px] transition-colors ${
+            className={`flex-1 h-[40px] rounded-button font-sans font-semibold text-[13px] transition-all cursor-pointer ${
               activeTab === "audit"
-                ? "border border-[#8CB34A] text-[#E8EDD4]"
-                : "text-[#72943A] hover:text-[#A0D056]"
+                ? "bg-primary border-primary text-white shadow-sm"
+                : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
             }`}
           >
             Audit Log

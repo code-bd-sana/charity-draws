@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import DrawsInfoCards from "./DrawsInfoCards";
 import DrawsTable from "./DrawsTable";
-import LiveDrawMonitor from "./LiveDrawMonitor";
 import DrawDetailsPanel from "./DrawDetailsPanel";
 import { useQuery } from "@tanstack/react-query";
 import { raffleService, Raffle } from "../../../../services/raffle.service";
@@ -31,21 +30,21 @@ export default function AdminDrawsManager() {
   const draws = drawsResponse?.data || [];
 
   return (
-    <div className="flex flex-col gap-6 w-full animate-fadeIn">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
       
       {/* Top Filter Pills */}
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 overflow-x-auto pb-1">
         {filters.map((filter) => (
           <button
             key={filter}
             onClick={() => {
               setActiveFilter(filter);
-              setSelectedDraw(null); // Reset selection on filter change
+              setSelectedDraw(null);
             }}
-            className={`px-4 py-2 rounded-[8px] font-sans font-medium text-[12px] transition-colors ${
+            className={`px-4 py-2 rounded-badge font-sans font-semibold text-[12px] whitespace-nowrap transition-all cursor-pointer ${
               activeFilter === filter
-                ? "bg-transparent border border-[#8CB34A] text-[#E8EDD4]"
-                : "bg-transparent border border-[#2D3C13] text-[#72943A] hover:bg-[#1A230A] hover:text-[#A0D056]"
+                ? "bg-primary border-primary text-primary-text font-bold shadow-sm"
+                : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
             }`}
           >
             {filter}
@@ -58,7 +57,7 @@ export default function AdminDrawsManager() {
 
       {/* Main Table */}
       {isLoading ? (
-        <div className="text-[#E8EDD4] py-8 text-center">Loading...</div>
+        <div className="text-text-muted py-8 text-center font-sans text-sm font-medium">Loading draws...</div>
       ) : (
         <DrawsTable draws={draws} onSelectDraw={setSelectedDraw} />
       )}

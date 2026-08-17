@@ -204,12 +204,12 @@ export default function LogsActivityTable() {
           <button 
             onClick={handleExportCSV}
             disabled={logs.length === 0}
-            className="flex items-center justify-center gap-2 h-[36px] px-4 rounded-button bg-accent-bg border border-border-medium hover:bg-primary hover:text-white text-text-brand font-sans font-semibold text-[12px] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+            className="group flex items-center justify-center gap-2 h-[36px] px-4 rounded-button bg-accent-bg border border-border-medium hover:bg-primary text-text-brand font-sans font-semibold text-[12px] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-text-brand group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            Export Logs
+            <span className="group-hover:text-white transition-colors">Export Logs</span>
           </button>
           
           {/* Pagination */}
