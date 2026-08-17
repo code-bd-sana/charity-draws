@@ -37,10 +37,10 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
       />
 
       <div className={cn(
-        "fixed inset-y-0 left-0 w-[280px] bg-[#111210] border-r border-[#2D3C13] z-50 flex flex-col transform transition-transform duration-300 ease-in-out lg:hidden shadow-card",
+        "fixed inset-y-0 left-0 w-[280px] bg-surface border-r border-border z-50 flex flex-col transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl select-none",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="h-[88px] flex items-center justify-between px-6 border-b border-[#2D3C13] shrink-0">
+        <div className="h-[88px] flex items-center justify-between px-6 border-b border-divider shrink-0 bg-surface">
           <Link href="/" onClick={onClose} className="relative h-[36px] w-[120px] select-none block">
             <Image
               alt="Charity Draws Logo"
@@ -52,7 +52,7 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
           </Link>
           <button
             onClick={onClose}
-            className="p-1 text-[#B3B8AA] hover:text-[#E8EDD4] rounded-md transition-colors"
+            className="p-1 text-text-muted hover:text-text-primary hover:bg-accent-bg rounded-lg transition-colors cursor-pointer"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -65,9 +65,9 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
           <Link
             href="/live-raffles"
             onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-xl bg-[#1A230A] border border-[#8CB34A] text-[#A0D056] text-xs font-bold font-sans flex items-center justify-center gap-2 mb-3 shadow-sm hover:bg-[#2D3C13] transition-colors"
+            className="w-full py-2.5 px-4 rounded-badge bg-accent-bg border border-border-medium text-text-brand text-xs font-bold font-sans flex items-center justify-center gap-2 mb-3 shadow-sm hover:bg-primary hover:text-primary-text transition-all cursor-pointer"
           >
-            <svg className="w-4 h-4 text-[#8CB34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m-17.432-6A8.959 8.959 0 0 0 3 12c0 .778.099 1.533.284 2.253" />
             </svg>
             <span>Exit to Public Website</span>
@@ -81,16 +81,16 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-[12px] h-[40px] pl-[19px] pr-[16px] rounded-[8px] transition-colors duration-200 group font-sans w-full",
+                  "flex items-center gap-[12px] h-[40px] pl-[19px] pr-[16px] rounded-[8px] transition-all duration-200 group font-sans w-full",
                   isActive
-                    ? "bg-[#1A230A] border-l-3 border-[#8CB34A]"
-                    : "bg-transparent border-l-3 border-transparent hover:bg-[#161810]"
+                    ? "bg-accent-bg border-l-4 border-primary shadow-sm"
+                    : "bg-transparent border-l-4 border-transparent hover:bg-accent-bg/50"
                 )}
               >
-                <item.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-[#8CB34A]" : "text-[#72943A]")} />
+                <item.icon className={cn("w-5 h-5 shrink-0 transition-colors", isActive ? "text-primary" : "text-text-muted group-hover:text-text-primary")} />
                 <span className={cn(
-                  "text-[14px] font-medium leading-[normal] truncate",
-                  isActive ? "text-[#8CB34A]" : "text-[#72943A]"
+                  "text-[14px] leading-[normal] truncate",
+                  isActive ? "text-text-brand font-bold" : "text-text-secondary group-hover:text-text-primary font-medium"
                 )}>
                   {item.label}
                 </span>
@@ -98,7 +98,7 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
                 {item.badge && (
                   <span className={cn(
                     "ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-badge min-w-[20px] text-center",
-                    isActive ? "bg-primary text-[#0D0D0B]" : "bg-[#2D3C13] text-[#A0D056]"
+                    isActive ? "bg-primary text-primary-text font-bold" : "bg-accent-bg border border-border-medium text-text-brand font-semibold"
                   )}>
                     {item.badge}
                   </span>
@@ -108,32 +108,32 @@ export default function MobileDashboardMenu({ account, isOpen, onClose }: Mobile
           })}
 
           <div className="w-full px-2 pt-2">
-            <div className="h-px bg-[#1A230A] w-full" />
+            <div className="h-px bg-divider w-full" />
           </div>
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-[12px] h-[40px] px-[16px] rounded-[8px] transition-colors duration-200 w-full hover:bg-[#161810] group"
+            className="flex items-center gap-[12px] h-[40px] px-[16px] rounded-[8px] transition-colors duration-200 w-full hover:bg-red-50/80 group cursor-pointer"
           >
-            <svg className="w-5 h-5 shrink-0 text-[#f76b6b]/70 group-hover:text-[#f76b6b]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg className="w-5 h-5 shrink-0 text-red-500/80 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
             </svg>
-            <span className="text-[14px] font-medium text-[#f76b6b] ml-1">Log Out</span>
+            <span className="text-[14px] font-semibold text-red-600 ml-1">Log Out</span>
           </button>
         </nav>
 
-        <div className="border-t border-[#2D3C13] w-full shrink-0 bg-[#111210]">
+        <div className="border-t border-divider w-full shrink-0 bg-surface">
           <div className="flex items-center gap-[12px] pb-[17px] pt-[16px] px-[20px] w-full">
-            <div className="w-[44px] h-[44px] shrink-0 rounded-full border border-[#43581E] bg-[#1A230A] flex items-center justify-center overflow-hidden">
+            <div className="w-[44px] h-[44px] shrink-0 rounded-full border border-border-medium bg-accent-bg flex items-center justify-center overflow-hidden shadow-sm">
                {/* eslint-disable-next-line @next/next/no-img-element */}
                <img src={account.avatar} alt="Profile" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="font-heading font-medium text-[14px] text-[#E8EDD4] truncate leading-tight">
+              <span className="font-heading font-bold text-[14px] text-text-primary truncate leading-tight">
                 {account.name}
               </span>
               <div className="mt-1">
-                <span className="inline-flex items-center justify-center px-[8px] h-[18px] rounded-full border border-[#8CB34A] bg-[#1A230A] text-[#A0D056] text-[10px] font-medium font-sans uppercase tracking-wide">
+                <span className="inline-flex items-center justify-center px-[8px] h-[18px] rounded-full border border-border-medium bg-accent-bg text-text-brand text-[10px] font-semibold font-sans uppercase tracking-wide">
                   {account.role === "host" ? "Premium Host" : `${account.role} Account`}
                 </span>
               </div>

@@ -116,12 +116,12 @@ export default function NotificationsDropdown({ isOpen, onClose }: Notifications
 
   const getIconColors = (type: string) => {
     switch(type) {
-      case "win": return "text-[#4ADE80] bg-[#083b18]";
-      case "payment": return "text-[#E8EDD4] bg-[#2D3C13]";
-      case "draw-start": return "text-[#D97706] bg-[#78350F]";
-      case "draw-completed": return "text-[#E8EDD4] bg-[#2D3C13]";
-      case "launch": return "text-[#D97706] bg-[#78350F]";
-      default: return "text-[#E8EDD4] bg-[#1A230A]";
+      case "win": return "text-emerald-700 bg-emerald-50 border border-emerald-200";
+      case "payment": return "text-purple-700 bg-accent-bg border border-border-medium";
+      case "draw-start": return "text-amber-700 bg-amber-50 border border-amber-200";
+      case "draw-completed": return "text-text-secondary bg-bg border border-border";
+      case "launch": return "text-primary bg-accent-bg border border-border-medium";
+      default: return "text-text-primary bg-accent-bg";
     }
   };
 
@@ -131,26 +131,26 @@ export default function NotificationsDropdown({ isOpen, onClose }: Notifications
         className="fixed inset-0 z-40 bg-transparent" 
         onClick={onClose} 
       />
-      <div className="absolute top-[52px] right-0 w-[440px] max-w-[calc(100vw-40px)] bg-[#0D0D0B] border border-[#2D3C13] rounded-[16px] shadow-2xl flex flex-col z-50 animate-fadeIn overflow-hidden">
+      <div className="absolute top-[52px] right-0 w-[440px] max-w-[calc(100vw-40px)] bg-surface border border-border rounded-card shadow-2xl flex flex-col z-50 animate-fadeIn overflow-hidden select-none">
         
         {/* Header Row */}
-        <div className="flex items-center justify-between p-4 border-b border-[#2D3C13]">
+        <div className="flex items-center justify-between p-4 border-b border-divider bg-surface">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {filters.map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-3 py-1 rounded-full text-[11px] font-sans font-medium transition-colors whitespace-nowrap ${
+                className={`px-3 py-1 rounded-full text-[11px] font-sans transition-all whitespace-nowrap cursor-pointer ${
                   activeFilter === filter 
-                    ? 'border border-[#8CB34A] text-[#8CB34A]' 
-                    : 'border border-[#2D3C13] text-[#72943A] hover:border-[#43581E] hover:text-[#E8EDD4]'
+                    ? 'bg-primary border border-primary text-primary-text font-bold shadow-sm' 
+                    : 'bg-bg border border-border text-text-secondary hover:border-border-medium hover:text-text-primary font-medium'
                 }`}
               >
                 {filter}
               </button>
             ))}
           </div>
-          <button className="text-[11px] font-sans font-medium text-[#72943A] hover:text-[#E8EDD4] transition-colors whitespace-nowrap ml-4 shrink-0">
+          <button className="text-[11px] font-sans font-semibold text-primary hover:underline transition-colors whitespace-nowrap ml-4 shrink-0 cursor-pointer">
             Mark all as read
           </button>
         </div>
@@ -160,22 +160,22 @@ export default function NotificationsDropdown({ isOpen, onClose }: Notifications
           {DUMMY_NOTIFICATIONS.map((notification) => (
             <div 
               key={notification.id}
-              className={`flex items-start gap-4 p-4 border-b border-[#2D3C13] hover:bg-[#161810] transition-colors cursor-pointer relative ${
-                !notification.isRead ? 'border-l-2 border-l-[#8CB34A]' : 'border-l-2 border-l-transparent'
+              className={`flex items-start gap-4 p-4 border-b border-divider hover:bg-accent-bg/30 transition-colors cursor-pointer relative ${
+                !notification.isRead ? 'border-l-4 border-l-primary bg-accent-bg/20' : 'border-l-4 border-l-transparent'
               }`}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${getIconColors(notification.type)}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm ${getIconColors(notification.type)}`}>
                 {getIconForType(notification.type)}
               </div>
               <div className="flex flex-col gap-1 flex-1">
-                <span className="font-sans text-[13px] font-medium text-[#E8EDD4] leading-tight">
+                <span className="font-sans text-[13px] font-bold text-text-primary leading-tight">
                   {notification.title}
                 </span>
-                <span className={`font-sans text-[11px] ${notification.type === 'win' || notification.type === 'launch' ? 'text-[#8CB34A]' : 'text-[#5A752A]'} leading-snug`}>
+                <span className={`font-sans text-[11px] ${notification.type === 'win' || notification.type === 'launch' ? 'text-text-brand font-semibold' : 'text-text-muted font-medium'} leading-snug`}>
                   {notification.subtitle}
                 </span>
               </div>
-              <span className="font-sans text-[10px] text-[#5A752A] shrink-0 mt-1">
+              <span className="font-sans text-[10px] text-text-muted font-medium shrink-0 mt-1">
                 {notification.timeAgo}
               </span>
             </div>
