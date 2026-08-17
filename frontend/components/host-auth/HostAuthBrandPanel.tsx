@@ -115,7 +115,7 @@ export default function HostAuthBrandPanel({
         <div className="flex flex-col gap-5 items-start">
           {/* Community Pill Badge */}
           <div className="bg-accent-bg border border-border px-[11px] py-[4px] rounded-[99px]">
-            <p className="font-sans font-medium text-[10px] md:text-[12px] text-primary tracking-[0.6px] uppercase whitespace-nowrap">
+            <p className="font-sans font-semibold text-[10px] md:text-[12px] text-text-brand tracking-[0.6px] uppercase whitespace-nowrap">
               JOIN THE COMMUNITY
             </p>
           </div>
@@ -128,8 +128,8 @@ export default function HostAuthBrandPanel({
                 : "Become a Verified Host"}
             </h1>
           </div>
-          <div className="max-w-[380px] w-full">
-            <p className="font-sans font-normal text-[16px] md:text-[20px] text-text-secondary leading-normal w-[593px] max-w-full">
+          <div className="max-w-[420px] w-full">
+            <p className="font-sans font-medium text-[15px] md:text-[18px] text-text-muted leading-relaxed w-[593px] max-w-full">
               {mode === "login"
                 ? "Log in to manage your raffles, track sales, and view your earnings."
                 : "Apply in minutes. Our team typically reviews applications within 24 hours."}
@@ -144,10 +144,10 @@ export default function HostAuthBrandPanel({
             <div className="flex flex-col gap-[16px]">
               {trustStats.map((stat, i) => (
                 <div key={i} className="flex items-center gap-[12px]">
-                  <div className="flex items-center justify-center w-[18px] h-[18px] text-text-secondary">
+                  <div className="flex items-center justify-center w-[18px] h-[18px] text-text-brand font-bold">
                     {stat.icon}
                   </div>
-                  <span className="font-sans font-normal text-[14px] text-text-secondary leading-[21px] whitespace-nowrap">
+                  <span className="font-sans font-medium text-[14px] text-text-primary leading-[21px] whitespace-nowrap">
                     {stat.label}
                   </span>
                 </div>
@@ -167,9 +167,9 @@ export default function HostAuthBrandPanel({
                       <div
                         className={cn(
                           "flex items-center justify-center w-[32px] h-[32px] rounded-full border transition-all duration-300 font-heading text-[13px]",
-                          status === "active" && "bg-primary border-primary text-bg font-semibold",
-                          status === "completed" && "bg-accent-bg border-primary text-primary font-semibold",
-                          status === "inactive" && "bg-elevated border-border text-border-medium font-semibold"
+                          status === "active" && "bg-primary border-primary text-primary-text font-bold shadow-glow",
+                          status === "completed" && "bg-accent-bg border-primary text-primary font-bold",
+                          status === "inactive" && "bg-surface border-border-medium text-text-muted font-semibold"
                         )}
                       >
                         {status === "completed" ? (
@@ -191,7 +191,7 @@ export default function HostAuthBrandPanel({
                           <div
                             className={cn(
                               "w-px h-[36px] transition-colors duration-300",
-                              status === "completed" ? "bg-primary" : "bg-border"
+                              status === "completed" ? "bg-primary" : "bg-border-medium"
                             )}
                           />
                         </div>
@@ -202,10 +202,10 @@ export default function HostAuthBrandPanel({
                     <div className="pt-[6px] pb-[36px]">
                       <p
                         className={cn(
-                          "font-sans text-[13px] leading-[19.5px] transition-colors duration-300 whitespace-nowrap",
-                          status === "active" && "text-text-primary font-medium",
-                          status === "completed" && "text-text-primary/70 font-medium",
-                          status === "inactive" && "text-border-medium font-normal"
+                          "font-sans text-[13px] md:text-sm leading-[19.5px] transition-colors duration-300 whitespace-nowrap",
+                          status === "active" && "text-text-primary font-bold",
+                          status === "completed" && "text-text-primary/90 font-semibold",
+                          status === "inactive" && "text-text-muted font-medium"
                         )}
                       >
                         {step.label}
@@ -221,7 +221,7 @@ export default function HostAuthBrandPanel({
 
       {/* Bottom Footer Copy */}
       <div className="mt-8 lg:mt-0">
-        <p className="font-sans font-normal text-[11px] leading-[16.5px] text-border-medium whitespace-nowrap">
+        <p className="font-sans font-medium text-[12px] leading-[16.5px] text-text-muted whitespace-nowrap">
           © {new Date().getFullYear()} Charity Draws · Privacy Policy · Terms
         </p>
       </div>

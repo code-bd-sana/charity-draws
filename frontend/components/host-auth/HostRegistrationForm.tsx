@@ -268,7 +268,7 @@ export default function HostRegistrationForm({
                   value={formData.email}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.email && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -294,7 +294,7 @@ export default function HostRegistrationForm({
                     value={formData.password}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.password && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -360,7 +360,7 @@ export default function HostRegistrationForm({
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.confirmPassword && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -391,11 +391,13 @@ export default function HostRegistrationForm({
               </div>
 
               {/* Encryption Banner */}
-              <div className="bg-[#1a230a]/50 border border-divider p-3 rounded-button flex items-center gap-3 select-none">
-                <svg className="w-5 h-5 text-text-brand flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                </svg>
-                <p className="font-sans text-xs text-text-secondary leading-normal">
+              <div className="bg-accent-bg/80 border border-border-medium p-3.5 rounded-button flex items-center gap-3 select-none shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-surface border border-border-medium flex items-center justify-center shrink-0">
+                  <svg className="w-3.5 h-3.5 text-text-brand" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                </div>
+                <p className="font-sans text-xs text-text-primary font-medium leading-normal">
                   Your account is protected with industry-standard encryption.
                 </p>
               </div>
@@ -463,7 +465,7 @@ export default function HostRegistrationForm({
                     Business / Organisation
                   </button>
                 </div>
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   {formData.hostType === "individual"
                     ? "You are hosting as a private individual."
                     : "You are hosting as a registered business entity."}
@@ -505,7 +507,7 @@ export default function HostRegistrationForm({
                     <p className="font-sans text-xs md:text-sm text-text-primary">
                       Upload a clear, professional photo.
                     </p>
-                    <p className="font-sans text-[11px] text-text-secondary/70">
+                    <p className="font-sans text-[11px] text-text-muted font-medium">
                       Square, PNG or JPG, minimum 200×200px.
                     </p>
                   </div>
@@ -527,7 +529,7 @@ export default function HostRegistrationForm({
                     value={formData.firstName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.firstName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -550,7 +552,7 @@ export default function HostRegistrationForm({
                     value={formData.lastName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.lastName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -576,7 +578,7 @@ export default function HostRegistrationForm({
                   value={formData.phone}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.phone && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -585,7 +587,7 @@ export default function HostRegistrationForm({
                     {errors.phone}
                   </span>
                 )}
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   Used for booking notifications and host support only.
                 </span>
               </div>
@@ -605,7 +607,7 @@ export default function HostRegistrationForm({
                     value={formData.city}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.city && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -651,7 +653,7 @@ export default function HostRegistrationForm({
                   <label htmlFor="bio" className="font-sans font-medium text-xs md:text-sm text-text-primary">
                     Short Bio
                   </label>
-                  <span className="text-[10px] md:text-xs bg-accent-bg border border-divider px-2 py-0.5 rounded-badge text-text-secondary/70">
+                  <span className="text-[10px] md:text-xs bg-accent-bg border border-divider px-2 py-0.5 rounded-badge text-text-muted font-medium">
                     optional
                   </span>
                 </div>
@@ -663,9 +665,9 @@ export default function HostRegistrationForm({
                     placeholder="Tell guests a bit about yourself and your hosting experience..."
                     value={formData.bio}
                     onChange={handleInputChange}
-                    className="w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none"
+                    className="w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none"
                   />
-                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-secondary/70 select-none">
+                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-muted font-medium select-none">
                     {formData.bio.length} / 300
                   </span>
                 </div>
@@ -718,7 +720,7 @@ export default function HostRegistrationForm({
                   value={formData.businessName}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.businessName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -744,7 +746,7 @@ export default function HostRegistrationForm({
                     value={formData.contactFullName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.contactFullName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -766,7 +768,7 @@ export default function HostRegistrationForm({
                     value={formData.businessRole}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessRole && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -792,7 +794,7 @@ export default function HostRegistrationForm({
                     value={formData.businessEmail}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessEmail && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -814,7 +816,7 @@ export default function HostRegistrationForm({
                     value={formData.businessPhone}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessPhone && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -843,9 +845,9 @@ export default function HostRegistrationForm({
                   placeholder="GB123456789"
                   value={formData.vatNumber}
                   onChange={handleInputChange}
-                  className="w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                  className="w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                 />
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   Leave blank if your business is not VAT registered.
                 </span>
               </div>
@@ -936,11 +938,11 @@ export default function HostRegistrationForm({
                     value={formData.businessBio}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none",
+                      "w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none",
                       errors.businessBio && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
-                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-secondary/70 select-none">
+                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-muted font-medium select-none">
                     {formData.businessBio.length} / 300
                   </span>
                 </div>
@@ -1072,7 +1074,7 @@ export default function HostRegistrationForm({
               </div>
 
               {/* Guidelines Agreement Alert */}
-              <div className="bg-[#1a230a] border border-divider p-4 rounded-card flex gap-3">
+              <div className="bg-accent-bg/80 border border-border-medium p-4 rounded-card flex gap-3 shadow-sm">
                 <div className="pt-0.5">
                   <input
                     type="checkbox"
@@ -1084,11 +1086,11 @@ export default function HostRegistrationForm({
                     className="w-4.5 h-4.5 rounded border border-border bg-bg text-primary focus:ring-0 focus:ring-offset-0 focus:outline-none accent-primary transition-all duration-200 cursor-pointer"
                   />
                 </div>
-                <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-secondary leading-normal select-none cursor-pointer">
+                <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-primary font-medium leading-normal select-none cursor-pointer">
                   By going live, you confirm that all information is accurate and agree to our{" "}
-                  <button type="button" onClick={() => showToast("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-medium">Host Guidelines</button>
+                  <button type="button" onClick={() => showToast("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Host Guidelines</button>
                   {" "}and{" "}
-                  <button type="button" onClick={() => showToast("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-medium">Platform Rules</button>.
+                  <button type="button" onClick={() => showToast("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Platform Rules</button>.
                 </label>
               </div>
 
