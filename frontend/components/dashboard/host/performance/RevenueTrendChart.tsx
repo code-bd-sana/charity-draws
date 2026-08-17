@@ -17,50 +17,52 @@ interface Props {
 
 export default function RevenueTrendChart({ data = [] }: Props) {
   return (
-    <div className="bg-[#161810] border border-[#2d3c13] rounded-[16px] p-[24px] flex flex-col h-[360px]">
-      <h3 className="font-heading font-medium text-[16px] text-[#e8edd4] mb-[32px]">
+    <div className="bg-surface border border-border rounded-card p-6 flex flex-col h-[360px] shadow-card select-none">
+      <h3 className="font-heading font-bold text-base md:text-lg text-text-primary mb-6">
         Revenue Trend
       </h3>
       
-      <div className="flex-1 w-full relative -ml-[15px]">
+      <div className="flex-1 w-full relative -ml-4">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8cb34a" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#8cb34a" stopOpacity={0} />
+                <stop offset="5%" stopColor="#7131C8" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#7131C8" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis 
               dataKey="month" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: "#5a752a", fontSize: 12, fontFamily: "var(--font-sans)" }} 
+              tick={{ fill: "#60407F", fontSize: 12, fontFamily: "Inter" }} 
               dy={10}
             />
             <YAxis 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: "#5a752a", fontSize: 12, fontFamily: "var(--font-sans)" }}
+              tick={{ fill: "#60407F", fontSize: 12, fontFamily: "Inter" }}
               tickFormatter={(val) => `£${val / 1000}k`}
               dx={-10}
             />
             <Tooltip
-              cursor={{ stroke: "#2d3c13", strokeWidth: 1, strokeDasharray: "4 4" }}
+              cursor={{ stroke: "#CDAFEA", strokeWidth: 1, strokeDasharray: "4 4" }}
               contentStyle={{ 
-                backgroundColor: "#0d0d0b", 
-                borderColor: "#2d3c13", 
-                borderRadius: "8px",
-                color: "#e8edd4" 
+                backgroundColor: "#FFFFFF", 
+                borderColor: "#CDAFEA", 
+                borderRadius: "12px",
+                fontFamily: "Inter",
+                boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
               }}
-              itemStyle={{ color: "#8cb34a" }}
+              itemStyle={{ color: "#351365", fontWeight: 700 }}
+              labelStyle={{ color: "#7131C8", fontWeight: 700, marginBottom: "4px" }}
               formatter={(value: any) => [`£${value}`, "Revenue"]}
             />
             <Area 
               type="monotone" 
               dataKey="revenue" 
-              stroke="#8cb34a" 
-              strokeWidth={2}
+              stroke="#7131C8" 
+              strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorRevenue)" 
             />
