@@ -5,8 +5,8 @@ export const CONTACT_INFO_ITEMS: ContactInfoCardItem[] = [
     id: "email",
     title: "Email Support",
     description: "Get in touch via email.",
-    value: "info@charitydraws.com",
-    href: "mailto:info@charitydraws.com",
+    value: "info@charitydraws.co.uk",
+    href: "mailto:info@charitydraws.co.uk",
     type: "email",
   },
   {

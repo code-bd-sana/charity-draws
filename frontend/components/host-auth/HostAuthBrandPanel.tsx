@@ -76,10 +76,10 @@ export default function HostAuthBrandPanel({
 
   // Stepper tracker steps for Registration flow
   const registrationSteps = [
-    { number: 1, label: "Account Details", stepIds: [1, 2] },
-    { number: 2, label: "Business Information", stepIds: [3] },
-    { number: 3, label: "Logo & Branding", stepIds: [4] },
-    { number: 4, label: "Payout Details", stepIds: [5, 8] },
+    { number: 1, label: "Account Details", stepIds: [1] },
+    { number: 2, label: "Host Profile & Branding", stepIds: [2] },
+    { number: 3, label: "Business Information", stepIds: [3] },
+    { number: 4, label: "Review & Submit", stepIds: [8] },
   ];
 
   const getStepStatus = (stepIds: number[]) => {

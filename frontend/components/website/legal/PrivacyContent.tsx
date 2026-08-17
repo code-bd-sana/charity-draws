@@ -140,7 +140,7 @@ export default function PrivacyContent() {
                   Phone: <a href="tel:+447497113316" className="text-[#8CB34A] hover:underline">+44 (0) 7497113316</a>
                 </p>
                 <p className="text-xs text-[#B3B8AA]">
-                  Email: <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] hover:underline">info@charitydraws.com</a>
+                  Email: <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] hover:underline">info@charitydraws.co.uk</a>
                 </p>
               </div>
               <p className="text-xs text-[#72943A]">
@@ -209,7 +209,7 @@ export default function PrivacyContent() {
                 You will receive marketing communications from Charity Draws if you have requested information, purchased tickets, entered a competition, or explicitly subscribed to our newsletter.
               </p>
               <p>
-                <strong className="text-[#E8EDD4]">Opting Out:</strong> You can unsubscribe from marketing communications at any time by clicking the "Unsubscribe" link in any promotional email or contacting us directly at <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] underline">info@charitydraws.com</a>. Opting out of marketing does not affect essential transaction emails (e.g. ticket purchase receipts or winner notifications).
+                <strong className="text-[#E8EDD4]">Opting Out:</strong> You can unsubscribe from marketing communications at any time by clicking the "Unsubscribe" link in any promotional email or contacting us directly at <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] underline">info@charitydraws.co.uk</a>. Opting out of marketing does not affect essential transaction emails (e.g. ticket purchase receipts or winner notifications).
               </p>
             </section>
 
@@ -277,7 +277,7 @@ export default function PrivacyContent() {
                 <li><strong>Data Portability:</strong> Request transfer of your data in a structured, machine-readable format.</li>
               </ul>
               <p className="text-xs text-[#72943A] pt-2">
-                To exercise any of your rights, contact our Data Privacy Manager at <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] underline">info@charitydraws.com</a>. We aim to respond within 30 days.
+                To exercise any of your rights, contact our Data Privacy Manager at <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] underline">info@charitydraws.co.uk</a>. We aim to respond within 30 days.
               </p>
             </section>
 

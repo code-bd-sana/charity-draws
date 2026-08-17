@@ -21,7 +21,7 @@ export class MailService {
   }
 
   async sendContactFormEmail(dto: ContactFormDto) {
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@charitydraws.com';
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@charitydraws.co.uk';
     const subject = `[Contact Form] ${dto.subject || 'New Inquiry from ' + dto.name}`;
 
     try {

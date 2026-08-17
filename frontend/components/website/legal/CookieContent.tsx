@@ -62,7 +62,7 @@ export default function CookieContent() {
             <div className="flex items-center gap-4 text-xs font-sans text-[#5A752A] pt-2">
               <span>Last Updated: April 2026</span>
               <span>•</span>
-              <span>Applies to Domain: charitydraws.com</span>
+              <span>Applies to Domain: charitydraws.co.uk</span>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function CookieContent() {
               </p>
               <div className="bg-[#111210] border border-[#2D3C13] rounded-xl p-4 mt-2">
                 <span className="font-sans text-xs text-[#8CB34A] font-semibold block">Consent Domain Scope:</span>
-                <span className="font-sans text-xs text-[#E8EDD4]">Your cookie consent applies to the following domain: <strong>charitydraws.com</strong></span>
+                <span className="font-sans text-xs text-[#E8EDD4]">Your cookie consent applies to the following domain: <strong>charitydraws.co.uk</strong></span>
               </div>
             </section>
 
@@ -247,7 +247,7 @@ export default function CookieContent() {
               </div>
 
               <p className="text-xs text-[#72943A] pt-3">
-                For further information on managing your data, please contact our privacy team at <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] underline">info@charitydraws.com</a>.
+                For further information on managing your data, please contact our privacy team at <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] underline">info@charitydraws.co.uk</a>.
               </p>
             </section>
 

@@ -131,8 +131,8 @@ export default function TermsContent() {
               </p>
               <p>
                 1.3. If you wish to contact us for any reason, please email us at{" "}
-                <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] font-semibold hover:underline">
-                  info@charitydraws.com
+                <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] font-semibold hover:underline">
+                  info@charitydraws.co.uk
                 </a>.
               </p>
             </section>
@@ -144,8 +144,8 @@ export default function TermsContent() {
               </h2>
               <p>
                 2.1. These terms and conditions apply to all competitions listed on the Promoter’s website at{" "}
-                <a href="https://charitydraws.com" className="text-[#8CB34A] font-semibold hover:underline">
-                  https://charitydraws.com
+                <a href="https://charitydraws.co.uk" className="text-[#8CB34A] font-semibold hover:underline">
+                  https://charitydraws.co.uk
                 </a>{" "}
                 (the “Website”).
               </p>
@@ -209,7 +209,7 @@ export default function TermsContent() {
               </p>
               <p>
                 4.2. All Entrants will have their names and entry numbers included in a entry spreadsheet published on the Website during the live draw. If you wish to censor your name on the live spreadsheet, notify us at{" "}
-                <a href="mailto:info@charitydraws.com" className="text-[#8CB34A] underline">info@charitydraws.com</a> at least 48 hours prior to the draw.
+                <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] underline">info@charitydraws.co.uk</a> at least 48 hours prior to the draw.
               </p>
             </section>
 
