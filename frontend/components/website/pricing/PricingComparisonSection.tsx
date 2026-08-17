@@ -37,26 +37,29 @@ export default function PricingComparisonSection() {
         </div>
       );
     }
-    return <span className="font-sans text-xs md:text-sm text-text-brand font-medium">{value}</span>;
+    return <span className="font-sans text-xs md:text-sm text-text-brand font-semibold">{value}</span>;
   };
 
   return (
-    <section className="w-full bg-elevated py-20 border-b border-divider">
+    <section className="w-full bg-transparent py-20 border-b border-divider select-none">
       <div className="container-custom">
         {/* Header Title */}
         <div className="text-center mb-12">
           <h2 className="font-heading font-bold text-2xl md:text-4xl text-text-primary tracking-tight">
-            Compare Paid Plans & Features
+            Compare Paid{" "}
+            <span className="text-text-brand bg-gradient-to-r from-primary to-[#8A46E4] bg-clip-text text-transparent">
+              Plans & Features
+            </span>
           </h2>
         </div>
 
         {/* Scrollable Comparison Table Frame */}
-        <div className="w-full max-w-4xl mx-auto overflow-x-auto rounded-[14px] border border-border shadow-card">
+        <div className="w-full max-w-4xl mx-auto overflow-x-auto rounded-card border border-border shadow-card bg-surface">
           <table className="w-full min-w-[600px] border-collapse text-left">
             
             {/* Table Header */}
             <thead>
-              <tr className="bg-surface border-b border-border h-[58px]">
+              <tr className="bg-accent-bg/50 border-b border-border h-[58px]">
                 <th className="font-heading font-bold text-xs md:text-sm text-text-secondary px-6 uppercase tracking-wider w-1/2">
                   Feature
                 </th>
@@ -74,7 +77,7 @@ export default function PricingComparisonSection() {
               {COMPARISON_ROWS.map((row, index) => (
                 <tr
                   key={row.featureName}
-                  className={index % 2 === 0 ? "bg-bg" : "bg-surface"}
+                  className={index % 2 === 0 ? "bg-surface" : "bg-bg/40"}
                 >
                   {/* Feature Label Name */}
                   <td className="font-sans font-medium text-xs md:text-sm text-text-muted px-6 py-4.5">

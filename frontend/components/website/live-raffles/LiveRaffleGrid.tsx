@@ -97,7 +97,7 @@ export default function LiveRaffleGrid() {
   };
 
   return (
-    <section className="py-12 bg-bg flex-grow">
+    <section className="py-12 bg-transparent flex-grow">
       <div className="container-custom">
         {/* Filter controls bar */}
         <LiveRafflesFilterBar

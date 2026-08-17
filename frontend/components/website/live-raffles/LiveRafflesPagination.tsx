@@ -45,8 +45,8 @@ export default function LiveRafflesPagination({
             className={cn(
               "w-9 h-9 text-xs font-semibold rounded-button border flex items-center justify-center transition-all duration-200 cursor-pointer select-none",
               currentPage === p
-                ? "bg-[#1a230a] border-primary text-[#a0d056] font-bold shadow-glow"
-                : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium"
+                ? "bg-primary border-primary text-primary-text font-bold shadow-glow"
+                : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
             )}
           >
             {p}

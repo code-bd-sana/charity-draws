@@ -16,7 +16,7 @@ export default function PricingFaqSection() {
   };
 
   return (
-    <section id="faq" className="w-full bg-bg py-20 border-b border-divider">
+    <section id="faq" className="w-full bg-transparent py-20 border-b border-divider select-none">
       <div className="container-custom max-w-3xl flex flex-col items-center">
         
         {/* Title Heading */}
@@ -25,7 +25,7 @@ export default function PricingFaqSection() {
         </h2>
 
         {/* Accordions Wrapper */}
-        <div className="w-full bg-surface border border-border rounded-[14px] p-6 md:p-8 flex flex-col gap-1">
+        <div className="w-full bg-surface border border-border rounded-card p-6 md:p-8 flex flex-col gap-1 shadow-card">
           {PRICING_FAQ.map((faq) => (
             <AccordionItem
               key={faq.id}

@@ -47,7 +47,7 @@ export default function WinnersGrid() {
   };
 
   return (
-    <section id="winners-listing-grid" className="py-12 md:py-16 bg-bg flex-grow scroll-mt-20">
+    <section id="winners-listing-grid" className="py-12 md:py-16 bg-transparent flex-grow scroll-mt-20">
       
       {/* Dynamic Filters Header bar */}
       <WinnersFilterBar
@@ -71,8 +71,8 @@ export default function WinnersGrid() {
               className={cn(
                 "font-sans font-semibold text-xs px-5 py-2.5 rounded-button border transition-all duration-200 cursor-pointer select-none",
                 winnerTypeFilter === tab.value
-                  ? "bg-primary border-primary text-primary-text hover:bg-primary-hover"
-                  : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium"
+                  ? "bg-primary border-primary text-primary-text hover:bg-primary-hover shadow-glow"
+                  : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
               )}
             >
               {tab.label}
@@ -81,7 +81,7 @@ export default function WinnersGrid() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-[400px] text-primary">Loading winners...</div>
+          <div className="flex justify-center items-center h-[400px] text-primary font-sans font-medium animate-pulse">Loading winners...</div>
         ) : visibleWinners.length > 0 ? (
           <>
             {/* Grid of Winner Cards: 4 columns desktop, 2 cols tablet, 1 col mobile */}
@@ -98,7 +98,7 @@ export default function WinnersGrid() {
                 <button
                   onClick={() => handlePageChange(activePage - 1)}
                   disabled={activePage === 1}
-                  className="px-4 py-2 border border-[#43581e] text-[#43581e] disabled:opacity-30 disabled:hover:text-[#43581e] disabled:hover:border-[#43581e] hover:text-text-primary hover:border-primary rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border bg-surface text-text-muted hover:text-text-primary hover:border-border-medium disabled:opacity-30 disabled:hover:text-text-muted rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm"
                 >
                   ← Previous
                 </button>
@@ -112,10 +112,10 @@ export default function WinnersGrid() {
                       key={pageNumber}
                       onClick={() => handlePageChange(pageNumber)}
                       className={cn(
-                        "w-9 h-9 rounded-button flex items-center justify-center font-sans text-xs font-semibold transition-all duration-200 cursor-pointer select-none",
+                        "w-9 h-9 rounded-button flex items-center justify-center font-sans text-xs font-semibold transition-all duration-200 cursor-pointer select-none border",
                         isActive
-                          ? "bg-primary text-primary-text font-bold"
-                          : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium"
+                          ? "bg-primary border-primary text-primary-text font-bold shadow-glow"
+                          : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
                       )}
                     >
                       {pageNumber}
@@ -127,7 +127,7 @@ export default function WinnersGrid() {
                 <button
                   onClick={() => handlePageChange(activePage + 1)}
                   disabled={activePage === totalPages}
-                  className="px-4 py-2 border border-[#43581e] text-[#e8edd4] disabled:opacity-30 disabled:hover:text-[#e8edd4] disabled:hover:border-[#43581e] hover:text-[#a0d056] hover:border-[#a0d056] rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border bg-surface text-text-muted hover:text-text-primary hover:border-border-medium disabled:opacity-30 disabled:hover:text-text-muted rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm"
                 >
                   Next →
                 </button>

@@ -9,7 +9,7 @@ interface LiveRafflesHeroProps {
 
 /**
  * Hero/Header section of the Live Raffles page.
- * Displays breadcrumbs, main title, description, and key statistics pills.
+ * Styled matching the homepage hero design system with badges, gradient heading, and metric cards.
  */
 export default function LiveRafflesHero({
   liveCount = 24,
@@ -17,10 +17,10 @@ export default function LiveRafflesHero({
   totalPrizesValue = "£1,200+",
 }: LiveRafflesHeroProps) {
   return (
-    <section className="bg-surface border-b border-divider pt-28 pb-12">
-      <div className="container-custom">
+    <section className="relative pt-12 md:pt-16 pb-10 border-b border-divider">
+      <div className="container-custom relative z-10">
         {/* Breadcrumb Navigation */}
-        <nav className="mb-4" aria-label="Breadcrumb">
+        <nav className="mb-6" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2 text-xs font-sans font-medium text-text-muted">
             <li>
               <Link href="/" className="hover:text-text-brand transition-colors duration-200">
@@ -30,36 +30,61 @@ export default function LiveRafflesHero({
             <li className="text-border-medium" aria-hidden="true">
               /
             </li>
-            <li className="text-text-secondary select-none font-semibold">Live Draws</li>
+            <li className="text-text-brand select-none font-semibold">Live Competitions</li>
           </ol>
         </nav>
 
-        {/* Hero Content Grid (Responsive layout) */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        {/* Hero Content Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="max-w-2xl">
-            <h1 className="font-heading font-bold text-4xl md:text-5xl text-text-primary tracking-tight mb-3">
-              Live Competitions
+            {/* Pill Badge */}
+            <div className="inline-flex items-center bg-accent-bg border border-border px-3 py-1.5 rounded-badge text-[11px] font-semibold uppercase tracking-wider text-text-brand mb-4 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse" />
+              LIVE & ACTIVE RAFFLES
+            </div>
+
+            {/* Main Title */}
+            <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl text-text-primary tracking-tight mb-4 leading-tight">
+              Win Premium{" "}
+              <span className="text-text-brand bg-gradient-to-r from-primary to-[#8A46E4] bg-clip-text text-transparent">
+                Live Competitions
+              </span>
             </h1>
-            <p className="font-sans text-sm md:text-base text-text-muted leading-relaxed">
-              Browse every active draw. Filter by category, price, or closing time.
+
+            {/* Subtitle */}
+            <p className="font-sans text-sm md:text-base text-text-muted leading-relaxed max-w-xl">
+              Browse every active draw. Filter by category, price, or closing time. Hosted by verified charity businesses with fast payouts.
             </p>
           </div>
 
-          {/* Statistics Pills (Floating right) */}
-          <div className="flex flex-wrap gap-2.5">
-            <div className="flex items-center gap-1.5 bg-accent-bg border border-border px-4 py-2 rounded-badge text-xs font-semibold text-text-brand shadow-sm select-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              <span>{liveCount} Live Draws</span>
+          {/* Metric Cards (Floating right) */}
+          <div className="grid grid-cols-3 sm:flex flex-wrap gap-3 shrink-0">
+            <div className="flex flex-col items-center justify-center bg-surface border border-border px-5 py-3.5 rounded-card shadow-card hover:border-border-medium transition-all">
+              <div className="flex items-center gap-1.5 text-text-brand font-heading font-bold text-xl md:text-2xl">
+                <span className="w-2 h-2 rounded-full bg-success animate-ping" />
+                <span>{liveCount}</span>
+              </div>
+              <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider mt-0.5">
+                Active Draws
+              </span>
             </div>
             
-            <div className="flex items-center gap-1.5 bg-accent-bg border border-border px-4 py-2 rounded-badge text-xs font-semibold text-text-brand shadow-sm select-none">
-              <span>⏱</span>
-              <span>{closingTodayCount} Closing Today</span>
+            <div className="flex flex-col items-center justify-center bg-surface border border-border px-5 py-3.5 rounded-card shadow-card hover:border-border-medium transition-all">
+              <div className="font-heading font-bold text-xl md:text-2xl text-text-primary">
+                {closingTodayCount}
+              </div>
+              <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider mt-0.5">
+                Closing Today
+              </span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-accent-bg border border-border px-4 py-2 rounded-badge text-xs font-semibold text-text-brand shadow-sm select-none">
-              <span>🎯</span>
-              <span>{totalPrizesValue} in Prizes</span>
+            <div className="flex flex-col items-center justify-center bg-surface border border-border px-5 py-3.5 rounded-card shadow-card hover:border-border-medium transition-all">
+              <div className="font-heading font-bold text-xl md:text-2xl text-text-brand">
+                {totalPrizesValue}
+              </div>
+              <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider mt-0.5">
+                In Prizes
+              </span>
             </div>
           </div>
         </div>
