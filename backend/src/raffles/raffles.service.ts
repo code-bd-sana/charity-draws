@@ -32,8 +32,23 @@ export class RafflesService {
     const activeSub = hostProfile.subscriptions[0];
     if (!activeSub) {
       throw new ForbiddenException(
-        'You must have an active paid subscription to create a competition.',
+        'You must have an active subscription to create a competition.',
       );
+    }
+
+    if (
+      activeSub.plan &&
+      activeSub.plan.maxActiveRaffles !== null &&
+      activeSub.plan.maxActiveRaffles !== undefined
+    ) {
+      const activeOrPendingRaffles = hostProfile.raffles.filter(
+        (r) => r.status !== 'CANCELLED' && r.status !== 'ENDED',
+      );
+      if (activeOrPendingRaffles.length >= activeSub.plan.maxActiveRaffles) {
+        throw new ForbiddenException(
+          `Your ${activeSub.plan.name} plan allows a maximum of ${activeSub.plan.maxActiveRaffles} competition(s). You have already created ${activeOrPendingRaffles.length} competition(s). Please upgrade your plan to create more competitions.`,
+        );
+      }
     }
 
     // Generate unique slug

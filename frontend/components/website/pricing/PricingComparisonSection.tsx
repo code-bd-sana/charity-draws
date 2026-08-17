@@ -54,19 +54,22 @@ export default function PricingComparisonSection() {
         </div>
 
         {/* Scrollable Comparison Table Frame */}
-        <div className="w-full max-w-4xl mx-auto overflow-x-auto rounded-card border border-border shadow-card bg-surface">
-          <table className="w-full min-w-[600px] border-collapse text-left">
+        <div className="w-full max-w-5xl mx-auto overflow-x-auto rounded-card border border-border shadow-card bg-surface">
+          <table className="w-full min-w-[700px] border-collapse text-left">
             
             {/* Table Header */}
             <thead>
               <tr className="bg-accent-bg/50 border-b border-border h-[58px]">
-                <th className="font-heading font-bold text-xs md:text-sm text-text-secondary px-6 uppercase tracking-wider w-1/2">
+                <th className="font-heading font-bold text-xs md:text-sm text-text-secondary px-6 uppercase tracking-wider w-2/5">
                   Feature
                 </th>
-                <th className="font-heading font-bold text-xs md:text-sm text-text-primary text-center px-6 uppercase tracking-wider w-1/4">
+                <th className="font-heading font-bold text-xs md:text-sm text-text-primary text-center px-6 uppercase tracking-wider w-1/5">
+                  Free
+                </th>
+                <th className="font-heading font-bold text-xs md:text-sm text-text-primary text-center px-6 uppercase tracking-wider w-1/5">
                   Premium
                 </th>
-                <th className="font-heading font-bold text-xs md:text-sm text-text-primary text-center px-6 uppercase tracking-wider w-1/4">
+                <th className="font-heading font-bold text-xs md:text-sm text-text-primary text-center px-6 uppercase tracking-wider w-1/5">
                   Pro
                 </th>
               </tr>
@@ -84,6 +87,11 @@ export default function PricingComparisonSection() {
                     {row.featureName}
                   </td>
                   
+                  {/* Free Value */}
+                  <td className="text-center px-6 py-4.5 border-l border-divider/50">
+                    {renderCell(row.freeValue)}
+                  </td>
+
                   {/* Premium Value */}
                   <td className="text-center px-6 py-4.5 border-l border-divider/50">
                     {renderCell(row.premiumValue)}

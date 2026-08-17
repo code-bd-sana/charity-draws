@@ -92,10 +92,10 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
         {/* Price Tag */}
         <div className="flex items-baseline gap-1 mt-3">
           <span className="font-heading font-bold text-4xl text-text-brand select-none">
-            £{isYearly ? price * 12 : price}
+            {price === 0 ? "Free" : `£${isYearly ? price * 12 : price}`}
           </span>
           <span className="font-sans text-xs text-text-muted select-none font-medium">
-            {isYearly ? " billed yearly" : "/month"}
+            {price === 0 ? " Forever" : isYearly ? " billed yearly" : "/month"}
           </span>
         </div>
         
@@ -183,8 +183,14 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
             </div>
-            <h2 className="font-heading font-bold text-2xl text-text-primary mb-3">Payment Successful</h2>
-            <p className="font-sans text-sm text-text-muted mb-8">Your subscription has been activated successfully.</p>
+            <h2 className="font-heading font-bold text-2xl text-text-primary mb-3">
+              {plan.monthlyPrice === 0 ? "Free Plan Activated!" : "Payment Successful"}
+            </h2>
+            <p className="font-sans text-sm text-text-muted mb-8">
+              {plan.monthlyPrice === 0 
+                ? "Your Free subscription has been activated successfully. You can now create 1 competition." 
+                : "Your subscription has been activated successfully."}
+            </p>
             <PrimaryButton 
               className="w-full py-3" 
               onClick={() => {

@@ -18,7 +18,7 @@ async function main() {
       name: 'Free',
       price: 0,
       durationDays: 30,
-      maxActiveRaffles: 3,
+      maxActiveRaffles: 1,
     },
     {
       id: 'premium',
