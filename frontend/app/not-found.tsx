@@ -3,115 +3,89 @@ import Link from "next/link";
 import WebsiteNavbar from "../components/website/layout/WebsiteNavbar";
 import WebsiteFooter from "../components/website/layout/WebsiteFooter";
 
+const quickLinks = [
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/winners", label: "Past Winners" },
+  { href: "/pricing", label: "Pricing & FAQ" },
+  { href: "/contact", label: "Contact Support" },
+];
+
 export default function NotFound() {
   return (
     <>
       <WebsiteNavbar />
-      
-      <main className="min-h-screen bg-[#0D0D0B] text-[#E8EDD4] pt-28 pb-20 flex flex-col justify-center relative overflow-hidden">
-        {/* Glowing Background Radial Effects */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#8CB34A]/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] bg-[#8CB34A]/5 rounded-full blur-[90px] pointer-events-none" />
 
-        <div className="container-custom max-w-4xl mx-auto px-4 text-center relative z-10 my-auto">
-          
-          {/* Tactical Target Graphic & 404 Badge */}
-          <div className="relative inline-flex items-center justify-center mb-8">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-[#161810] border-2 border-[#2D3C13] flex items-center justify-center relative shadow-[0_0_40px_rgba(140,179,74,0.15)]">
-              {/* Tactical Crosshair SVG */}
-              <svg
-                className="w-16 h-16 sm:w-20 sm:h-20 text-[#8CB34A]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth={1.5} strokeDasharray="3 3" />
-                <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth={1.5} />
-                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v3m0 14v3M2 12h3m14 0h3" />
-              </svg>
+      <main className="relative flex min-h-screen flex-col overflow-hidden bg-surface pb-12 pt-20 lg:pt-[66px]">
+        <div className="pointer-events-none absolute left-[-10%] top-[-10%] h-[50%] w-[50%] rounded-full bg-primary/15 blur-[120px]" />
+        <div className="pointer-events-none absolute bottom-[-15%] right-[-10%] h-[45%] w-[45%] rounded-full bg-success/10 blur-[120px]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(113,49,200,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(113,49,200,0.04)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_75%_70%_at_50%_45%,#000_20%,transparent_100%)]" />
 
-              {/* Pulsing ring indicator */}
-              <span className="absolute inset-0 rounded-full border border-[#8CB34A]/40 animate-ping opacity-25" />
+        <section className="container-custom relative z-10 my-auto flex flex-1 items-center justify-center py-16 text-center sm:py-20">
+          <div className="w-full max-w-3xl">
+            <div className="relative mb-8 inline-flex items-center justify-center">
+              <div className="flex h-28 w-28 items-center justify-center rounded-full border border-border bg-accent-bg text-primary shadow-glow sm:h-32 sm:w-32">
+                <svg
+                  aria-hidden="true"
+                  className="h-14 w-14 sm:h-16 sm:w-16"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <circle cx="12" cy="12" r="8.5" strokeDasharray="3 3" />
+                  <circle cx="12" cy="12" r="4.5" />
+                  <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                  <path strokeLinecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+                </svg>
+              </div>
+              <span className="absolute -bottom-3 rounded-badge border border-border-medium bg-surface px-3 py-1 font-sans text-xs font-bold uppercase tracking-widest text-text-brand shadow-card">
+                Error 404
+              </span>
             </div>
 
-            {/* Glowing 404 Tag */}
-            <span className="absolute -bottom-3 bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A] text-xs font-sans font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
-              404 • Target Missing
-            </span>
-          </div>
+            <h1 className="mb-4 font-heading text-4xl font-bold tracking-tight text-text-primary sm:text-5xl lg:text-6xl">
+              Page not found
+            </h1>
+            <p className="mx-auto mb-9 max-w-xl font-sans text-base leading-relaxed text-text-secondary sm:text-lg">
+              The page or competition you&apos;re looking for may have moved, expired, or no longer exists.
+            </p>
 
-          {/* Heading & Subtitle */}
-          <h1 className="font-heading font-extrabold text-4xl sm:text-6xl text-[#E8EDD4] tracking-tight mb-4 leading-tight">
-            Target Out of Range
-          </h1>
-
-          <p className="font-sans text-base sm:text-lg text-[#B3B8AA] max-w-xl mx-auto mb-10 leading-relaxed">
-            The page or competition you are looking for has moved, expired, or doesn't exist. Take aim back to safety or check out our live raffles.
-          </p>
-
-          {/* Primary Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-            <Link
-              href="/"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] font-heading font-bold text-sm transition-all shadow-lg hover:shadow-[#8CB34A]/20 flex items-center justify-center gap-2 group"
-            >
-              <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-              </svg>
-              <span>Back to Homepage</span>
-            </Link>
-
-            <Link
-              href="/live-raffles"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#161810] hover:bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A]/60 text-[#E8EDD4] font-heading font-semibold text-sm transition-all flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4 text-[#8CB34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-12v.75m0 3v.75m0 3v.75m0 3V18M3 7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v9a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 16.5v-9z" />
-              </svg>
-              <span>Explore Live Raffles</span>
-            </Link>
-          </div>
-
-          {/* Quick Helpful Links Box */}
-          <div className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 max-w-2xl mx-auto shadow-md">
-            <h3 className="font-heading font-bold text-xs text-[#8CB34A] uppercase tracking-wider mb-4">
-              Quick Navigation Shortcuts
-            </h3>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-sans">
+            <div className="mb-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                href="/how-it-works"
-                className="p-3 rounded-xl bg-[#111210] border border-[#2D3C13] text-[#B3B8AA] hover:text-[#E8EDD4] hover:border-[#8CB34A]/40 transition-colors text-center font-medium"
+                href="/"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-button bg-primary px-6 py-3 font-sans text-sm font-semibold text-primary-text shadow-glow transition-all duration-200 hover:bg-primary-hover sm:w-auto"
               >
-                How It Works
+                <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back to homepage
               </Link>
-
               <Link
-                href="/winners"
-                className="p-3 rounded-xl bg-[#111210] border border-[#2D3C13] text-[#B3B8AA] hover:text-[#E8EDD4] hover:border-[#8CB34A]/40 transition-colors text-center font-medium"
+                href="/live-raffles"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-button border border-border bg-surface px-6 py-3 font-sans text-sm font-semibold text-text-primary shadow-card transition-all duration-200 hover:border-border-medium hover:bg-accent-bg sm:w-auto"
               >
-                Past Winners
-              </Link>
-
-              <Link
-                href="/pricing"
-                className="p-3 rounded-xl bg-[#111210] border border-[#2D3C13] text-[#B3B8AA] hover:text-[#E8EDD4] hover:border-[#8CB34A]/40 transition-colors text-center font-medium"
-              >
-                Pricing & FAQ
-              </Link>
-
-              <Link
-                href="/contact"
-                className="p-3 rounded-xl bg-[#111210] border border-[#2D3C13] text-[#B3B8AA] hover:text-[#E8EDD4] hover:border-[#8CB34A]/40 transition-colors text-center font-medium"
-              >
-                Contact Support
+                Explore live raffles
               </Link>
             </div>
-          </div>
 
-        </div>
+            <div className="rounded-card border border-border bg-surface p-5 shadow-card sm:p-6">
+              <p className="mb-4 font-heading text-xs font-bold uppercase tracking-wider text-text-brand">
+                Quick navigation
+              </p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {quickLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="rounded-button border border-border bg-bg px-3 py-3 font-sans text-xs font-medium text-text-secondary transition-colors duration-200 hover:border-border-medium hover:bg-accent-bg hover:text-text-primary"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <WebsiteFooter />
