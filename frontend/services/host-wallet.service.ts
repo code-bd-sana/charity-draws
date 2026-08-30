@@ -32,7 +32,7 @@ export interface WithdrawalHistoryItem {
   method: string;
   status: string;
   referenceId: string;
-  payoutDetails?: any;
+  payoutDetails?: Record<string, unknown>;
   adminNotes?: string;
 }
 
@@ -77,9 +77,50 @@ export interface HostDashboardOverviewData {
   }>;
 }
 
+export type HostSalesRange = '7d' | '30d' | '12m';
+
+export interface HostSalesRaffle {
+  id: string;
+  name: string;
+  ticketsSold: number;
+  totalTickets: number;
+  raised: number;
+  status: 'Live' | 'Completed' | 'Draft' | 'Pending Review' | 'Cancelled';
+  endsAt: string;
+  grossRevenue: number;
+  ticketPrice: number;
+  platformFee: number;
+  platformFeePercent: number;
+  platformPlan: string;
+  netEarnings: number;
+}
+
+export interface HostSalesAnalytics {
+  metrics: {
+    totalRevenue: number;
+    totalTicketsSold: number;
+    completedOrders: number;
+    averageOrderValue: number;
+  };
+  chart: {
+    range: HostSalesRange;
+    data: Array<{
+      date: string;
+      sales: number;
+      revenue: number;
+    }>;
+  };
+  raffles: HostSalesRaffle[];
+}
+
 export const hostWalletService = {
   async getDashboardOverview(): Promise<HostDashboardOverviewData> {
     const response = await api.get('/hosts/dashboard');
+    return response.data;
+  },
+
+  async getSalesAnalytics(range: HostSalesRange): Promise<HostSalesAnalytics> {
+    const response = await api.get('/hosts/sales', { params: { range } });
     return response.data;
   },
 

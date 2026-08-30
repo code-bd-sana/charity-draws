@@ -415,4 +415,159 @@ export class HostsService {
       recentActivity,
     };
   }
+
+  async getHostSalesAnalytics(userId: string, requestedRange?: string) {
+    const host = await this.getHostProfileByUserId(userId);
+    const range = requestedRange === '30d' || requestedRange === '12m' ? requestedRange : '7d';
+    const now = new Date();
+    const startDate = new Date();
+
+    if (range === '12m') {
+      startDate.setUTCFullYear(now.getUTCFullYear(), now.getUTCMonth() - 11, 1);
+      startDate.setUTCHours(0, 0, 0, 0);
+    } else {
+      const dayCount = range === '30d' ? 30 : 7;
+      startDate.setUTCDate(now.getUTCDate() - (dayCount - 1));
+      startDate.setUTCHours(0, 0, 0, 0);
+    }
+
+    const completedTicketPurchaseWhere = {
+      type: 'TICKET_PURCHASE',
+      status: 'COMPLETED',
+      tickets: {
+        some: {
+          raffle: { hostId: host.id },
+        },
+      },
+    };
+
+    const [salesTotals, totalTicketsSold, salesInRange, raffles] = await Promise.all([
+      this.prisma.transaction.aggregate({
+        where: completedTicketPurchaseWhere,
+        _sum: { amount: true },
+        _count: { id: true },
+      }),
+      this.prisma.ticket.count({
+        where: {
+          raffle: { hostId: host.id },
+          transaction: {
+            type: 'TICKET_PURCHASE',
+            status: 'COMPLETED',
+          },
+        },
+      }),
+      this.prisma.transaction.findMany({
+        where: {
+          ...completedTicketPurchaseWhere,
+          createdAt: { gte: startDate },
+        },
+        select: {
+          amount: true,
+          createdAt: true,
+          tickets: {
+            where: { raffle: { hostId: host.id } },
+            select: { id: true },
+          },
+        },
+      }),
+      this.prisma.raffle.findMany({
+        where: { hostId: host.id },
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          ticketsSold: true,
+          totalTickets: true,
+          pricePerTicket: true,
+          endDate: true,
+          status: true,
+        },
+      }),
+    ]);
+
+    const createBucketKey = (date: Date) =>
+      range === '12m'
+        ? `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`
+        : date.toISOString().slice(0, 10);
+
+    const chartBuckets = new Map<string, { date: string; sales: number; revenue: number }>();
+    const bucketCount = range === '12m' ? 12 : range === '30d' ? 30 : 7;
+
+    for (let index = 0; index < bucketCount; index += 1) {
+      const bucketDate = new Date(startDate);
+      if (range === '12m') {
+        bucketDate.setUTCMonth(startDate.getUTCMonth() + index);
+      } else {
+        bucketDate.setUTCDate(startDate.getUTCDate() + index);
+      }
+
+      const label = bucketDate.toLocaleDateString('en-GB',
+        range === '12m'
+          ? { month: 'short', timeZone: 'UTC' }
+          : range === '7d'
+            ? { weekday: 'short', timeZone: 'UTC' }
+            : { day: 'numeric', month: 'short', timeZone: 'UTC' },
+      );
+
+      chartBuckets.set(createBucketKey(bucketDate), { date: label, sales: 0, revenue: 0 });
+    }
+
+    salesInRange.forEach((sale) => {
+      const bucket = chartBuckets.get(createBucketKey(sale.createdAt));
+      if (!bucket) return;
+
+      bucket.sales += sale.tickets.length;
+      bucket.revenue += Number(sale.amount);
+    });
+
+    const totalRevenue = Number(salesTotals._sum.amount || 0);
+    const completedOrders = salesTotals._count.id;
+
+    return {
+      metrics: {
+        totalRevenue,
+        totalTicketsSold,
+        completedOrders,
+        averageOrderValue: completedOrders > 0 ? totalRevenue / completedOrders : 0,
+      },
+      chart: {
+        range,
+        data: Array.from(chartBuckets.values()),
+      },
+      raffles: raffles.map((raffle) => {
+        const ticketPrice = Number(raffle.pricePerTicket);
+        const grossRevenue = ticketPrice * raffle.ticketsSold;
+        const status =
+          raffle.status === 'ACTIVE'
+            ? 'Live'
+            : raffle.status === 'ENDED'
+              ? 'Completed'
+              : raffle.status === 'PENDING_APPROVAL'
+                ? 'Pending Review'
+                : raffle.status === 'CANCELLED'
+                  ? 'Cancelled'
+                  : 'Draft';
+
+        return {
+          id: raffle.id,
+          name: raffle.title,
+          ticketsSold: raffle.ticketsSold,
+          totalTickets: raffle.totalTickets,
+          raised: grossRevenue,
+          status,
+          endsAt: raffle.endDate.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          }),
+          grossRevenue,
+          ticketPrice,
+          platformFee: grossRevenue * 0.1,
+          platformFeePercent: 10,
+          platformPlan: 'Standard',
+          netEarnings: grossRevenue * 0.9,
+        };
+      }),
+    };
+  }
 }

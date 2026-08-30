@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { HostRaffleDetail } from "../../../../types/host-dashboard.types";
+import { HostSalesRaffle } from "../../../../services/host-wallet.service";
 import { cn } from "../../../../lib/utils";
 
 interface Props {
-  raffles: HostRaffleDetail[];
+  raffles: HostSalesRaffle[];
+  isLoading?: boolean;
 }
 
-export default function SalesBreakdownTable({ raffles }: Props) {
+export default function SalesBreakdownTable({ raffles, isLoading = false }: Props) {
   const [activeTab, setActiveTab] = useState("All");
   
   const tabs = ["All", "Active", "Completed"];
@@ -75,7 +76,17 @@ export default function SalesBreakdownTable({ raffles }: Props) {
             </tr>
           </thead>
           <tbody>
-            {filteredRaffles.map((raffle) => (
+            {isLoading && Array.from({ length: 4 }).map((_, index) => (
+              <tr key={index} className="border-b border-divider last:border-b-0">
+                {["w-48", "w-20", "w-24", "w-16", "w-20"].map((width, cellIndex) => (
+                  <td key={cellIndex} className="px-6 py-4">
+                    <div className={`h-4 ${width} animate-pulse rounded bg-accent-bg`} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+
+            {!isLoading && filteredRaffles.map((raffle) => (
               <tr 
                 key={raffle.id}
                 className="group transition-colors hover:bg-accent-bg/40 border-b border-divider last:border-b-0"
@@ -90,7 +101,8 @@ export default function SalesBreakdownTable({ raffles }: Props) {
                     "inline-flex px-2.5 py-0.5 rounded-badge font-sans font-bold text-[11px] border shadow-sm",
                     raffle.status === "Live" && "bg-emerald-50 border-emerald-200 text-emerald-700",
                     raffle.status === "Completed" && "bg-purple-50 border-border-medium text-text-brand",
-                    (raffle.status === "Draft" || raffle.status === "Pending Review") && "bg-amber-50 border-amber-200 text-amber-700"
+                    (raffle.status === "Draft" || raffle.status === "Pending Review") && "bg-amber-50 border-amber-200 text-amber-700",
+                    raffle.status === "Cancelled" && "bg-red-50 border-red-200 text-red-700"
                   )}>
                     {raffle.status}
                   </span>
@@ -104,7 +116,7 @@ export default function SalesBreakdownTable({ raffles }: Props) {
                     <div className="w-full max-w-[100px] h-1.5 bg-accent-bg border border-border-medium rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-primary rounded-full transition-all duration-300"
-                        style={{ width: `${(raffle.ticketsSold / raffle.totalTickets) * 100}%` }}
+                        style={{ width: `${raffle.totalTickets > 0 ? Math.min(100, (raffle.ticketsSold / raffle.totalTickets) * 100) : 0}%` }}
                       />
                     </div>
                   </div>
@@ -121,6 +133,14 @@ export default function SalesBreakdownTable({ raffles }: Props) {
                 </td>
               </tr>
             ))}
+
+            {!isLoading && filteredRaffles.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center font-sans text-sm font-medium text-text-muted">
+                  No competitions match this filter yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

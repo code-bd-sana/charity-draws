@@ -4,6 +4,7 @@ import {
   Post,
   Param,
   Body,
+  Query,
   UseGuards,
   Req,
   UnauthorizedException,
@@ -63,6 +64,18 @@ export class HostsController {
   getDashboardOverview(@Req() req: Request) {
     const userId = this.extractUserId(req);
     return this.hostsService.getHostDashboardOverview(userId);
+  }
+
+  @Get('sales')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('HOST')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current host sales analytics and raffle breakdown' })
+  @ApiResponse({ status: 200, description: 'Host sales analytics' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  getSalesAnalytics(@Req() req: Request, @Query('range') range?: string) {
+    const userId = this.extractUserId(req);
+    return this.hostsService.getHostSalesAnalytics(userId, range);
   }
 
   @Get('wallet')

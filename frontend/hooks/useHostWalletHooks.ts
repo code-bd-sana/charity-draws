@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { hostWalletService, RequestWithdrawalPayload } from '../services/host-wallet.service';
+import { hostWalletService, HostSalesRange, RequestWithdrawalPayload } from '../services/host-wallet.service';
 
 export const useHostDashboardOverview = () => {
   return useQuery({
@@ -14,6 +14,14 @@ export const useHostWalletStats = () => {
     queryKey: ['host-wallet-stats'],
     queryFn: hostWalletService.getWalletStats,
     staleTime: 60 * 1000,
+  });
+};
+
+export const useHostSalesAnalytics = (range: HostSalesRange) => {
+  return useQuery({
+    queryKey: ['host-sales-analytics', range],
+    queryFn: () => hostWalletService.getSalesAnalytics(range),
+    staleTime: 30 * 1000,
   });
 };
 

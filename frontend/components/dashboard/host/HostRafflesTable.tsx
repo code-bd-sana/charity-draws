@@ -21,6 +21,10 @@ export default function HostRafflesTable() {
   const { data: response, isLoading } = useHostRaffles({ page, limit: 10, status: activeFilter });
   const raffles = response?.data || [];
   const meta = response?.meta;
+  const totalPages = Math.max(1, Number(meta?.totalPages ?? meta?.lastPage) || 1);
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+  const firstVisibleItem = meta && raffles.length > 0 ? (currentPage - 1) * meta.limit + 1 : 0;
+  const lastVisibleItem = meta && raffles.length > 0 ? Math.min(firstVisibleItem + raffles.length - 1, meta.total) : 0;
   const deleteMutation = useDeleteRaffle();
   const drawWinnerMutation = useDrawWinner();
 
@@ -319,13 +323,25 @@ export default function HostRafflesTable() {
         </div>
       </div>
 
-      {/* Pagination component */}
+      {/* Pagination */}
       {!isLoading && meta && meta.total > 0 && (
-        <Pagination 
-          currentPage={meta.page}
-          totalPages={meta.totalPages}
-          onPageChange={setPage}
-        />
+        <div className="flex flex-col items-center justify-between gap-4 rounded-card border border-border bg-surface p-4 shadow-card sm:flex-row">
+          <p className="font-sans text-[13px] font-medium text-text-muted">
+            Showing <span className="font-bold text-text-primary">{firstVisibleItem}–{lastVisibleItem}</span> of{" "}
+            <span className="font-bold text-text-primary">{meta.total}</span> competitions
+            {totalPages > 1 && (
+              <> · Page <span className="font-bold text-text-brand">{currentPage}</span> of {totalPages}</>
+            )}
+          </p>
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          )}
+        </div>
       )}
 
       {selectedCompForDelete && (
