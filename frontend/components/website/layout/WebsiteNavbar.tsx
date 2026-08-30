@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useAuthUser } from '../../../hooks/useAuthHooks';
 import { NAV_LINKS } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
-import logo from '../../../public/logo.jpg';
+import logo from '../../../public/logo3.png';
 import PrimaryButton from '../shared/PrimaryButton';
 
 /**
@@ -42,8 +42,8 @@ export default function WebsiteNavbar() {
         className={cn(
           'fixed top-0 left-0 w-full z-45 transition-all duration-300 border-b',
           scrolled
-            ? 'bg-bg/90 backdrop-blur-md border-divider/80 py-2'
-            : 'bg-transparent border-transparent py-4',
+            ? 'bg-white/90 backdrop-blur-md border-[#e6d8f7]/80 py-3 shadow-[0_6px_22px_rgba(91,32,181,.08)]'
+            : 'bg-white/72 backdrop-blur-sm border-[#e6d8f7]/50 py-5',
         )}
       >
         <div className='container-custom flex items-center justify-between'>
@@ -52,11 +52,14 @@ export default function WebsiteNavbar() {
             <Image
               alt='Charity Draws Logo'
               src={logo}
-              height={55}
-              width={55}
+              height={150}
+              width={150}
               priority
-              className='w-14 sm:w-16 md:w-[70px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md mix-blend-multiply contrast-105'
+              className='w-20 sm:w-24 md:w-[130px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md'
             />
+            <span className='font-sans font-bold text-sm sm:text-lg md:text-xl tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-[#7131C8] whitespace-nowrap'>
+              Charity Draws
+            </span>
           </Link>
           {/* Desktop Navigation Links */}
           <nav className='hidden xl:flex items-center gap-8'>

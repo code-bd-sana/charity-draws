@@ -18,8 +18,7 @@ export class SubscriptionsService {
   async getMySubscription(hostId: string) {
     const host = await this.prisma.hostProfile.findUnique({
       where: { userId: hostId },
-    });
-    if (!host) return null;
+    }); if (!host) return null;
 
     const sub = await this.prisma.hostSubscription.findFirst({
       where: { hostId: host.id },
@@ -97,7 +96,7 @@ export class SubscriptionsService {
     const planCounts: Record<string, number> = {};
     const planNames: Record<string, string> = {};
 
-    activeSubscriptions.forEach(sub => {
+    activeSubscriptions.forEach((sub) => {
       // Calculate MRR (assuming price is per month)
       if (sub.plan && sub.plan.price) {
         mrr += Number(sub.plan.price);
@@ -114,9 +113,10 @@ export class SubscriptionsService {
 
     // Format plan distribution for the pie chart
     const totalActive = activeSubscriptions.length;
-    const planDistribution = Object.keys(planCounts).map(planId => {
+    const planDistribution = Object.keys(planCounts).map((planId) => {
       const count = planCounts[planId];
-      const percentage = totalActive > 0 ? Math.round((count / totalActive) * 100) : 0;
+      const percentage =
+        totalActive > 0 ? Math.round((count / totalActive) * 100) : 0;
       return {
         name: planNames[planId],
         value: count,

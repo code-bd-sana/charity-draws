@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { winnersData } from "../../../data/winners/winners.data";
+import React, { useState } from "react";
+import { usePublicWinnersList } from "../../../hooks/useRaffleHooks";
 import WinnersFilterBar from "./WinnersFilterBar";
 import WinnerCard from "./WinnerCard";
 import { cn } from "../../../lib/utils";
@@ -17,58 +17,18 @@ export default function WinnersGrid() {
 
   const itemsPerPage = 8;
 
-  // Process filters, sorting, and pagination
-  const processedWinners = useMemo(() => {
-    // 1. Filter by time ranges
-    // Today is June 26, 2026 (based on local system time)
-    const today = new Date("2026-06-26");
-    
-    const filtered = winnersData.filter((winner) => {
-      if (winnerTypeFilter !== "all" && winner.winnerType !== winnerTypeFilter) {
-        return false;
-      }
+  // Use the API hook
+  const { data: winnersResponse, isLoading } = usePublicWinnersList({
+    activeTab,
+    winnerType: winnerTypeFilter,
+    sortBy,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
 
-      const winDate = new Date(winner.dateString);
-      
-      if (activeTab === "week") {
-        // Within past 7 days (June 19 to June 26, 2026)
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 7);
-        return winDate >= sevenDaysAgo && winDate <= today;
-      }
-      
-      if (activeTab === "month") {
-        // Within active month (June 2026)
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        return winDate >= monthStart && winDate <= today;
-      }
-      
-      return true; // All Time
-    });
-
-    // 2. Sort by date
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.dateString).getTime();
-      const dateB = new Date(b.dateString).getTime();
-      
-      if (sortBy === "newest") {
-        return dateB - dateA;
-      } else {
-        return dateA - dateB;
-      }
-    });
-
-    return filtered;
-  }, [activeTab, sortBy, winnerTypeFilter]);
-
-  // Pagination bounds
-  const totalPages = Math.ceil(processedWinners.length / itemsPerPage) || 1;
-  
-  // Adjust page if filters shrink total items below active page index
+  const visibleWinners = winnersResponse?.data || [];
+  const totalPages = winnersResponse?.meta?.totalPages || 1;
   const activePage = currentPage > totalPages ? totalPages : currentPage;
-  
-  const startIndex = (activePage - 1) * itemsPerPage;
-  const visibleWinners = processedWinners.slice(startIndex, startIndex + itemsPerPage);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -87,7 +47,7 @@ export default function WinnersGrid() {
   };
 
   return (
-    <section id="winners-listing-grid" className="py-12 md:py-16 bg-bg flex-grow scroll-mt-20">
+    <section id="winners-listing-grid" className="py-12 md:py-16 bg-transparent flex-grow scroll-mt-20">
       
       {/* Dynamic Filters Header bar */}
       <WinnersFilterBar
@@ -111,8 +71,8 @@ export default function WinnersGrid() {
               className={cn(
                 "font-sans font-semibold text-xs px-5 py-2.5 rounded-button border transition-all duration-200 cursor-pointer select-none",
                 winnerTypeFilter === tab.value
-                  ? "bg-primary border-primary text-primary-text hover:bg-primary-hover"
-                  : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium"
+                  ? "bg-primary border-primary text-primary-text hover:bg-primary-hover shadow-glow"
+                  : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
               )}
             >
               {tab.label}
@@ -120,7 +80,9 @@ export default function WinnersGrid() {
           ))}
         </div>
 
-        {visibleWinners.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[400px] text-primary font-sans font-medium animate-pulse">Loading winners...</div>
+        ) : visibleWinners.length > 0 ? (
           <>
             {/* Grid of Winner Cards: 4 columns desktop, 2 cols tablet, 1 col mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
@@ -136,7 +98,7 @@ export default function WinnersGrid() {
                 <button
                   onClick={() => handlePageChange(activePage - 1)}
                   disabled={activePage === 1}
-                  className="px-4 py-2 border border-[#43581e] text-[#43581e] disabled:opacity-30 disabled:hover:text-[#43581e] disabled:hover:border-[#43581e] hover:text-text-primary hover:border-primary rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border bg-surface text-text-muted hover:text-text-primary hover:border-border-medium disabled:opacity-30 disabled:hover:text-text-muted rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm"
                 >
                   ← Previous
                 </button>
@@ -150,10 +112,10 @@ export default function WinnersGrid() {
                       key={pageNumber}
                       onClick={() => handlePageChange(pageNumber)}
                       className={cn(
-                        "w-9 h-9 rounded-button flex items-center justify-center font-sans text-xs font-semibold transition-all duration-200 cursor-pointer select-none",
+                        "w-9 h-9 rounded-button flex items-center justify-center font-sans text-xs font-semibold transition-all duration-200 cursor-pointer select-none border",
                         isActive
-                          ? "bg-primary text-primary-text font-bold"
-                          : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium"
+                          ? "bg-primary border-primary text-primary-text font-bold shadow-glow"
+                          : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
                       )}
                     >
                       {pageNumber}
@@ -165,7 +127,7 @@ export default function WinnersGrid() {
                 <button
                   onClick={() => handlePageChange(activePage + 1)}
                   disabled={activePage === totalPages}
-                  className="px-4 py-2 border border-[#43581e] text-[#e8edd4] disabled:opacity-30 disabled:hover:text-[#e8edd4] disabled:hover:border-[#43581e] hover:text-[#a0d056] hover:border-[#a0d056] rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-border bg-surface text-text-muted hover:text-text-primary hover:border-border-medium disabled:opacity-30 disabled:hover:text-text-muted rounded-button text-xs font-semibold uppercase tracking-wider transition-colors duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm"
                 >
                   Next →
                 </button>

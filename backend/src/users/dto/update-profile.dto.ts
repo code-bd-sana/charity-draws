@@ -30,7 +30,7 @@ export class UpdateProfileDto {
   location?: string;
 
   @ApiProperty({
-    example: 'Airsoft Events LLC',
+    example: 'Charity Events LLC',
     description: 'Business name (Hosts only)',
     required: false,
   })
@@ -39,7 +39,7 @@ export class UpdateProfileDto {
   businessName?: string;
 
   @ApiProperty({
-    example: 'We are the best airsoft hosts.',
+    example: 'We are the best charity hosts.',
     description: 'Host Bio',
     required: false,
   })
@@ -57,7 +57,7 @@ export class UpdateProfileDto {
   phone?: string;
 
   @ApiProperty({
-    example: '123 Airsoft Lane, London, UK',
+    example: '123 Charity Lane, London, UK',
     description: 'Business Address',
     required: false,
   })

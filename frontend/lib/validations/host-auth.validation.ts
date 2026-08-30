@@ -184,15 +184,13 @@ export function validateRegisterStep3(values: Pick<HostRegistrationFormValues, "
 /**
  * Validates Host Registration Step 4 (Logo & Branding).
  */
-export function validateRegisterStep4(values: Pick<HostRegistrationFormValues, "businessBio">): {
+export function validateRegisterStep4(values: Partial<HostRegistrationFormValues>): {
   businessBio?: string;
 } {
   const errors: { businessBio?: string } = {};
 
-  if (!values.businessBio.trim()) {
-    errors.businessBio = "Business bio is required";
-  } else if (values.businessBio.trim().length < 10) {
-    errors.businessBio = "Please enter a slightly longer business bio (min 10 characters)";
+  if (values.businessBio && values.businessBio.trim().length > 0 && values.businessBio.trim().length < 10) {
+    errors.businessBio = "Please enter a slightly longer bio (min 10 characters)";
   }
 
   return errors;

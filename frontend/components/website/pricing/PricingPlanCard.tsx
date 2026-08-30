@@ -68,15 +68,15 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
   return (
     <div
       className={cn(
-        "relative flex flex-col bg-surface border rounded-[16px] p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-glow w-full",
+        "relative flex flex-col bg-surface border rounded-card p-8 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-glow w-full",
         plan.isFeatured
-          ? "border-primary ring-1 ring-primary/30"
+          ? "border-primary ring-1 ring-primary/30 shadow-glow"
           : "border-border hover:border-border-medium"
       )}
     >
       {/* Featured Ribbon Badge */}
       {plan.isFeatured && plan.badgeLabel && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary rounded-full px-4 py-1 shadow-md">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary rounded-full px-4 py-1 shadow-glow">
           <span className="font-sans font-bold text-[10px] tracking-wider text-primary-text uppercase">
             {plan.badgeLabel}
           </span>
@@ -92,22 +92,22 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
         {/* Price Tag */}
         <div className="flex items-baseline gap-1 mt-3">
           <span className="font-heading font-bold text-4xl text-text-brand select-none">
-            £{isYearly ? price * 12 : price}
+            {price === 0 ? "Free" : `£${isYearly ? price * 12 : price}`}
           </span>
-          <span className="font-sans text-xs text-text-muted select-none">
-            {isYearly ? " billed yearly" : "/month"}
+          <span className="font-sans text-xs text-text-muted select-none font-medium">
+            {price === 0 ? " Forever" : isYearly ? " billed yearly" : "/month"}
           </span>
         </div>
         
         {isYearly && plan.monthlyPrice > 0 && (
-          <span className="font-sans text-[10px] text-text-secondary mt-1 select-none">
+          <span className="font-sans text-[11px] text-text-muted mt-1 select-none font-medium">
             Equivalent to £{price} per month
           </span>
         )}
       </div>
 
       {/* Commission Level Label */}
-      <div className="inline-flex items-center bg-accent-bg border border-border px-3 py-1.5 rounded-full text-xs font-semibold text-text-brand select-none w-fit mb-6">
+      <div className="inline-flex items-center bg-accent-bg border border-border px-3.5 py-1.5 rounded-badge text-xs font-semibold text-text-brand select-none w-fit mb-6 shadow-sm">
         {plan.commissionLabel}
       </div>
 
@@ -121,7 +121,7 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
             key={feature.id}
             className={cn(
               "flex items-center gap-3 font-sans text-xs md:text-sm transition-all duration-200",
-              feature.included ? "text-text-primary" : "text-text-muted/40"
+              feature.included ? "text-text-primary font-medium" : "text-text-muted/40"
             )}
           >
             {/* Check or Dash SVG icon */}
@@ -176,15 +176,21 @@ export default function PricingPlanCard({ plan, billingCycle, dbPlan }: PricingP
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-surface border border-border p-8 rounded-[24px] shadow-glow w-[90%] max-w-md flex flex-col items-center text-center animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-surface border border-border p-8 rounded-card shadow-glow w-[90%] max-w-md flex flex-col items-center text-center animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 rounded-full bg-accent-bg border border-border flex items-center justify-center mb-6">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8 text-primary">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
             </div>
-            <h2 className="font-heading font-bold text-2xl text-text-primary mb-3">Payment Successful</h2>
-            <p className="font-sans text-sm text-text-secondary mb-8">Your subscription has been activated successfully.</p>
+            <h2 className="font-heading font-bold text-2xl text-text-primary mb-3">
+              {plan.monthlyPrice === 0 ? "Free Plan Activated!" : "Payment Successful"}
+            </h2>
+            <p className="font-sans text-sm text-text-muted mb-8">
+              {plan.monthlyPrice === 0 
+                ? "Your Free subscription has been activated successfully. You can now create 1 competition." 
+                : "Your subscription has been activated successfully."}
+            </p>
             <PrimaryButton 
               className="w-full py-3" 
               onClick={() => {

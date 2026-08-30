@@ -9,8 +9,8 @@ interface LiveRafflesEmptyStateProps {
  */
 export default function LiveRafflesEmptyState({ onReset }: LiveRafflesEmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-surface border border-border border-dashed rounded-card max-w-lg mx-auto font-sans">
-      <div className="w-14 h-14 rounded-full bg-accent-bg border border-border flex items-center justify-center mb-5 text-[#72943a]">
+    <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-surface border border-border border-dashed rounded-card max-w-lg mx-auto font-sans shadow-card">
+      <div className="w-14 h-14 rounded-full bg-accent-bg border border-border flex items-center justify-center mb-5 text-text-brand">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -34,7 +34,7 @@ export default function LiveRafflesEmptyState({ onReset }: LiveRafflesEmptyState
       </p>
       <button
         onClick={onReset}
-        className="font-heading font-semibold text-xs text-primary-text bg-primary hover:bg-primary-hover px-6 py-3 rounded-button transition-colors duration-200 cursor-pointer select-none"
+        className="font-heading font-semibold text-xs text-primary-text bg-primary hover:bg-primary-hover px-6 py-3 rounded-button shadow-glow transition-all duration-200 cursor-pointer select-none"
       >
         Reset Filters
       </button>

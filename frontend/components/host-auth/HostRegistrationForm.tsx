@@ -82,11 +82,21 @@ export default function HostRegistrationForm({
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
+    const val = type === "checkbox" ? checked : value;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setFormData((prev) => {
+      if (name === "bio" || name === "businessBio") {
+        return {
+          ...prev,
+          bio: val as string,
+          businessBio: val as string,
+        };
+      }
+      return {
+        ...prev,
+        [name]: val,
+      };
+    });
 
     // Clear validation error when field is updated
     if (errors[name]) {
@@ -98,15 +108,17 @@ export default function HostRegistrationForm({
     }
   };
 
-  // Profile photo file selection with local uploader data URL preview
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, field: "profilePhoto" | "businessLogo") => {
+  // Profile photo / logo file selection with local uploader data URL preview
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        const result = reader.result as string;
         setFormData((prev) => ({
           ...prev,
-          [field]: reader.result as string,
+          profilePhoto: result,
+          businessLogo: result,
         }));
       };
       reader.readAsDataURL(file);
@@ -117,8 +129,13 @@ export default function HostRegistrationForm({
   const handleBack = () => {
     if (step === 2) onChangeStep(1);
     else if (step === 3) onChangeStep(2);
-    else if (step === 4) onChangeStep(3);
-    else if (step === 8) onChangeStep(4);
+    else if (step === 8) {
+      if (formData.hostType === "business") {
+        onChangeStep(3);
+      } else {
+        onChangeStep(2);
+      }
+    }
   };
 
   // Advancing steps with validation gates
@@ -140,21 +157,17 @@ export default function HostRegistrationForm({
         setErrors(stepErrors);
         return;
       }
-      onChangeStep(3);
+      if (formData.hostType === "individual") {
+        onChangeStep(8);
+      } else {
+        onChangeStep(3);
+      }
     } else if (step === 3) {
       const stepErrors = validateRegisterStep3(formData);
       if (Object.keys(stepErrors).length > 0) {
         setErrors(stepErrors);
         return;
       }
-      onChangeStep(4);
-    } else if (step === 4) {
-      const stepErrors = validateRegisterStep4(formData);
-      if (Object.keys(stepErrors).length > 0) {
-        setErrors(stepErrors);
-        return;
-      }
-      // Skip directly to step 8 review as designed in Figma node list
       onChangeStep(8);
     } else if (step === 8) {
       if (!formData.acceptedTerms) {
@@ -268,7 +281,7 @@ export default function HostRegistrationForm({
                   value={formData.email}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.email && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -294,7 +307,7 @@ export default function HostRegistrationForm({
                     value={formData.password}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.password && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -360,7 +373,7 @@ export default function HostRegistrationForm({
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.confirmPassword && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -391,11 +404,13 @@ export default function HostRegistrationForm({
               </div>
 
               {/* Encryption Banner */}
-              <div className="bg-[#1a230a]/50 border border-divider p-3 rounded-button flex items-center gap-3 select-none">
-                <svg className="w-5 h-5 text-text-brand flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                </svg>
-                <p className="font-sans text-xs text-text-secondary leading-normal">
+              <div className="bg-accent-bg/80 border border-border-medium p-3.5 rounded-button flex items-center gap-3 select-none shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-surface border border-border-medium flex items-center justify-center shrink-0">
+                  <svg className="w-3.5 h-3.5 text-text-brand" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                </div>
+                <p className="font-sans text-xs text-text-primary font-medium leading-normal">
                   Your account is protected with industry-standard encryption.
                 </p>
               </div>
@@ -463,27 +478,27 @@ export default function HostRegistrationForm({
                     Business / Organisation
                   </button>
                 </div>
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   {formData.hostType === "individual"
                     ? "You are hosting as a private individual."
                     : "You are hosting as a registered business entity."}
                 </span>
               </div>
 
-              {/* Profile Photo Uploader */}
+              {/* Profile Photo / Logo Uploader */}
               <div className="flex flex-col gap-2">
                 <label className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                  Profile Photo
+                  {formData.hostType === "individual" ? "Profile Photo" : "Business Logo / Profile Photo"}
                 </label>
                 <div className="flex items-center gap-5">
                   <div
                     onClick={() => profilePhotoInputRef.current?.click()}
                     className="w-20 h-20 md:w-22 md:h-22 rounded-full border-2 border-dashed border-border hover:border-primary bg-bg flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200"
                   >
-                    {formData.profilePhoto ? (
+                    {formData.profilePhoto || formData.businessLogo ? (
                       <img
                         alt="Profile photo preview"
-                        src={formData.profilePhoto}
+                        src={formData.profilePhoto || formData.businessLogo || ""}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -497,15 +512,15 @@ export default function HostRegistrationForm({
                   <input
                     type="file"
                     ref={profilePhotoInputRef}
-                    onChange={(e) => handlePhotoUpload(e, "profilePhoto")}
+                    onChange={handlePhotoUpload}
                     accept="image/png, image/jpeg, image/jpg"
                     className="hidden"
                   />
                   <div className="flex flex-col gap-1">
                     <p className="font-sans text-xs md:text-sm text-text-primary">
-                      Upload a clear, professional photo.
+                      {formData.hostType === "individual" ? "Upload a clear, professional photo." : "Upload your official business logo or avatar."}
                     </p>
-                    <p className="font-sans text-[11px] text-text-secondary/70">
+                    <p className="font-sans text-[11px] text-text-muted font-medium">
                       Square, PNG or JPG, minimum 200×200px.
                     </p>
                   </div>
@@ -527,7 +542,7 @@ export default function HostRegistrationForm({
                     value={formData.firstName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.firstName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -550,7 +565,7 @@ export default function HostRegistrationForm({
                     value={formData.lastName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.lastName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -576,7 +591,7 @@ export default function HostRegistrationForm({
                   value={formData.phone}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.phone && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -585,7 +600,7 @@ export default function HostRegistrationForm({
                     {errors.phone}
                   </span>
                 )}
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   Used for booking notifications and host support only.
                 </span>
               </div>
@@ -605,7 +620,7 @@ export default function HostRegistrationForm({
                     value={formData.city}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.city && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -651,7 +666,7 @@ export default function HostRegistrationForm({
                   <label htmlFor="bio" className="font-sans font-medium text-xs md:text-sm text-text-primary">
                     Short Bio
                   </label>
-                  <span className="text-[10px] md:text-xs bg-accent-bg border border-divider px-2 py-0.5 rounded-badge text-text-secondary/70">
+                  <span className="text-[10px] md:text-xs bg-accent-bg border border-divider px-2 py-0.5 rounded-badge text-text-muted font-medium">
                     optional
                   </span>
                 </div>
@@ -663,9 +678,9 @@ export default function HostRegistrationForm({
                     placeholder="Tell guests a bit about yourself and your hosting experience..."
                     value={formData.bio}
                     onChange={handleInputChange}
-                    className="w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none"
+                    className="w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none"
                   />
-                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-secondary/70 select-none">
+                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-muted font-medium select-none">
                     {formData.bio.length} / 300
                   </span>
                 </div>
@@ -718,7 +733,7 @@ export default function HostRegistrationForm({
                   value={formData.businessName}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                     errors.businessName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                   )}
                 />
@@ -744,7 +759,7 @@ export default function HostRegistrationForm({
                     value={formData.contactFullName}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.contactFullName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -766,7 +781,7 @@ export default function HostRegistrationForm({
                     value={formData.businessRole}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessRole && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -792,7 +807,7 @@ export default function HostRegistrationForm({
                     value={formData.businessEmail}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessEmail && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -814,7 +829,7 @@ export default function HostRegistrationForm({
                     value={formData.businessPhone}
                     onChange={handleInputChange}
                     className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                      "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
                       errors.businessPhone && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
                     )}
                   />
@@ -843,9 +858,9 @@ export default function HostRegistrationForm({
                   placeholder="GB123456789"
                   value={formData.vatNumber}
                   onChange={handleInputChange}
-                  className="w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                  className="w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                 />
-                <span className="font-sans text-[11px] text-text-secondary/70">
+                <span className="font-sans text-[11px] text-text-muted font-medium">
                   Leave blank if your business is not VAT registered.
                 </span>
               </div>
@@ -866,106 +881,7 @@ export default function HostRegistrationForm({
             </div>
           )}
 
-          {/* STEP 4: Logo & Branding */}
-          {step === 4 && (
-            <div className="flex flex-col gap-6 animate-fadeIn">
-              {/* Step Title Header */}
-              <div className="flex flex-col gap-1.5 pb-2 border-b border-divider">
-                <div className="flex items-center justify-between text-xs font-medium text-text-secondary">
-                  <span>Step 4 of 8</span>
-                  <span className="text-[11px] bg-accent-bg border border-border px-2 py-0.5 rounded-badge text-text-brand">Logo &amp; Branding</span>
-                </div>
-                <h2 className="font-heading font-semibold text-xl md:text-2xl text-text-primary mt-1">
-                  Upload Logo &amp; Branding
-                </h2>
-                <p className="font-sans text-xs md:text-sm text-text-secondary">
-                  Configure visual branding features for entrants to see on your page.
-                </p>
-              </div>
 
-              {/* Logo Upload Box */}
-              <div className="flex flex-col gap-2">
-                <label className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                  Business Logo
-                </label>
-                <div className="flex gap-4 items-start">
-                  <div
-                    onClick={() => businessLogoInputRef.current?.click()}
-                    className="w-32 h-32 bg-bg border border-dashed border-border hover:border-primary rounded-card flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center transition-all duration-200"
-                  >
-                    {formData.businessLogo ? (
-                      <img
-                        alt="Business Logo preview"
-                        src={formData.businessLogo}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="p-3 flex flex-col items-center gap-1 select-none text-text-secondary hover:text-text-primary">
-                        {/* Image Logo Icon */}
-                        <svg className="w-8 h-8 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        <span className="text-[10px] md:text-xs">Click to upload</span>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    ref={businessLogoInputRef}
-                    onChange={(e) => handlePhotoUpload(e, "businessLogo")}
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                  />
-                  <p className="font-sans text-xs md:text-sm text-text-secondary leading-normal max-w-sm pt-2">
-                    PNG or JPG, at least 400×400px. This appears on your public Host Profile and in the Verified Hosts directory.
-                  </p>
-                </div>
-              </div>
-
-              {/* Short Business Bio */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="businessBio" className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                  Short Business Bio
-                </label>
-                <div className="relative w-full">
-                  <textarea
-                    id="businessBio"
-                    name="businessBio"
-                    maxLength={300}
-                    placeholder="Tell entrants a bit about your business..."
-                    value={formData.businessBio}
-                    onChange={handleInputChange}
-                    className={cn(
-                      "w-full bg-bg border border-border rounded-button px-4 py-3 h-28 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none",
-                      errors.businessBio && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
-                    )}
-                  />
-                  <span className="absolute bottom-2.5 right-3 font-sans text-[10px] text-text-secondary/70 select-none">
-                    {formData.businessBio.length} / 300
-                  </span>
-                </div>
-                {errors.businessBio && (
-                  <span className="font-sans text-[11px] text-red-500 mt-0.5 self-start select-none">
-                    {errors.businessBio}
-                  </span>
-                )}
-              </div>
-
-              {/* Bottom Actions Row */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-divider/40">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 font-sans font-medium text-xs md:text-sm text-text-secondary hover:text-text-primary cursor-pointer select-none transition-colors duration-150"
-                >
-                  &larr; Back
-                </button>
-                <PrimaryButton type="submit" className="font-heading font-semibold text-xs px-6 py-2.5">
-                  Save &amp; Continue &rarr;
-                </PrimaryButton>
-              </div>
-            </div>
-          )}
 
           {/* STEP 8: Ready to Go Live? */}
           {step === 8 && (
@@ -1072,7 +988,7 @@ export default function HostRegistrationForm({
               </div>
 
               {/* Guidelines Agreement Alert */}
-              <div className="bg-[#1a230a] border border-divider p-4 rounded-card flex gap-3">
+              <div className="bg-accent-bg/80 border border-border-medium p-4 rounded-card flex gap-3 shadow-sm">
                 <div className="pt-0.5">
                   <input
                     type="checkbox"
@@ -1084,11 +1000,11 @@ export default function HostRegistrationForm({
                     className="w-4.5 h-4.5 rounded border border-border bg-bg text-primary focus:ring-0 focus:ring-offset-0 focus:outline-none accent-primary transition-all duration-200 cursor-pointer"
                   />
                 </div>
-                <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-secondary leading-normal select-none cursor-pointer">
+                <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-primary font-medium leading-normal select-none cursor-pointer">
                   By going live, you confirm that all information is accurate and agree to our{" "}
-                  <button type="button" onClick={() => showToast("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-medium">Host Guidelines</button>
+                  <button type="button" onClick={() => showToast("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Host Guidelines</button>
                   {" "}and{" "}
-                  <button type="button" onClick={() => showToast("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-medium">Platform Rules</button>.
+                  <button type="button" onClick={() => showToast("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Platform Rules</button>.
                 </label>
               </div>
 

@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { HostRaffleDetail } from "../../../../types/host-dashboard.types";
+import { HostSalesRaffle } from "../../../../services/host-wallet.service";
 import { cn } from "../../../../lib/utils";
 
 interface Props {
-  raffles: HostRaffleDetail[];
+  raffles: HostSalesRaffle[];
+  isLoading?: boolean;
 }
 
-export default function SalesBreakdownTable({ raffles }: Props) {
+export default function SalesBreakdownTable({ raffles, isLoading = false }: Props) {
   const [activeTab, setActiveTab] = useState("All");
   
   const tabs = ["All", "Active", "Completed"];
@@ -21,29 +22,29 @@ export default function SalesBreakdownTable({ raffles }: Props) {
   });
 
   return (
-    <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] overflow-hidden flex flex-col mt-[24px]">
+    <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col mt-6 shadow-card select-none">
       
       {/* Header & Tabs */}
-      <div className="p-[24px] border-b border-[#2d3c13] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[16px]">
+      <div className="p-6 border-b border-divider flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface">
         <div>
-          <h3 className="font-heading font-medium text-[18px] text-[#e8edd4]">
+          <h3 className="font-heading font-bold text-base md:text-lg text-text-primary">
             Competition Breakdown
           </h3>
-          <p className="font-sans font-normal text-[14px] text-[#b3b8aa]">
+          <p className="font-sans text-xs md:text-sm text-text-muted font-medium">
             Individual performance metrics for your raffles.
           </p>
         </div>
         
-        <div className="flex items-center gap-[8px] bg-[#0d0d0b] p-[4px] rounded-[10px] border border-[#2d3c13]">
+        <div className="flex items-center gap-1 bg-bg p-1 rounded-button border border-border">
           {tabs.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "px-[16px] py-[6px] rounded-[6px] font-sans font-medium text-[13px] transition-colors",
+                "px-4 py-1.5 rounded-button font-sans text-xs transition-all cursor-pointer",
                 activeTab === tab
-                  ? "bg-[#2d3c13] text-[#e8edd4]"
-                  : "text-[#5a752a] hover:text-[#b3b8aa]"
+                  ? "bg-primary border border-primary text-primary-text font-bold shadow-sm"
+                  : "text-text-secondary hover:text-text-primary font-semibold"
               )}
             >
               {tab}
@@ -56,74 +57,90 @@ export default function SalesBreakdownTable({ raffles }: Props) {
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[800px] text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#2d3c13] bg-[#0d0d0b]/50">
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+            <tr className="border-b border-divider bg-accent-bg/30">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Item
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Status
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Tickets Sold
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Price
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Gross Revenue
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredRaffles.map((raffle, index) => (
+            {isLoading && Array.from({ length: 4 }).map((_, index) => (
+              <tr key={index} className="border-b border-divider last:border-b-0">
+                {["w-48", "w-20", "w-24", "w-16", "w-20"].map((width, cellIndex) => (
+                  <td key={cellIndex} className="px-6 py-4">
+                    <div className={`h-4 ${width} animate-pulse rounded bg-accent-bg`} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+
+            {!isLoading && filteredRaffles.map((raffle) => (
               <tr 
                 key={raffle.id}
-                className={cn(
-                  "group transition-colors hover:bg-[#1a230a]",
-                  index !== filteredRaffles.length - 1 && "border-b border-[#2d3c13]/50"
-                )}
+                className="group transition-colors hover:bg-accent-bg/40 border-b border-divider last:border-b-0"
               >
-                <td className="py-[20px] px-[24px]">
-                  <span className="font-sans font-medium text-[14px] text-[#e8edd4]">
+                <td className="py-4 px-6">
+                  <span className="font-sans font-semibold text-xs md:text-sm text-text-primary">
                     {raffle.name}
                   </span>
                 </td>
-                <td className="py-[20px] px-[24px]">
+                <td className="py-4 px-6">
                   <span className={cn(
-                    "inline-flex px-[10px] py-[4px] rounded-full font-sans font-medium text-[11px]",
-                    raffle.status === "Live" && "bg-[#8cb34a]/10 text-[#8cb34a] border border-[#8cb34a]/20",
-                    raffle.status === "Completed" && "bg-[#5a752a]/10 text-[#5a752a] border border-[#5a752a]/20",
-                    (raffle.status === "Draft" || raffle.status === "Pending Review") && "bg-[#f76b6b]/10 text-[#f76b6b] border border-[#f76b6b]/20"
+                    "inline-flex px-2.5 py-0.5 rounded-badge font-sans font-bold text-[11px] border shadow-sm",
+                    raffle.status === "Live" && "bg-emerald-50 border-emerald-200 text-emerald-700",
+                    raffle.status === "Completed" && "bg-purple-50 border-border-medium text-text-brand",
+                    (raffle.status === "Draft" || raffle.status === "Pending Review") && "bg-amber-50 border-amber-200 text-amber-700",
+                    raffle.status === "Cancelled" && "bg-red-50 border-red-200 text-red-700"
                   )}>
                     {raffle.status}
                   </span>
                 </td>
-                <td className="py-[20px] px-[24px]">
-                  <div className="flex flex-col gap-[4px]">
-                    <span className="font-sans font-medium text-[14px] text-[#e8edd4]">
-                      {raffle.ticketsSold} <span className="text-[#5a752a]">/ {raffle.totalTickets}</span>
+                <td className="py-4 px-6">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-sans font-semibold text-xs md:text-sm text-text-brand">
+                      {raffle.ticketsSold} <span className="text-text-muted font-medium">/ {raffle.totalTickets}</span>
                     </span>
                     {/* Tiny Progress bar */}
-                    <div className="w-full max-w-[100px] h-[4px] bg-[#0d0d0b] rounded-full overflow-hidden">
+                    <div className="w-full max-w-[100px] h-1.5 bg-accent-bg border border-border-medium rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-[#8cb34a]"
-                        style={{ width: `${(raffle.ticketsSold / raffle.totalTickets) * 100}%` }}
+                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${raffle.totalTickets > 0 ? Math.min(100, (raffle.ticketsSold / raffle.totalTickets) * 100) : 0}%` }}
                       />
                     </div>
                   </div>
                 </td>
-                <td className="py-[20px] px-[24px]">
-                  <span className="font-sans font-medium text-[14px] text-[#b3b8aa]">
+                <td className="py-4 px-6">
+                  <span className="font-sans font-medium text-xs md:text-sm text-text-secondary">
                     £{raffle.ticketPrice.toFixed(2)}
                   </span>
                 </td>
-                <td className="py-[20px] px-[24px]">
-                  <span className="font-heading font-medium text-[15px] text-[#8cb34a]">
+                <td className="py-4 px-6">
+                  <span className="font-heading font-bold text-xs md:text-sm text-text-primary">
                     £{raffle.grossRevenue.toFixed(2)}
                   </span>
                 </td>
               </tr>
             ))}
+
+            {!isLoading && filteredRaffles.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center font-sans text-sm font-medium text-text-muted">
+                  No competitions match this filter yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import DrawCard from "../shared/DrawCard";
-import { liveRafflesData } from "../../../data/live-raffles.data";
 
 export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
   const [activeTab, setActiveTab] = useState<"active" | "past" | "reviews" | "about">("active");
@@ -11,45 +10,45 @@ export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
   const pastDraws = raffles.filter(r => r.status === 'ENDED' || r.status === 'COMPLETED');
 
   return (
-    <div className="flex flex-col mt-8">
+    <div className="flex flex-col mt-8 select-none">
       {/* Tabs Row */}
-      <div className="flex items-center gap-8 border-b border-[#2D3C13] mb-8 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-8 border-b border-border mb-8 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab("active")}
-          className={`pb-4 text-[14px] font-medium transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap ${
+          className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer ${
             activeTab === "active" 
-              ? "border-[#8CB34A] text-[#8CB34A]" 
-              : "border-transparent text-[#72943A] hover:text-[#E8EDD4]"
+              ? "border-primary text-text-brand font-bold" 
+              : "border-transparent text-text-muted hover:text-text-primary"
           }`}
         >
           Active Draws
         </button>
         <button
           onClick={() => setActiveTab("past")}
-          className={`pb-4 text-[14px] font-medium transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap ${
+          className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer ${
             activeTab === "past" 
-              ? "border-[#8CB34A] text-[#8CB34A]" 
-              : "border-transparent text-[#72943A] hover:text-[#E8EDD4]"
+              ? "border-primary text-text-brand font-bold" 
+              : "border-transparent text-text-muted hover:text-text-primary"
           }`}
         >
           Past Draws
         </button>
         <button
           onClick={() => setActiveTab("reviews")}
-          className={`pb-4 text-[14px] font-medium transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap ${
+          className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer ${
             activeTab === "reviews" 
-              ? "border-[#8CB34A] text-[#8CB34A]" 
-              : "border-transparent text-[#72943A] hover:text-[#E8EDD4]"
+              ? "border-primary text-text-brand font-bold" 
+              : "border-transparent text-text-muted hover:text-text-primary"
           }`}
         >
           Reviews
         </button>
         <button
           onClick={() => setActiveTab("about")}
-          className={`pb-4 text-[14px] font-medium transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap ${
+          className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer ${
             activeTab === "about" 
-              ? "border-[#8CB34A] text-[#8CB34A]" 
-              : "border-transparent text-[#72943A] hover:text-[#E8EDD4]"
+              ? "border-primary text-text-brand font-bold" 
+              : "border-transparent text-text-muted hover:text-text-primary"
           }`}
         >
           About
@@ -65,7 +64,7 @@ export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
                 <DrawCard key={draw.id} draw={draw} />
               ))
             ) : (
-              <p className="text-[#72943A] col-span-full py-10 text-center">No active draws at the moment.</p>
+              <p className="text-text-muted col-span-full py-10 text-center font-medium">No active draws at the moment.</p>
             )}
           </div>
         )}
@@ -79,8 +78,8 @@ export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center gap-3 w-full col-span-full">
                 <span className="text-[32px]">🏆</span>
-                <h3 className="font-heading font-medium text-[18px] text-[#E8EDD4]">No Past Draws</h3>
-                <p className="font-sans text-[13px] text-[#72943A] max-w-[300px]">
+                <h3 className="font-heading font-bold text-[18px] text-text-primary">No Past Draws</h3>
+                <p className="font-sans text-[13px] text-text-muted max-w-[300px]">
                   This host hasn't completed any draws yet. Check back later to see their history of winners!
                 </p>
               </div>
@@ -91,8 +90,8 @@ export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
         {activeTab === "reviews" && (
           <div className="flex flex-col items-center justify-center py-20 text-center gap-3 animate-in fade-in duration-300">
             <span className="text-[32px]">⭐</span>
-            <h3 className="font-heading font-medium text-[18px] text-[#E8EDD4]">Host Reviews</h3>
-            <p className="font-sans text-[13px] text-[#72943A] max-w-[300px]">
+            <h3 className="font-heading font-bold text-[18px] text-text-primary">Host Reviews</h3>
+            <p className="font-sans text-[13px] text-text-muted max-w-[300px]">
               Reviews are left by verified ticket buyers after a draw completes.
             </p>
           </div>
@@ -100,14 +99,12 @@ export default function HostProfileTabs({ raffles = [] }: { raffles?: any[] }) {
 
         {activeTab === "about" && (
           <div className="animate-in fade-in duration-300 flex flex-col gap-4 max-w-[800px]">
-            <h3 className="font-heading font-medium text-[18px] text-[#E8EDD4]">About TacticalGear UK</h3>
-            <p className="font-sans text-[14px] text-[#72943A] leading-relaxed">
-              We are a premium charity retailer based in Manchester, supplying the community with the highest quality gear, from rare gas blowback rifles to tactical apparel. 
-              Our competitions give you the chance to win top-tier equipment for a fraction of the cost, fully audited and guaranteed.
+            <h3 className="font-heading font-bold text-[18px] text-text-primary">About Host</h3>
+            <p className="font-sans text-[14px] text-text-muted leading-relaxed font-medium">
+              We are a verified charity host organization. Our competitions give you the chance to win top-tier prizes for a fraction of the cost, fully audited and guaranteed.
             </p>
             <div className="flex gap-4 mt-2">
-              <span className="font-sans text-[13px] text-[#A0D056]">🔗 www.tacticalgear.co.uk</span>
-              <span className="font-sans text-[13px] text-[#A0D056]">📍 Manchester, UK</span>
+              <span className="font-sans text-[13px] text-text-brand font-semibold">📍 Verified UK Partner</span>
             </div>
           </div>
         )}

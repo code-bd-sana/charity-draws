@@ -16,7 +16,7 @@ export interface HeroData {
 export const heroData: HeroData = {
   badgeText: "CHARITY GEAR COMPETITIONS",
   headingText: "Win Premium Charity Gear For Less",
-  paragraphText: "Enter draws from just £1 per ticket. Fair, transparent, and escrow-protected. Over £180k+ in prizes already won by our community.",
+  paragraphText: "Enter draws from just £1 per ticket. Fair and transparent. Over £180k+ in prizes already won by our community.",
   primaryCtaLabel: "Browse Live Draws",
   primaryCtaHref: "#live-draws",
   secondaryCtaLabel: "How It Works",
@@ -24,18 +24,18 @@ export const heroData: HeroData = {
   stats: [
     {
       id: "hero-stat-1",
-      value: "2,400+",
+      value: "0",
       label: "Draws Completed",
     },
     {
       id: "hero-stat-2",
-      value: "£1",
-      label: "Minimum Entry",
+      value: "0",
+      label: "Winning Operators",
     },
     {
       id: "hero-stat-3",
-      value: "Verified",
-      label: "Fair Draws",
+      value: "£0",
+      label: "Won in prizes!",
     },
   ],
   featuredDraw: {

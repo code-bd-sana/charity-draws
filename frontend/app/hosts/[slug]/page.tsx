@@ -49,10 +49,10 @@ export default async function HostProfilePage({ params }: PageProps) {
     return (
       <>
         <WebsiteNavbar />
-        <main className="min-h-screen bg-background flex items-center justify-center pt-[80px]">
+        <main className="min-h-screen bg-surface flex items-center justify-center pt-[80px]">
           <div className="text-center">
-            <h1 className="text-2xl text-[#E8EDD4] mb-4">Host Not Found</h1>
-            <p className="text-[#72943A]">This host does not exist or has been removed.</p>
+            <h1 className="text-2xl text-text-primary mb-4 font-heading font-bold">Host Not Found</h1>
+            <p className="text-text-muted">This host does not exist or has been removed.</p>
           </div>
         </main>
         <WebsiteFooter />
@@ -67,26 +67,27 @@ export default async function HostProfilePage({ params }: PageProps) {
     <>
       <WebsiteNavbar />
       
-      <main className="min-h-screen bg-background pt-[80px] md:pt-[90px]">
-        <section className="py-12 md:py-16">
-          <div className="container-custom">
-            
-            <div className="max-w-[1200px] mx-auto w-full flex flex-col">
-              <HostProfileHeader 
-                name={name}
-                logo={host.logo || initials}
-                bio={host.bio || "Charity draws host"}
-                isVerified={host.isVerified}
-                drawsHosted={host.drawsHosted}
-                rating={host.rating}
-                memberSince={host.memberSince}
-              />
-              
-              <HostProfileTabs raffles={host.raffles} />
-            </div>
+      <main className="min-h-screen flex flex-col bg-surface pt-20 lg:pt-[66px] pb-12 relative overflow-hidden select-none">
+        {/* Background Glows & Grid Pattern matching Homepage */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-100 pointer-events-none" />
 
+        <div className="relative z-10 container-custom pt-12 md:pt-16 pb-12">
+          <div className="max-w-[1200px] mx-auto w-full flex flex-col">
+            <HostProfileHeader 
+              name={name}
+              logo={host.logo || initials}
+              bio={host.bio || "Charity draws host"}
+              isVerified={host.isVerified}
+              drawsHosted={host.drawsHosted}
+              rating={host.rating}
+              memberSince={host.memberSince}
+            />
+            
+            <HostProfileTabs raffles={host.raffles} />
           </div>
-        </section>
+        </div>
       </main>
 
       <WebsiteFooter />

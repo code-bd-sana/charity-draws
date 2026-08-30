@@ -2,87 +2,58 @@
 
 import React, { useState } from "react";
 import { cn } from "../../../../lib/utils";
-import DrawConfirmationModal from "./DrawConfirmationModal";
-import { useHostRaffles, useDrawWinner } from "../../../../hooks/useRaffleHooks";
+import { useHostRaffles } from "../../../../hooks/useRaffleHooks";
 import WinnerDetailsModal from "./WinnerDetailsModal";
-import { toast } from "sonner";
 
 export default function WinnersTable() {
-  const [activeTab, setActiveTab] = useState<"Awaiting Draw" | "Drawn">("Awaiting Draw");
-  const [selectedDrawToRun, setSelectedDrawToRun] = useState<any | null>(null);
+  const [activeFilter, setActiveFilter] = useState<"All" | "ACTIVE" | "ENDED">("All");
   const [selectedDrawToView, setSelectedDrawToView] = useState<any | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
   
   const { data: response, isLoading } = useHostRaffles();
   const raffles = response?.data || [];
-  const drawWinnerMutation = useDrawWinner();
 
-  // Filter based on status
-  // Awaiting Draw = ACTIVE or PENDING_APPROVAL or DRAFT
-  // Drawn = ENDED
   const filteredDraws = raffles.filter((r: any) => {
-    if (activeTab === "Awaiting Draw") {
-      return r.status !== 'ENDED' && r.status !== 'CANCELLED';
-    } else {
-      return r.status === 'ENDED';
-    }
+    if (activeFilter === "All") return true;
+    return r.status === activeFilter;
   });
-
-  const handleConfirmDraw = async () => {
-    if (!selectedDrawToRun) return;
-    setIsDrawing(true);
-    try {
-      // Simulate an authentic "Draw" delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      await drawWinnerMutation.mutateAsync(selectedDrawToRun.id);
-      setSelectedDrawToRun(null);
-      toast.success("Draw completed successfully!");
-      setActiveTab("Drawn");
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Failed to draw winner");
-      setSelectedDrawToRun(null);
-    } finally {
-      setIsDrawing(false);
-    }
-  };
 
   if (isLoading) {
     return (
-      <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] overflow-hidden flex flex-col mt-[24px] animate-in fade-in duration-300">
-        <div className="p-[24px] border-b border-[#2d3c13] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[16px]">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col mt-6 shadow-card select-none animate-in fade-in duration-300">
+        <div className="p-6 border-b border-divider flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface">
           <div>
-            <div className="h-[24px] w-[150px] bg-[#2d3c13]/60 rounded animate-pulse mb-[8px]"></div>
-            <div className="h-[16px] w-[250px] bg-[#2d3c13]/40 rounded animate-pulse"></div>
+            <div className="h-6 w-36 bg-accent-bg rounded animate-pulse mb-2"></div>
+            <div className="h-4 w-60 bg-accent-bg rounded animate-pulse"></div>
           </div>
-          <div className="h-[40px] w-[210px] bg-[#2d3c13]/50 rounded-[10px] animate-pulse"></div>
+          <div className="h-10 w-52 bg-accent-bg rounded-button animate-pulse"></div>
         </div>
         <div className="w-full overflow-x-auto min-h-[400px]">
           <table className="w-full min-w-[800px] text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#2d3c13] bg-[#0d0d0b]/50">
-                <th className="py-[16px] px-[24px]"><div className="h-[14px] w-[80px] bg-[#2d3c13]/50 rounded animate-pulse"></div></th>
-                <th className="py-[16px] px-[24px]"><div className="h-[14px] w-[80px] bg-[#2d3c13]/50 rounded animate-pulse"></div></th>
-                <th className="py-[16px] px-[24px]"><div className="h-[14px] w-[80px] bg-[#2d3c13]/50 rounded animate-pulse"></div></th>
-                <th className="py-[16px] px-[24px] flex justify-end"><div className="h-[14px] w-[80px] bg-[#2d3c13]/50 rounded animate-pulse"></div></th>
+              <tr className="border-b border-divider bg-accent-bg/30">
+                <th className="py-3 px-6"><div className="h-3.5 w-20 bg-accent-bg rounded animate-pulse"></div></th>
+                <th className="py-3 px-6"><div className="h-3.5 w-20 bg-accent-bg rounded animate-pulse"></div></th>
+                <th className="py-3 px-6"><div className="h-3.5 w-20 bg-accent-bg rounded animate-pulse"></div></th>
+                <th className="py-3 px-6 flex justify-end"><div className="h-3.5 w-20 bg-accent-bg rounded animate-pulse"></div></th>
               </tr>
             </thead>
             <tbody>
               {[...Array(5)].map((_, i) => (
-                <tr key={i} className="border-b border-[#2d3c13]/50 last:border-0">
-                  <td className="py-[20px] px-[24px]">
+                <tr key={i} className="border-b border-divider last:border-0 bg-surface">
+                  <td className="py-4 px-6">
                     <div className="flex flex-col gap-2">
-                      <div className="h-[18px] w-[180px] bg-[#2d3c13]/60 rounded animate-pulse" style={{ animationDelay: `${i * 150}ms` }}></div>
-                      <div className="h-[14px] w-[100px] bg-[#2d3c13]/40 rounded animate-pulse" style={{ animationDelay: `${i * 150}ms` }}></div>
+                      <div className="h-4.5 w-44 bg-accent-bg rounded animate-pulse"></div>
+                      <div className="h-3.5 w-24 bg-accent-bg rounded animate-pulse"></div>
                     </div>
                   </td>
-                  <td className="py-[20px] px-[24px]">
-                    <div className="h-[16px] w-[90px] bg-[#2d3c13]/40 rounded animate-pulse" style={{ animationDelay: `${i * 150 + 50}ms` }}></div>
+                  <td className="py-4 px-6">
+                    <div className="h-4 w-20 bg-accent-bg rounded animate-pulse"></div>
                   </td>
-                  <td className="py-[20px] px-[24px]">
-                    <div className="h-[16px] w-[70px] bg-[#2d3c13]/40 rounded animate-pulse" style={{ animationDelay: `${i * 150 + 100}ms` }}></div>
+                  <td className="py-4 px-6">
+                    <div className="h-4 w-16 bg-accent-bg rounded animate-pulse"></div>
                   </td>
-                  <td className="py-[20px] px-[24px] text-right">
-                    <div className="h-[36px] w-[120px] bg-[#8cb34a]/20 rounded-[6px] animate-pulse ml-auto" style={{ animationDelay: `${i * 150 + 150}ms` }}></div>
+                  <td className="py-4 px-6 text-right">
+                    <div className="h-9 w-28 bg-accent-bg rounded-button animate-pulse ml-auto"></div>
                   </td>
                 </tr>
               ))}
@@ -94,60 +65,52 @@ export default function WinnersTable() {
   }
 
   return (
-    <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] overflow-hidden flex flex-col mt-[24px]">
+    <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col mt-6 shadow-card select-none">
       
-      {/* Header & Tabs */}
-      <div className="p-[24px] border-b border-[#2d3c13] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[16px]">
+      {/* Header & Filter Tabs */}
+      <div className="p-6 border-b border-divider flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface">
         <div>
-          <h3 className="font-heading font-medium text-[18px] text-[#e8edd4]">
-            Winners & Draws
+          <h3 className="font-heading font-bold text-base md:text-lg text-text-primary">
+            My Competition Winners & Deliveries
           </h3>
-          <p className="font-sans font-normal text-[14px] text-[#b3b8aa]">
-            Manage upcoming draws and view past winners.
+          <p className="font-sans text-xs md:text-sm text-text-muted font-medium">
+            View winners (Instant Wins & Main Draw) and update prize delivery status.
           </p>
         </div>
         
-        <div className="flex items-center gap-[8px] bg-[#0d0d0b] p-[4px] rounded-[10px] border border-[#2d3c13]">
-          <button
-            onClick={() => setActiveTab("Awaiting Draw")}
-            className={cn(
-              "px-[16px] py-[6px] rounded-[6px] font-sans font-medium text-[13px] transition-colors",
-              activeTab === "Awaiting Draw"
-                ? "bg-[#2d3c13] text-[#e8edd4]"
-                : "text-[#5a752a] hover:text-[#b3b8aa]"
-            )}
-          >
-            Awaiting Draw
-          </button>
-          <button
-            onClick={() => setActiveTab("Drawn")}
-            className={cn(
-              "px-[16px] py-[6px] rounded-[6px] font-sans font-medium text-[13px] transition-colors",
-              activeTab === "Drawn"
-                ? "bg-[#2d3c13] text-[#e8edd4]"
-                : "text-[#5a752a] hover:text-[#b3b8aa]"
-            )}
-          >
-            Drawn
-          </button>
+        <div className="flex items-center gap-1 bg-bg p-1 rounded-button border border-border">
+          {(["All", "ACTIVE", "ENDED"] as const).map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={cn(
+                "px-4 py-1.5 rounded-button font-sans text-xs transition-all cursor-pointer",
+                activeFilter === filter
+                  ? "bg-primary border border-primary text-primary-text font-bold shadow-sm"
+                  : "text-text-secondary hover:text-text-primary font-semibold"
+              )}
+            >
+              {filter === "All" ? "All Competitions" : filter === "ACTIVE" ? "Active" : "Completed"}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Table */}
-      <div className="w-full overflow-x-auto min-h-[400px]">
+      <div className="w-full overflow-x-auto min-h-[350px]">
         <table className="w-full min-w-[800px] text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#2d3c13] bg-[#0d0d0b]/50">
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
-                Competition
+            <tr className="border-b border-divider bg-accent-bg/30">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
+                Competition Name
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
-                Draw Date
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
+                End / Draw Date
               </th>
-              <th className="py-[16px] px-[24px] font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Tickets Sold
               </th>
-              <th className="py-[16px] px-[24px] text-right font-sans font-medium text-[12px] text-[#5a752a] uppercase tracking-wider">
+              <th className="py-3 px-6 text-right font-sans font-semibold text-[11px] text-text-muted uppercase tracking-wider">
                 Action
               </th>
             </tr>
@@ -155,60 +118,43 @@ export default function WinnersTable() {
           <tbody>
             {filteredDraws.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-[48px] text-center text-[#5a752a] font-sans text-[14px]">
-                  No records found in this category.
+                <td colSpan={4} className="py-8 text-center text-text-muted font-sans text-xs md:text-sm font-medium">
+                  No competitions found.
                 </td>
               </tr>
             ) : (
-              filteredDraws.map((draw: any, index: number) => (
+              filteredDraws.map((draw: any) => (
                 <tr 
                   key={draw.id}
-                  className={cn(
-                    "group transition-colors hover:bg-[#1a230a]",
-                    index !== filteredDraws.length - 1 && "border-b border-[#2d3c13]/50"
-                  )}
+                  className="group transition-colors hover:bg-accent-bg/40 border-b border-divider last:border-b-0"
                 >
-                  <td className="py-[20px] px-[24px]">
+                  <td className="py-4 px-6">
                     <div className="flex flex-col gap-1">
-                      <span className="font-sans font-medium text-[14px] text-[#e8edd4]">
+                      <span className="font-sans font-semibold text-xs md:text-sm text-text-primary">
                         {draw.title}
                       </span>
-                      <span className="font-sans text-[12px] text-[#5a752a]">
-                        {draw.status}
+                      <span className="font-sans text-xs text-text-muted font-medium">
+                        Status: <strong className="text-text-brand font-bold">{draw.status}</strong>
                       </span>
                     </div>
                   </td>
-                  <td className="py-[20px] px-[24px]">
-                    <span className="font-sans font-medium text-[14px] text-[#b3b8aa]">
-                      {new Date(draw.endDate).toLocaleDateString()}
+                  <td className="py-4 px-6">
+                    <span className="font-sans font-medium text-xs md:text-sm text-text-secondary">
+                      {draw.endDate ? new Date(draw.endDate).toLocaleDateString() : 'N/A'}
                     </span>
                   </td>
-                  <td className="py-[20px] px-[24px]">
-                    <span className="font-sans font-medium text-[14px] text-[#b3b8aa]">
+                  <td className="py-4 px-6">
+                    <span className="font-sans font-semibold text-xs md:text-sm text-text-brand">
                       {draw.ticketsSold} / {draw.totalTickets}
                     </span>
                   </td>
-                  <td className="py-[20px] px-[24px] text-right">
-                    {activeTab === "Awaiting Draw" ? (
-                      <button 
-                        onClick={() => setSelectedDrawToRun(draw)}
-                        disabled={draw.status !== 'ACTIVE' || drawWinnerMutation.isPending}
-                        className="h-[36px] px-[16px] bg-[#8cb34a] hover:bg-[#72943a] transition-colors rounded-[6px] inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <span className="font-heading font-medium text-[13px] text-[#0d0d0b]">
-                          {drawWinnerMutation.isPending && selectedDrawToRun?.id === draw.id ? 'Running...' : 'Run Draw Now'}
-                        </span>
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => setSelectedDrawToView(draw)}
-                        className="h-[36px] px-[16px] bg-[#2d3c13] hover:bg-[#3a4d19] transition-colors rounded-[6px] inline-flex items-center justify-center"
-                      >
-                        <span className="font-heading font-medium text-[13px] text-[#e8edd4]">
-                          View Details & Winners
-                        </span>
-                      </button>
-                    )}
+                  <td className="py-4 px-6 text-right">
+                    <button 
+                      onClick={() => setSelectedDrawToView(draw)}
+                      className="h-9 px-4 bg-accent-bg border border-border-medium text-text-brand hover:bg-primary hover:text-primary-text transition-all rounded-button inline-flex items-center justify-center font-sans font-semibold text-xs shadow-sm cursor-pointer"
+                    >
+                      🏆 View Winners & Delivery
+                    </button>
                   </td>
                 </tr>
               ))
@@ -217,19 +163,9 @@ export default function WinnersTable() {
         </table>
       </div>
 
-      {selectedDrawToRun && (
-        <DrawConfirmationModal 
-          draw={{ name: selectedDrawToRun.title } as any}
-          isOpen={!!selectedDrawToRun}
-          isDrawing={isDrawing}
-          onClose={() => !isDrawing && setSelectedDrawToRun(null)}
-          onConfirm={handleConfirmDraw}
-        />
-      )}
-
       {selectedDrawToView && (
         <WinnerDetailsModal
-          isOpen={true}
+          isOpen={!!selectedDrawToView}
           onClose={() => setSelectedDrawToView(null)}
           raffle={selectedDrawToView}
         />

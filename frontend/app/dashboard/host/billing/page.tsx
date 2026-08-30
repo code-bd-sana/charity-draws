@@ -31,11 +31,11 @@ export default function SubscriptionBillingPage() {
   })) || [];
 
   return (
-    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col gap-[24px] animate-in fade-in zoom-in-95 duration-300">
+    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col gap-[24px] animate-in fade-in zoom-in-95 duration-300 select-none">
       <CurrentPlanCard />
       <PaymentMethodCard />
       {isLoading ? (
-        <div className="text-white p-4">Loading billing history...</div>
+        <div className="text-text-muted font-sans font-medium text-sm p-4 animate-pulse">Loading billing history...</div>
       ) : (
         <BillingHistoryTable history={history} />
       )}

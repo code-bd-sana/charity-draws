@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 
 export default function AdminTrackingPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn">
+    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
       <div>
-        <h1 className="font-heading font-bold text-2xl text-[#E8EDD4] mb-2">Winners</h1>
-        <p className="font-sans text-sm text-[#72943A]">
+        <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">Winners</h1>
+        <p className="font-sans text-sm text-text-muted font-medium">
           Manage and track competition winners, perform verifications, and monitor prize deliveries.
         </p>
       </div>

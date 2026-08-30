@@ -4,35 +4,35 @@ import React from "react";
 
 export default function PaymentMethodCard() {
   return (
-    <div className="w-full bg-[#161810] border border-[#2d3c13] rounded-[16px] p-[24px] lg:p-[32px] flex flex-col gap-[24px]">
+    <div className="w-full bg-surface border border-border rounded-card p-6 lg:p-8 flex flex-col gap-6 shadow-card">
       
-      <h3 className="font-heading font-medium text-[16px] text-[#e8edd4]">
+      <h3 className="font-heading font-bold text-base md:text-lg text-text-primary">
         Payment Method
       </h3>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-[16px]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         
         {/* Card Details */}
-        <div className="flex items-center gap-[16px]">
+        <div className="flex items-center gap-4">
           {/* Card Icon Container */}
-          <div className="w-[48px] h-[32px] bg-[#1a230a] border border-[#2d3c13] rounded-[4px] flex items-center justify-center">
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8cb34a" className="w-[20px] h-[20px]">
+          <div className="w-12 h-8 bg-accent-bg border border-border-medium rounded-button flex items-center justify-center text-primary shadow-sm shrink-0">
+            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
             </svg>
           </div>
           
-          <div className="flex items-center gap-[12px]">
-            <span className="font-sans font-medium text-[14px] text-[#e8edd4] tracking-widest mt-1">
+          <div className="flex items-center gap-3">
+            <span className="font-sans font-bold text-sm md:text-base text-text-primary tracking-widest">
               **** **** **** 4242
             </span>
-            <span className="font-sans font-normal text-[12px] text-[#72943a]">
+            <span className="font-sans text-xs text-text-muted font-medium">
               Expires 12/26
             </span>
           </div>
         </div>
 
         {/* Action */}
-        <button className="h-[40px] px-[24px] bg-transparent border border-[#2d3c13] hover:border-[#8cb34a] rounded-[8px] font-sans font-medium text-[13px] text-[#e8edd4] transition-colors shrink-0 w-fit">
+        <button className="h-10 px-5 bg-bg border border-border hover:bg-accent-bg/50 rounded-button font-sans font-semibold text-xs md:text-sm text-text-primary transition-all shrink-0 w-fit cursor-pointer">
           Update Card
         </button>
 

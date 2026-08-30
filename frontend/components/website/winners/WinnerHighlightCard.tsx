@@ -17,23 +17,23 @@ export default function WinnerHighlightCard() {
   );
 
   return (
-    <section className="bg-accent-bg border-t border-b border-border py-16 md:py-20 select-none">
-      <div className="container-custom">
+    <section className="bg-surface border-t border-b border-divider py-16 md:py-20 select-none relative overflow-hidden">
+      <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 items-center max-w-6xl mx-auto">
           
           {/* LEFT: Featured Winner Photo Card */}
           <div className="lg:col-span-6 w-full">
-            <div className="relative w-full h-[320px] sm:h-[380px] md:h-[420px] rounded-card border border-border-medium overflow-hidden bg-surface shadow-card">
+            <div className="relative w-full h-[320px] sm:h-[380px] md:h-[420px] rounded-card border border-border overflow-hidden bg-bg shadow-card group">
               <Image
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop"
                 alt="Featured Winner Aisha R."
                 fill
                 sizes="(max-width: 1024px) 100vw, 500px"
-                className="object-cover opacity-80 hover:opacity-90 transition-opacity duration-300"
+                className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
                 unoptimized
               />
               {/* Overlay Label Badge */}
-              <div className="absolute bottom-4 left-4 bg-bg/85 backdrop-blur-sm border border-border px-3.5 py-1.5 rounded-badge text-[11px] font-semibold text-text-brand tracking-wider uppercase">
+              <div className="absolute bottom-4 left-4 bg-surface/90 backdrop-blur-md border border-border-medium px-3.5 py-1.5 rounded-badge text-[11px] font-semibold text-text-brand tracking-wider uppercase shadow-sm">
                 Featured Winner Photo
               </div>
             </div>
@@ -51,7 +51,7 @@ export default function WinnerHighlightCard() {
               <span className="font-sans font-semibold text-sm sm:text-base text-text-brand">
                 Aisha R. · Leeds
               </span>
-              <span className="font-sans text-xs sm:text-sm text-text-secondary">
+              <span className="font-sans text-xs sm:text-sm text-text-muted">
                 Won: VFC HK416 Bundle — June 2026
               </span>
             </div>

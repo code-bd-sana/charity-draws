@@ -1,18 +1,38 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import PrimaryButton from "../shared/PrimaryButton";
 import SecondaryButton from "../shared/SecondaryButton";
 import { formatCurrency } from "../../../lib/utils";
+import { raffleService } from "../../../services/raffle.service";
 
 /**
  * Host CTA section featuring hosting benefits and a preview of the Host dashboard.
  */
 export default function FinalCtaSection() {
-  const hostDashboardPreview = {
-    activeDrawsCount: 3,
-    ticketsSoldThisMonth: 1240,
-    totalEarnedAmount: 3100,
-    monthlyTargetPercent: 62,
-  };
+  const [hostDashboardPreview, setHostDashboardPreview] = useState({
+    activeDrawsCount: 0,
+    ticketsSoldThisMonth: 0,
+    totalEarnedAmount: 0,
+    monthlyTargetPercent: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const stats = await raffleService.getHostPreviewStats();
+        if (stats) {
+          setHostDashboardPreview(stats);
+        }
+      } catch (err) {
+        console.error("Failed to load host preview stats:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
 
   // Render a bullet check mark
   const bulletCheck = (
@@ -109,7 +129,7 @@ export default function FinalCtaSection() {
                     Active Competitions
                   </span>
                   <span className="font-heading font-bold text-sm text-text-brand">
-                    {hostDashboardPreview.activeDrawsCount}
+                    {isLoading ? "..." : hostDashboardPreview.activeDrawsCount}
                   </span>
                 </div>
                 
@@ -118,7 +138,7 @@ export default function FinalCtaSection() {
                     Tickets Sold This Month
                   </span>
                   <span className="font-heading font-bold text-sm text-text-brand">
-                    {hostDashboardPreview.ticketsSoldThisMonth.toLocaleString()}
+                    {isLoading ? "..." : hostDashboardPreview.ticketsSoldThisMonth.toLocaleString()}
                   </span>
                 </div>
                 
@@ -127,7 +147,7 @@ export default function FinalCtaSection() {
                     Total Earned Payouts
                   </span>
                   <span className="font-heading font-bold text-sm text-text-brand">
-                    {formatCurrency(hostDashboardPreview.totalEarnedAmount, 0)}
+                    {isLoading ? "..." : formatCurrency(hostDashboardPreview.totalEarnedAmount, 0)}
                   </span>
                 </div>
               </div>
@@ -137,7 +157,7 @@ export default function FinalCtaSection() {
                 <div className="flex justify-between items-center text-xs text-text-muted mb-2 font-medium">
                   <span>Monthly sales target</span>
                   <span className="text-text-brand font-semibold">
-                    {hostDashboardPreview.monthlyTargetPercent}%
+                    {isLoading ? "..." : `${hostDashboardPreview.monthlyTargetPercent}%`}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-bg rounded-badge overflow-hidden border border-divider">

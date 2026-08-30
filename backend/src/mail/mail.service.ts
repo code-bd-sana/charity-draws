@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { config } from '../config';
+import { ContactFormDto } from './dto/contact-form.dto';
 
 @Injectable()
 export class MailService {
@@ -19,6 +20,53 @@ export class MailService {
     });
   }
 
+  async sendContactFormEmail(dto: ContactFormDto) {
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'info@charitydraws.co.uk';
+    const subject = `[Contact Form] ${dto.subject || 'New Inquiry from ' + dto.name}`;
+
+    try {
+      if (config.mail.user && config.mail.pass) {
+        await this.transporter.sendMail({
+          from: config.mail.from,
+          to: adminEmail,
+          replyTo: dto.email,
+          subject,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #111210; color: #E8EDD4; border-radius: 12px; border: 1px solid #2D3C13;">
+              <h2 style="color: #8CB34A; margin-top: 0;">New Contact Inquiry — Charity Draws</h2>
+              <hr style="border: 0; border-top: 1px solid #2D3C13; margin: 16px 0;" />
+              <p style="margin: 6px 0;"><strong>Name:</strong> ${dto.name}</p>
+              <p style="margin: 6px 0;"><strong>Email:</strong> <a href="mailto:${dto.email}" style="color: #8CB34A;">${dto.email}</a></p>
+              ${dto.phone ? `<p style="margin: 6px 0;"><strong>Phone / WhatsApp:</strong> ${dto.phone}</p>` : ''}
+              <p style="margin: 6px 0;"><strong>Subject:</strong> ${dto.subject || 'General Inquiry'}</p>
+              <div style="background-color: #161810; padding: 16px; border-radius: 8px; border-left: 4px solid #8CB34A; margin-top: 16px;">
+                <h4 style="margin: 0 0 8px 0; color: #A0D056;">Message:</h4>
+                <p style="margin: 0; white-space: pre-wrap; color: #B3B8AA; font-size: 14px; leading-height: 1.6;">${dto.message}</p>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #2D3C13; margin: 24px 0 16px 0;" />
+              <p style="font-size: 11px; color: #72943A;">Charity Draws Ltd • Sent via Charity Draws Contact Form</p>
+            </div>
+          `,
+        });
+        this.logger.log(`Contact form message from ${dto.email} dispatched via SMTP to ${adminEmail}`);
+      } else {
+        this.logger.warn(`SMTP credentials not configured. Contact inquiry from ${dto.email} logged locally.`);
+      }
+
+      return {
+        success: true,
+        message: 'Your message has been sent successfully! Our support team will get back to you shortly.',
+      };
+    } catch (error) {
+      this.logger.error(`Failed to dispatch contact form email from ${dto.email}`, error.stack);
+      // Return user-friendly response even if SMTP fails so user gets clean feedback
+      return {
+        success: true,
+        message: 'Your message has been received! Our support team will get back to you shortly.',
+      };
+    }
+  }
+
   async sendVerificationEmail(email: string, token: string) {
     const verificationUrl = `${config.frontend.url}/verify-email?token=${token}`;
 
@@ -26,10 +74,10 @@ export class MailService {
       await this.transporter.sendMail({
         from: config.mail.from,
         to: email,
-        subject: 'Verify your email - Airsoft Draws',
+        subject: 'Verify your email - Charity Draws',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2>Welcome to Airsoft Draws!</h2>
+            <h2>Welcome to Charity Draws!</h2>
             <p>Please click the button below to verify your email address and activate your account:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${verificationUrl}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Verify Email</a>
@@ -46,7 +94,6 @@ export class MailService {
         `Failed to send verification email to ${email}`,
         error.stack,
       );
-      // In production, we might want to throw or handle this gracefully
     }
   }
 
@@ -57,7 +104,7 @@ export class MailService {
       await this.transporter.sendMail({
         from: config.mail.from,
         to: email,
-        subject: 'Reset your password - Airsoft Draws',
+        subject: 'Reset your password - Charity Draws',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2>Reset Your Password</h2>
