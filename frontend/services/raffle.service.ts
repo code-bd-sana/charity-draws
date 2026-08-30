@@ -92,6 +92,16 @@ export const raffleService = {
     return response.data;
   },
 
+  async getHostPreviewStats(): Promise<{ activeDrawsCount: number; ticketsSoldThisMonth: number; totalEarnedAmount: number; monthlyTargetPercent: number }> {
+    const response = await api.get('/raffles/public/host-preview-stats');
+    return response.data;
+  },
+
+  async getLiveRafflesStats(): Promise<{ liveCount: number; closingTodayCount: number; totalPrizesValue: string }> {
+    const response = await api.get('/raffles/public/live-stats');
+    return response.data;
+  },
+
   async getInstantWinRaffles(limit = 10): Promise<any> {
     const response = await api.get('/raffles', {
       params: { limit, hasInstantWins: 'true', statusFilter: 'Live' },

@@ -1,8 +1,21 @@
+"use client";
+
+import React, { useState } from "react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useHostPerformanceAnalytics } from "../../../hooks/useHostWalletHooks";
+
 interface HostRevenueChartProps {
   totalRevenue?: number;
 }
 
+const TIMEFRAMES = ["7D", "1M", "3M", "1Y"];
+
 export default function HostRevenueChart({ totalRevenue }: HostRevenueChartProps) {
+  const [activeTimeframe, setActiveTimeframe] = useState("1M");
+  const { data: analytics, isLoading } = useHostPerformanceAnalytics(activeTimeframe);
+
+  const chartData = analytics?.revenueTrend ?? [];
+
   const displayRevenue = totalRevenue !== undefined 
     ? `£${Number(totalRevenue).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : "£0.00";
@@ -16,11 +29,12 @@ export default function HostRevenueChart({ totalRevenue }: HostRevenueChartProps
         
         {/* Time filters */}
         <div className="flex gap-1.5">
-          {["7D", "1M", "3M", "1Y"].map((filter) => (
+          {TIMEFRAMES.map((filter) => (
             <button
               key={filter}
+              onClick={() => setActiveTimeframe(filter)}
               className={`rounded-badge px-3 py-1 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                filter === "1M"
+                filter === activeTimeframe
                   ? "bg-primary border-primary text-primary-text font-bold shadow-glow"
                   : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
               }`}
@@ -40,31 +54,57 @@ export default function HostRevenueChart({ totalRevenue }: HostRevenueChartProps
         </div>
       </div>
 
-      <div className="flex-1 w-full pt-5 relative min-h-[200px]">
-        {/* Placeholder SVG matching Figma's design intent for the Area Chart */}
-        <div className="absolute inset-0 w-full h-full">
-          <svg preserveAspectRatio="none" viewBox="0 0 875 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-primary">
-            {/* Grid lines */}
-            <path d="M47.5 170H875" stroke="#E6D8F7" strokeDasharray="4 4" />
-            <path d="M47.5 127.5H875" stroke="#E6D8F7" strokeDasharray="4 4" />
-            <path d="M47.5 85H875" stroke="#E6D8F7" strokeDasharray="4 4" />
-            <path d="M47.5 42.5H875" stroke="#E6D8F7" strokeDasharray="4 4" />
-            <path d="M47.5 0H875" stroke="#E6D8F7" strokeDasharray="4 4" />
-            
-            {/* Area Fill */}
-            <path d="M47.5 150.5C124.5 150.5 201.5 120 278.5 120C355.5 120 432.5 70.5 509.5 70.5C586.5 70.5 663.5 130 740.5 130C817.5 130 875 42.5 875 42.5V170H47.5V150.5Z" fill="url(#paint0_linear)" fillOpacity="0.2" />
-            
-            {/* Line Path */}
-            <path d="M47.5 150.5C124.5 150.5 201.5 120 278.5 120C355.5 120 432.5 70.5 509.5 70.5C586.5 70.5 663.5 130 740.5 130C817.5 130 875 42.5 875 42.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            
-            <defs>
-              <linearGradient id="paint0_linear" x1="461.25" y1="42.5" x2="461.25" y2="170" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#7131C8" />
-                <stop offset="1" stopColor="#7131C8" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+      <div className="flex-1 w-full pt-5 relative min-h-[200px] -ml-3">
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="hostRevenueGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#7131C8" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#7131C8" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis 
+                dataKey="month" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "#60407F", fontSize: 11, fontFamily: "Inter" }} 
+                dy={5}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "#60407F", fontSize: 11, fontFamily: "Inter" }}
+                tickFormatter={(val) => `£${val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val}`}
+              />
+              <Tooltip
+                cursor={{ stroke: "#CDAFEA", strokeWidth: 1, strokeDasharray: "4 4" }}
+                contentStyle={{ 
+                  backgroundColor: "#FFFFFF", 
+                  borderColor: "#CDAFEA", 
+                  borderRadius: "12px",
+                  fontFamily: "Inter",
+                  boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
+                }}
+                itemStyle={{ color: "#351365", fontWeight: 700 }}
+                labelStyle={{ color: "#7131C8", fontWeight: 700, marginBottom: "4px" }}
+                formatter={(value: any) => [`£${Number(value).toFixed(2)}`, "Earnings"]}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="#7131C8" 
+                strokeWidth={3}
+                fillOpacity={1} 
+                fill="url(#hostRevenueGrad)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

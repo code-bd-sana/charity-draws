@@ -17,61 +17,67 @@ export default function CategorySalesChart({ data = [] }: Props) {
         Ticket Sales by Category
       </h3>
       
-      <div className="flex-1 w-full flex items-center justify-between">
-        
-        {/* Pie Chart */}
-        <div className="relative w-1/2 h-[200px] flex items-center justify-center -ml-5">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={65}
-                outerRadius={85}
-                paddingAngle={2}
-                dataKey="value"
-                stroke="none"
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "#FFFFFF", 
-                  borderColor: "#CDAFEA", 
-                  borderRadius: "12px",
-                  fontFamily: "Inter",
-                  boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
-                }}
-                itemStyle={{ color: "#351365", fontWeight: 700 }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+      {data.length === 0 ? (
+        <div className="flex-1 w-full flex items-center justify-center">
+          <p className="font-sans text-xs md:text-sm text-text-muted">No category sales data available yet.</p>
         </div>
-
-        {/* Legend */}
-        <div className="flex flex-col gap-4 flex-1 pl-6">
-          {data.map((item, i) => (
-            <div key={i} className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-2.5 h-2.5 rounded-sm shrink-0 shadow-sm" 
-                  style={{ backgroundColor: BRAND_COLORS[i % BRAND_COLORS.length] }} 
+      ) : (
+        <div className="flex-1 w-full flex items-center justify-between">
+          
+          {/* Pie Chart */}
+          <div className="relative w-1/2 h-[200px] flex items-center justify-center -ml-5">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={65}
+                  outerRadius={85}
+                  paddingAngle={2}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={BRAND_COLORS[index % BRAND_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "#FFFFFF", 
+                    borderColor: "#CDAFEA", 
+                    borderRadius: "12px",
+                    fontFamily: "Inter",
+                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
+                  }}
+                  itemStyle={{ color: "#351365", fontWeight: 700 }}
                 />
-                <span className="font-sans font-medium text-xs md:text-sm text-text-secondary">
-                  {item.name}
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-col gap-4 flex-1 pl-6">
+            {data.map((item, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-2.5 h-2.5 rounded-sm shrink-0 shadow-sm" 
+                    style={{ backgroundColor: BRAND_COLORS[i % BRAND_COLORS.length] }} 
+                  />
+                  <span className="font-sans font-medium text-xs md:text-sm text-text-secondary">
+                    {item.name}
+                  </span>
+                </div>
+                <span className="font-sans font-bold text-xs md:text-sm text-text-primary">
+                  {item.percentage}%
                 </span>
               </div>
-              <span className="font-sans font-bold text-xs md:text-sm text-text-primary">
-                {item.percentage}%
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-      </div>
+        </div>
+      )}
     </div>
   );
 }

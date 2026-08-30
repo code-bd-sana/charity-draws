@@ -15,26 +15,30 @@ export default function TopRafflesList({ data = [] }: Props) {
       </h3>
       
       <div className="flex flex-col gap-5">
-        {data.map((item) => (
-          <div key={item.id} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs md:text-sm">
-              <span className="font-sans font-semibold text-text-primary">
-                {item.name}
-              </span>
-              <span className="font-sans font-bold text-text-brand">
-                {item.percentage}%
-              </span>
+        {data.length === 0 ? (
+          <p className="font-sans text-xs md:text-sm text-text-muted py-4">No top raffles data available yet.</p>
+        ) : (
+          data.map((item) => (
+            <div key={item.id} className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs md:text-sm">
+                <span className="font-sans font-semibold text-text-primary">
+                  {item.name}
+                </span>
+                <span className="font-sans font-bold text-text-brand">
+                  {item.percentage}%
+                </span>
+              </div>
+              
+              {/* Progress Bar Container */}
+              <div className="w-full bg-accent-bg border border-border-medium h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-primary h-full rounded-full transition-all duration-500"
+                  style={{ width: `${item.percentage}%` }}
+                />
+              </div>
             </div>
-            
-            {/* Progress Bar Container */}
-            <div className="w-full bg-accent-bg border border-border-medium h-2 rounded-full overflow-hidden">
-              <div 
-                className="bg-primary h-full rounded-full transition-all duration-500"
-                style={{ width: `${item.percentage}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

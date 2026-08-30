@@ -570,4 +570,215 @@ export class HostsService {
       }),
     };
   }
+
+  async getHostPerformanceAnalytics(userId: string, requestedTimeframe?: string) {
+    const host = await this.getHostProfileByUserId(userId);
+    const timeframe = ['7D', '1M', '3M', '1Y'].includes(requestedTimeframe || '')
+      ? requestedTimeframe!
+      : '1M';
+
+    const now = new Date();
+    const startDate = new Date();
+
+    if (timeframe === '7D') {
+      startDate.setDate(now.getDate() - 7);
+    } else if (timeframe === '1M') {
+      startDate.setDate(now.getDate() - 30);
+    } else if (timeframe === '3M') {
+      startDate.setDate(now.getDate() - 90);
+    } else if (timeframe === '1Y') {
+      startDate.setFullYear(now.getFullYear() - 1);
+    }
+
+    // 1. Revenue Trend Data
+    const completedTransactions = await this.prisma.transaction.findMany({
+      where: {
+        type: 'TICKET_PURCHASE',
+        status: 'COMPLETED',
+        createdAt: { gte: startDate },
+        tickets: {
+          some: {
+            raffle: { hostId: host.id },
+          },
+        },
+      },
+      select: {
+        amount: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    let revenueTrend: { month: string; revenue: number }[] = [];
+
+    if (timeframe === '7D' || timeframe === '1M') {
+      const dayCount = timeframe === '7D' ? 7 : 30;
+      const bucketMap = new Map<string, number>();
+
+      for (let i = dayCount - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(now.getDate() - i);
+        const key = d.toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+        });
+        bucketMap.set(key, 0);
+      }
+
+      completedTransactions.forEach((tx) => {
+        const key = new Date(tx.createdAt).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+        });
+        if (bucketMap.has(key)) {
+          bucketMap.set(key, (bucketMap.get(key) || 0) + Number(tx.amount));
+        }
+      });
+
+      revenueTrend = Array.from(bucketMap.entries()).map(([month, revenue]) => ({
+        month,
+        revenue,
+      }));
+    } else {
+      const monthCount = timeframe === '3M' ? 3 : 12;
+      const bucketMap = new Map<string, number>();
+
+      for (let i = monthCount - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(now.getMonth() - i);
+        const key = d.toLocaleDateString('en-GB', { month: 'short' });
+        bucketMap.set(key, 0);
+      }
+
+      completedTransactions.forEach((tx) => {
+        const key = new Date(tx.createdAt).toLocaleDateString('en-GB', {
+          month: 'short',
+        });
+        if (bucketMap.has(key)) {
+          bucketMap.set(key, (bucketMap.get(key) || 0) + Number(tx.amount));
+        }
+      });
+
+      revenueTrend = Array.from(bucketMap.entries()).map(([month, revenue]) => ({
+        month,
+        revenue,
+      }));
+    }
+
+    // 2. Category Sales Data
+    const hostRafflesWithCategory = await this.prisma.raffle.findMany({
+      where: { hostId: host.id },
+      select: {
+        id: true,
+        category: true,
+        ticketsSold: true,
+        pricePerTicket: true,
+      },
+    });
+
+    const categorySalesMap = new Map<string, number>();
+    let totalSalesVal = 0;
+
+    hostRafflesWithCategory.forEach((r) => {
+      const cat = r.category || 'General';
+      const salesCount = r.ticketsSold;
+      categorySalesMap.set(cat, (categorySalesMap.get(cat) || 0) + salesCount);
+      totalSalesVal += salesCount;
+    });
+
+    const BRAND_COLORS = ['#7131C8', '#A87FE6', '#EC4899', '#F59E0B', '#3B82F6'];
+    let categorySales: { name: string; value: number; percentage: number; color: string }[] = [];
+
+    if (totalSalesVal > 0) {
+      let index = 0;
+      categorySalesMap.forEach((val, name) => {
+        const pct = Math.round((val / totalSalesVal) * 100);
+        categorySales.push({
+          name,
+          value: val,
+          percentage: pct,
+          color: BRAND_COLORS[index % BRAND_COLORS.length],
+        });
+        index++;
+      });
+    }
+
+    // 3. Top Raffles List
+    const topRafflesData = await this.prisma.raffle.findMany({
+      where: { hostId: host.id },
+      orderBy: { ticketsSold: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        title: true,
+        ticketsSold: true,
+        totalTickets: true,
+      },
+    });
+
+    const topRaffles = topRafflesData.map((r) => {
+      const pct =
+        r.totalTickets > 0
+          ? Math.min(100, Math.round((r.ticketsSold / r.totalTickets) * 100))
+          : 0;
+      return {
+        id: r.id,
+        name: r.title,
+        percentage: pct,
+      };
+    });
+
+    // 4. Entrant Demographics
+    const ticketsWithUsers = await this.prisma.ticket.findMany({
+      where: { raffle: { hostId: host.id } },
+      select: {
+        user: {
+          select: {
+            location: true,
+            address: true,
+          },
+        },
+      },
+    });
+
+    const regionCounts = new Map<string, number>();
+    const totalEntrantsCount = ticketsWithUsers.length;
+
+    if (totalEntrantsCount > 0) {
+      ticketsWithUsers.forEach((t) => {
+        const loc = (t.user?.location || t.user?.address || '').toLowerCase();
+        let region = 'England';
+        if (loc.includes('scotland')) region = 'Scotland';
+        else if (loc.includes('wales')) region = 'Wales';
+        else if (loc.includes('ireland')) region = 'N. Ireland';
+        else if (
+          loc.includes('usa') ||
+          loc.includes('canada') ||
+          loc.includes('australia') ||
+          loc.includes('europe') ||
+          loc.includes('international')
+        )
+          region = 'International';
+
+        regionCounts.set(region, (regionCounts.get(region) || 0) + 1);
+      });
+    }
+
+    let demographics: { region: string; percentage: number }[] = [];
+    if (totalEntrantsCount > 0) {
+      regionCounts.forEach((count, region) => {
+        demographics.push({
+          region,
+          percentage: Math.round((count / totalEntrantsCount) * 100),
+        });
+      });
+    }
+
+    return {
+      revenueTrend,
+      categorySales,
+      topRaffles,
+      demographics,
+    };
+  }
 }

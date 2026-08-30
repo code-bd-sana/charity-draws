@@ -64,7 +64,7 @@ export default function WinnersHero() {
           {/* Stat 2: Total Winners */}
           <div className="flex flex-col items-center text-center flex-1">
             <span className="font-heading font-bold text-3xl md:text-4xl text-text-brand">
-              {stats.totalWinners.toLocaleString()}+
+              {stats.totalWinners.toLocaleString()}
             </span>
             <span className="font-sans text-xs text-text-muted mt-2 font-semibold uppercase tracking-wider">
               Total Winners

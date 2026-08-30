@@ -25,6 +25,14 @@ export const useHostSalesAnalytics = (range: HostSalesRange) => {
   });
 };
 
+export const useHostPerformanceAnalytics = (timeframe: string) => {
+  return useQuery({
+    queryKey: ['host-performance-analytics', timeframe],
+    queryFn: () => hostWalletService.getPerformanceAnalytics(timeframe),
+    staleTime: 30 * 1000,
+  });
+};
+
 export const useHostWithdrawalHistory = () => {
   return useQuery({
     queryKey: ['host-withdrawal-history'],

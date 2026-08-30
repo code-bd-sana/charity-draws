@@ -138,4 +138,9 @@ export const hostWalletService = {
     const response = await api.get('/hosts/withdrawals');
     return response.data;
   },
+
+  async getPerformanceAnalytics(timeframe: string) {
+    const response = await api.get('/hosts/performance', { params: { timeframe } });
+    return response.data;
+  },
 };

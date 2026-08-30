@@ -1,5 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { raffleService } from "../../../services/raffle.service";
 
 interface LiveRafflesHeroProps {
   liveCount?: number;
@@ -12,10 +15,36 @@ interface LiveRafflesHeroProps {
  * Styled matching the homepage hero design system with badges, gradient heading, and metric cards.
  */
 export default function LiveRafflesHero({
-  liveCount = 24,
-  closingTodayCount = 6,
-  totalPrizesValue = "£1,200+",
+  liveCount: propLiveCount,
+  closingTodayCount: propClosingTodayCount,
+  totalPrizesValue: propTotalPrizesValue,
 }: LiveRafflesHeroProps) {
+  const [stats, setStats] = useState<{
+    liveCount: number;
+    closingTodayCount: number;
+    totalPrizesValue: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const res = await raffleService.getLiveRafflesStats();
+        if (res) {
+          setStats(res);
+        }
+      } catch (err) {
+        console.error("Failed to fetch live raffles stats:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
+  const liveCount = propLiveCount ?? stats?.liveCount ?? (isLoading ? "..." : 0);
+  const closingTodayCount = propClosingTodayCount ?? stats?.closingTodayCount ?? (isLoading ? "..." : 0);
+  const totalPrizesValue = propTotalPrizesValue ?? stats?.totalPrizesValue ?? (isLoading ? "..." : "£0");
   return (
     <section className="relative pt-12 md:pt-16 pb-10 border-b border-divider">
       <div className="container-custom relative z-10">

@@ -884,32 +884,45 @@ export class RafflesService {
       where: { status: 'ENDED' },
     });
 
-    // 2. Minimum Entry (Lowest pricePerTicket across ACTIVE/ENDED)
-    const minEntryAgg = await this.prisma.raffle.aggregate({
-      where: { status: { in: ['ACTIVE', 'ENDED'] } },
-      _min: { pricePerTicket: true },
+    // 2. Winning Operators (Count of HostProfiles)
+    const winningOperators = await this.prisma.hostProfile.count();
+
+    // 3. Won in prizes! (Total sum of prizes awarded / ended raffles)
+    const endedRaffles = await this.prisma.raffle.findMany({
+      where: { status: 'ENDED' },
+      select: { totalTickets: true, pricePerTicket: true, mainPrizeValue: true },
     });
 
-    // Parse the decimal value, default to 1 if none found
-    const minimumEntry = minEntryAgg._min.pricePerTicket
-      ? Number(minEntryAgg._min.pricePerTicket)
-      : 1;
+    let totalPrizesValue = 0;
+    endedRaffles.forEach((r) => {
+      if (r.mainPrizeValue) {
+        totalPrizesValue += Number(r.mainPrizeValue);
+      } else {
+        totalPrizesValue += r.totalTickets * Number(r.pricePerTicket);
+      }
+    });
+
+    const formattedWonInPrizes = new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+      maximumFractionDigits: 0,
+    }).format(totalPrizesValue);
 
     return [
       {
         id: 1,
-        value: `${drawsCompleted}+`,
+        value: `${drawsCompleted}`,
         label: 'Draws Completed',
       },
       {
         id: 2,
-        value: `£${minimumEntry}`,
-        label: 'Minimum Entry',
+        value: `${winningOperators}`,
+        label: 'Winning Operators',
       },
       {
         id: 3,
-        value: 'Verified',
-        label: 'Fair Draws',
+        value: formattedWonInPrizes,
+        label: 'Won in prizes!',
       },
     ];
   }
@@ -946,7 +959,96 @@ export class RafflesService {
     return {
       prizesAwarded: formattedValue,
       totalWinners,
-      verifiedDraws: verifiedDraws > 0 ? `${verifiedDraws}+` : '0',
+      verifiedDraws: `${verifiedDraws}`,
+    };
+  }
+
+  async getHostPreviewStats() {
+    const activeCompetitions = await this.prisma.raffle.count({
+      where: { status: 'ACTIVE' },
+    });
+
+    const now = new Date();
+    const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+
+    const ticketsSoldThisMonth = await this.prisma.ticket.count({
+      where: {
+        createdAt: { gte: startOfMonth },
+      },
+    });
+
+    const completedTransactions = await this.prisma.transaction.aggregate({
+      where: {
+        type: 'TICKET_PURCHASE',
+        status: 'COMPLETED',
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const totalEarnedAmount = Number(completedTransactions._sum.amount || 0) * 0.9;
+
+    const monthlyTarget = 2000;
+    const monthlyTargetPercent = Math.min(
+      100,
+      Math.round((ticketsSoldThisMonth / monthlyTarget) * 100),
+    );
+
+    return {
+      activeDrawsCount: activeCompetitions,
+      ticketsSoldThisMonth,
+      totalEarnedAmount,
+      monthlyTargetPercent: monthlyTargetPercent > 0 ? monthlyTargetPercent : 0,
+    };
+  }
+
+  async getLiveRafflesStats() {
+    const liveCount = await this.prisma.raffle.count({
+      where: { status: 'ACTIVE' },
+    });
+
+    const now = new Date();
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    const closingTodayCount = await this.prisma.raffle.count({
+      where: {
+        status: 'ACTIVE',
+        endDate: {
+          gte: now,
+          lte: endOfToday,
+        },
+      },
+    });
+
+    const activeRaffles = await this.prisma.raffle.findMany({
+      where: { status: 'ACTIVE' },
+      select: {
+        totalTickets: true,
+        pricePerTicket: true,
+        mainPrizeValue: true,
+      },
+    });
+
+    let totalPrizesVal = 0;
+    activeRaffles.forEach((r) => {
+      if (r.mainPrizeValue) {
+        totalPrizesVal += Number(r.mainPrizeValue);
+      } else {
+        totalPrizesVal += r.totalTickets * Number(r.pricePerTicket);
+      }
+    });
+
+    const formattedTotalPrizes = new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+      maximumFractionDigits: 0,
+    }).format(totalPrizesVal);
+
+    return {
+      liveCount,
+      closingTodayCount,
+      totalPrizesValue: formattedTotalPrizes,
     };
   }
 }

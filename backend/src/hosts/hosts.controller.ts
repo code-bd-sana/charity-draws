@@ -78,6 +78,21 @@ export class HostsController {
     return this.hostsService.getHostSalesAnalytics(userId, range);
   }
 
+  @Get('performance')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('HOST')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current host performance analytics' })
+  @ApiResponse({ status: 200, description: 'Host performance analytics data' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  getPerformanceAnalytics(
+    @Req() req: Request,
+    @Query('timeframe') timeframe?: string,
+  ) {
+    const userId = this.extractUserId(req);
+    return this.hostsService.getHostPerformanceAnalytics(userId, timeframe);
+  }
+
   @Get('wallet')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('HOST')

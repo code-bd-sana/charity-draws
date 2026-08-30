@@ -76,6 +76,20 @@ export class RafflesController {
     return this.rafflesService.getPublicStats();
   }
 
+  @Get('public/host-preview-stats')
+  @ApiOperation({ summary: 'Get host preview stats for homepage CTA (public)' })
+  @ApiResponse({ status: 200, description: 'Host preview stats retrieved successfully' })
+  getHostPreviewStats() {
+    return this.rafflesService.getHostPreviewStats();
+  }
+
+  @Get('public/live-stats')
+  @ApiOperation({ summary: 'Get live raffles header stats (public)' })
+  @ApiResponse({ status: 200, description: 'Live raffles stats retrieved successfully' })
+  getLiveRafflesStats() {
+    return this.rafflesService.getLiveRafflesStats();
+  }
+
   @Get('public/winner-stats')
   @ApiOperation({ summary: 'Get stats for the winners page hero (public)' })
   @ApiResponse({ status: 200, description: 'Winner stats page hero details' })
