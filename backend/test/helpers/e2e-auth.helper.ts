@@ -26,3 +26,19 @@ export const createTestAuthSession = (
     cookie: `accessToken=${token}`,
   };
 };
+
+export const createAdminSession = (
+  id = 'admin-e2e-1',
+  email = 'admin@charitydraws.co.uk',
+) => createTestAuthSession({ id, email, role: 'ADMIN' });
+
+export const createHostSession = (
+  id = 'host-e2e-1',
+  email = 'host@charitydraws.co.uk',
+) => createTestAuthSession({ id, email, role: 'HOST' });
+
+export const createClientSession = (
+  id = 'client-e2e-1',
+  email = 'client@charitydraws.co.uk',
+) => createTestAuthSession({ id, email, role: 'CLIENT' });
+
