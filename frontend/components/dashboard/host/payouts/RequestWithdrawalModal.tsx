@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { useRequestWithdrawalMutation } from "../../../../hooks/useHostWalletHooks";
-import { cn } from "../../../../lib/utils";
+import { cn, extractApiError } from "../../../../lib/utils";
+import PrimaryButton from "../../../website/shared/PrimaryButton";
 
 interface RequestWithdrawalModalProps {
   isOpen: boolean;
@@ -34,7 +36,6 @@ export default function RequestWithdrawalModal({
   const [paypalEmail, setPaypalEmail] = useState("");
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const withdrawMutation = useRequestWithdrawalMutation();
 
@@ -47,15 +48,18 @@ export default function RequestWithdrawalModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setSuccessMessage(null);
 
     if (numAmount < 10) {
-      setErrorMessage("Minimum withdrawal amount is £10.00");
+      const err = "Minimum withdrawal amount is £10.00";
+      setErrorMessage(err);
+      toast.error(err);
       return;
     }
 
     if (numAmount > availableBalance) {
-      setErrorMessage(`Cannot withdraw more than your available balance (£${availableBalance.toFixed(2)})`);
+      const err = `Cannot withdraw more than your available balance (£${availableBalance.toFixed(2)})`;
+      setErrorMessage(err);
+      toast.error(err);
       return;
     }
 
@@ -63,7 +67,9 @@ export default function RequestWithdrawalModal({
 
     if (payoutMethod === "BANK_TRANSFER") {
       if (!accountHolderName.trim() || !bankName.trim() || !accountNumber.trim()) {
-        setErrorMessage("Please complete all required bank account fields.");
+        const err = "Please complete all required bank account fields.";
+        setErrorMessage(err);
+        toast.error(err);
         return;
       }
       payoutDetails = {
@@ -74,7 +80,9 @@ export default function RequestWithdrawalModal({
       };
     } else {
       if (!paypalEmail.trim() || !paypalEmail.includes("@")) {
-        setErrorMessage("Please provide a valid PayPal email address.");
+        const err = "Please provide a valid PayPal email address.";
+        setErrorMessage(err);
+        toast.error(err);
         return;
       }
       payoutDetails = {
@@ -89,15 +97,14 @@ export default function RequestWithdrawalModal({
         payoutDetails,
       },
       {
-        onSuccess: (res) => {
-          setSuccessMessage("Withdrawal request submitted successfully! Your payout is now in processing.");
-          setTimeout(() => {
-            setSuccessMessage(null);
-            onClose();
-          }, 2000);
+        onSuccess: () => {
+          toast.success("Withdrawal request submitted successfully! Your payout is now processing.");
+          onClose();
         },
         onError: (err: any) => {
-          setErrorMessage(err.response?.data?.message || err.message || "Failed to submit withdrawal request.");
+          const msg = extractApiError(err, "Failed to submit withdrawal request.");
+          setErrorMessage(msg);
+          toast.error(msg);
         },
       }
     );
@@ -133,12 +140,6 @@ export default function RequestWithdrawalModal({
           {errorMessage && (
             <div className="p-3.5 rounded-card bg-red-50 border border-red-200 text-red-700 text-xs font-sans font-medium">
               ⚠️ {errorMessage}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="p-3.5 rounded-card bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-sans font-medium">
-              ✅ {successMessage}
             </div>
           )}
 
@@ -296,13 +297,15 @@ export default function RequestWithdrawalModal({
             >
               Cancel
             </button>
-            <button
+            <PrimaryButton
               type="submit"
-              disabled={withdrawMutation.isPending || numAmount <= 0}
-              className="px-6 py-2.5 rounded-button bg-primary hover:bg-primary-hover text-primary-text font-heading font-bold text-xs md:text-sm shadow-glow transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+              isLoading={withdrawMutation.isPending}
+              loadingText="Submitting..."
+              disabled={numAmount <= 0}
+              className="px-6 py-2.5 text-xs md:text-sm uppercase tracking-wider"
             >
-              {withdrawMutation.isPending ? "Submitting..." : `Confirm & Withdraw £${netAmount.toFixed(2)}`}
-            </button>
+              Confirm & Withdraw £{netAmount.toFixed(2)}
+            </PrimaryButton>
           </div>
 
         </form>

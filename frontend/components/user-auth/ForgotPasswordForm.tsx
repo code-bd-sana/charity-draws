@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { ForgotPasswordFormValues, UserAuthFormState } from "../../types/user-auth.types";
 import { validateForgotPasswordForm } from "../../lib/validations/user-auth.validation";
 import PrimaryButton from "../website/shared/PrimaryButton";
-import { cn } from "../../lib/utils";
+import { cn, extractApiError } from "../../lib/utils";
 import { useForgotPasswordMutation } from "../../hooks/useUserHooks";
 
 export default function ForgotPasswordForm() {
@@ -27,6 +28,7 @@ export default function ForgotPasswordForm() {
   };
 
   const mutation = useForgotPasswordMutation();
+  const isSubmitting = formState.isSubmitting || mutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +52,11 @@ export default function ForgotPasswordForm() {
         isSubmitting: false,
         submitStatus: "success",
       });
+      toast.success("Password recovery link sent!");
     } catch (err: any) {
-      setErrors({ email: err.response?.data?.message || "Failed to send reset link" });
+      const errorMsg = extractApiError(err, "Failed to send reset link");
+      setErrors({ email: errorMsg });
+      toast.error(errorMsg);
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
@@ -116,13 +121,13 @@ export default function ForgotPasswordForm() {
             placeholder="you@example.com"
             value={formData.email}
             onChange={handleInputChange}
-            disabled={formState.isSubmitting}
+            disabled={isSubmitting}
             className={cn(
               "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
               errors.email
                 ? "border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
                 : "focus:border-primary focus:ring-1 focus:ring-primary/20",
-              formState.isSubmitting && "opacity-50 cursor-not-allowed"
+              isSubmitting && "opacity-50 cursor-not-allowed"
             )}
           />
           {errors.email && (
@@ -134,10 +139,11 @@ export default function ForgotPasswordForm() {
 
         <PrimaryButton
           type="submit"
-          disabled={formState.isSubmitting}
+          isLoading={isSubmitting}
+          loadingText="Sending Link..."
           className="w-full py-3.5 mt-2 font-heading font-semibold text-sm tracking-wide uppercase"
         >
-          {formState.isSubmitting ? "Sending..." : "Send Reset Link →"}
+          Send Reset Link →
         </PrimaryButton>
 
         <div className="text-center mt-2">

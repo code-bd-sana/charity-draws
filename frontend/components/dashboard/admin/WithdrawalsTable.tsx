@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import ConfirmPayoutModal, { AdminPayoutData } from "./ConfirmPayoutModal";
 import { useAdminWithdrawals } from "../../../hooks/useAdminHooks";
+import EmptyState from "../../ui/EmptyState";
 
 interface WithdrawalsTableProps {
   withdrawals?: AdminPayoutData[];
@@ -69,8 +70,11 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
         <tbody>
           {withdrawals.length === 0 ? (
             <tr>
-              <td colSpan={8} className="py-12 text-center text-text-muted font-sans text-sm font-medium">
-                No withdrawal requests found.
+              <td colSpan={8} className="py-8 px-6 text-center">
+                <EmptyState
+                  title="No Withdrawal Requests"
+                  description="There are currently no withdrawal or payout requests pending review."
+                />
               </td>
             </tr>
           ) : (
@@ -125,17 +129,14 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
                             Reject
                           </button>
                         </>
-                      ) : null}
-                      <button 
-                        onClick={() => handleAction(payout, "VIEW")}
-                        title="View Details"
-                        className="p-1.5 rounded-button text-text-muted hover:text-text-brand hover:bg-accent-bg transition-colors cursor-pointer"
-                      >
-                        <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        </svg>
-                      </button>
+                      ) : (
+                        <button 
+                          onClick={() => handleAction(payout, "VIEW")}
+                          className="h-[28px] px-3 rounded-button bg-accent-bg border border-border text-text-secondary hover:text-text-primary hover:bg-border/30 font-sans font-semibold text-[11px] transition-all cursor-pointer shadow-sm"
+                        >
+                          Details
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -146,8 +147,8 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
       </table>
 
       <ConfirmPayoutModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         payout={selectedPayout}
         actionType={actionType}
       />

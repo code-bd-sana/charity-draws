@@ -7,6 +7,7 @@ import { cn } from "../../../lib/utils";
 import { Pagination } from "../../ui/Pagination";
 import { toast } from "sonner";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
+import EmptyState from "../../ui/EmptyState";
 
 const filters = ["All", "Live", "Pending Review", "Ended", "Drafts"];
 
@@ -316,8 +317,13 @@ export default function HostRafflesTable() {
           })}
           
           {!isLoading && raffles?.length === 0 && (
-            <div className="p-8 text-center text-text-muted font-sans text-xs md:text-sm font-medium">
-              No competitions found.
+            <div className="py-8">
+              <EmptyState
+                title="No Competitions Found"
+                description="You haven't created any competitions matching this filter. Launch a new raffle to start raising funds!"
+                actionText="+ Create Raffle"
+                actionHref="/dashboard/host/create"
+              />
             </div>
           )}
         </div>

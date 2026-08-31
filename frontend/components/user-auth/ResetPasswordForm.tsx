@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { ResetPasswordFormValues, UserAuthFormState } from "../../types/user-auth.types";
 import { validateResetPasswordForm } from "../../lib/validations/user-auth.validation";
 import PrimaryButton from "../website/shared/PrimaryButton";
@@ -40,6 +41,7 @@ export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const mutation = useResetPasswordMutation();
+  const isSubmitting = formState.isSubmitting || mutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +54,9 @@ export default function ResetPasswordForm() {
     }
 
     if (!token) {
-      setErrors({ form: "Reset token is missing from the URL. Please use the link sent to your email." });
+      const msg = "Reset token is missing from the URL. Please use the link sent to your email.";
+      setErrors({ form: msg });
+      toast.error(msg);
       return;
     }
 
@@ -72,10 +76,11 @@ export default function ResetPasswordForm() {
         isSubmitting: false,
         submitStatus: "success",
       });
+      toast.success("Password reset successfully!");
     } catch (err: any) {
-      setErrors({
-        form: extractApiError(err, "Failed to reset password. The link might be expired or invalid."),
-      });
+      const errorMsg = extractApiError(err, "Failed to reset password. The link might be expired or invalid.");
+      setErrors({ form: errorMsg });
+      toast.error(errorMsg);
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
@@ -147,13 +152,13 @@ export default function ResetPasswordForm() {
               placeholder="••••••••"
               value={formData.password}
               onChange={handleInputChange}
-              disabled={formState.isSubmitting}
+              disabled={isSubmitting}
               className={cn(
                 "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
                 errors.password
                   ? "border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
                   : "focus:border-primary focus:ring-1 focus:ring-primary/20",
-                formState.isSubmitting && "opacity-50 cursor-not-allowed"
+                isSubmitting && "opacity-50 cursor-not-allowed"
               )}
             />
             <button
@@ -194,13 +199,13 @@ export default function ResetPasswordForm() {
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              disabled={formState.isSubmitting}
+              disabled={isSubmitting}
               className={cn(
                 "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
                 errors.confirmPassword
                   ? "border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
                   : "focus:border-primary focus:ring-1 focus:ring-primary/20",
-                formState.isSubmitting && "opacity-50 cursor-not-allowed"
+                isSubmitting && "opacity-50 cursor-not-allowed"
               )}
             />
             <button
@@ -230,10 +235,11 @@ export default function ResetPasswordForm() {
 
         <PrimaryButton
           type="submit"
-          disabled={formState.isSubmitting}
+          isLoading={isSubmitting}
+          loadingText="Updating Password..."
           className="w-full py-3.5 mt-2 font-heading font-semibold text-sm tracking-wide uppercase"
         >
-          {formState.isSubmitting ? "Updating..." : "Reset Password →"}
+          Reset Password →
         </PrimaryButton>
       </form>
     </div>

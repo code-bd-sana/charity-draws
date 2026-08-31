@@ -16,6 +16,7 @@ import AuthSuccessState from "./AuthSuccessState";
 import { cn } from "../../lib/utils";
 import { useRegisterMutation } from "../../hooks/useAuthHooks";
 import { extractApiError } from "../../lib/utils";
+import { toast } from "sonner";
 
 interface HostRegistrationFormProps {
   step: HostRegistrationStep;
@@ -68,14 +69,6 @@ export default function HostRegistrationForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const showToast = (message: string) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3000);
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -140,6 +133,7 @@ export default function HostRegistrationForm({
 
   // Advancing steps with validation gates
   const registerMutation = useRegisterMutation();
+  const isSubmitting = formState.isSubmitting || registerMutation.isPending;
 
   const handleContinue = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +165,7 @@ export default function HostRegistrationForm({
       onChangeStep(8);
     } else if (step === 8) {
       if (!formData.acceptedTerms) {
-        showToast("Please agree to the Host Guidelines and Platform Rules.");
+        toast.error("Please agree to the Host Guidelines and Platform Rules.");
         return;
       }
 
@@ -191,7 +185,7 @@ export default function HostRegistrationForm({
           businessName: formData.businessName || `${formData.firstName} ${formData.lastName}`, // Fallback for individual
         });
         
-        showToast("Host registration successful! Check your email to verify.");
+        toast.success("Host registration successful! Check your email to verify.");
         setTimeout(() => {
           router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
         }, 1500);
@@ -201,7 +195,7 @@ export default function HostRegistrationForm({
           isSubmitting: false,
         }));
         const errorMsg = extractApiError(error, "Registration failed");
-        showToast(errorMsg);
+        toast.error(errorMsg);
       }
     }
   };
@@ -222,12 +216,6 @@ export default function HostRegistrationForm({
 
   return (
     <div className="relative w-full max-w-2xl mx-auto flex flex-col gap-6 animate-fadeIn">
-      {/* Action Simulation Toast notifications */}
-      {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-accent-bg border border-primary text-text-brand px-4 py-3 rounded-button shadow-card text-xs md:text-sm animate-fadeIn">
-          {toastMessage}
-        </div>
-      )}
 
       {/* User vs Host Navigation Pills */}
       {step === 1 && (
@@ -1002,9 +990,9 @@ export default function HostRegistrationForm({
                 </div>
                 <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-primary font-medium leading-normal select-none cursor-pointer">
                   By going live, you confirm that all information is accurate and agree to our{" "}
-                  <button type="button" onClick={() => showToast("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Host Guidelines</button>
+                  <button type="button" onClick={() => toast.info("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Host Guidelines</button>
                   {" "}and{" "}
-                  <button type="button" onClick={() => showToast("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Platform Rules</button>.
+                  <button type="button" onClick={() => toast.info("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Platform Rules</button>.
                 </label>
               </div>
 
@@ -1013,20 +1001,21 @@ export default function HostRegistrationForm({
                 <button
                   type="button"
                   onClick={handleBack}
-                  disabled={formState.isSubmitting}
+                  disabled={isSubmitting}
                   className={cn(
                     "inline-flex items-center gap-1.5 font-sans font-medium text-xs md:text-sm text-text-secondary hover:text-text-primary cursor-pointer select-none transition-colors duration-150",
-                    formState.isSubmitting && "opacity-50 cursor-not-allowed"
+                    isSubmitting && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   &larr; Back
                 </button>
                 <PrimaryButton
                   type="submit"
-                  disabled={formState.isSubmitting}
+                  isLoading={isSubmitting}
+                  loadingText="Launching..."
                   className="font-heading font-semibold text-xs px-6 py-2.5 cursor-pointer"
                 >
-                  {formState.isSubmitting ? "Launching..." : "🚀 Go Live"}
+                  🚀 Go Live
                 </PrimaryButton>
               </div>
             </div>
