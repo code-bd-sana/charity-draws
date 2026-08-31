@@ -16,6 +16,8 @@ export type MockModel = {
   fields?: Record<string, any>;
 };
 
+export type MockPrismaTransaction = MockPrismaService;
+
 export const createMockModel = (): MockModel => ({
   findUnique: jest.fn(),
   findFirst: jest.fn(),
