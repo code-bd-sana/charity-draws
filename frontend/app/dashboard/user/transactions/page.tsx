@@ -69,7 +69,7 @@ const DUMMY_TRANSACTIONS: Transaction[] = [
 
 export default function UserTransactionsPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
       {/* Header */}
       <div>
         <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">My Transactions</h1>

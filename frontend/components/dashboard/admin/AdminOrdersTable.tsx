@@ -46,7 +46,7 @@ export default function AdminOrdersTable() {
   return (
     <div className="flex flex-col gap-6 select-none">
       {/* Table Container */}
-      <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto mt-2">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto scrollbar-thin mt-2">
         <table className="w-full min-w-[1050px] text-left border-collapse">
           <thead>
             <tr className="border-b border-border bg-accent-bg/50">

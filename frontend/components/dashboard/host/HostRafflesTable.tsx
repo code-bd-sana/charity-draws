@@ -79,9 +79,9 @@ export default function HostRafflesTable() {
       </div>
 
       {/* Table Container */}
-      <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col shadow-card">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col shadow-card overflow-x-auto scrollbar-thin">
         {/* Table Header */}
-        <div className="grid grid-cols-5 items-center px-6 h-12 border-b border-divider bg-accent-bg/30">
+        <div className="grid grid-cols-5 items-center px-6 h-12 border-b border-divider bg-accent-bg/30 min-w-[700px]">
           <div className="col-span-2 sm:col-span-1">
             <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">
               Raffle Name
@@ -114,7 +114,7 @@ export default function HostRafflesTable() {
           {isLoading && (
             <div className="flex flex-col w-full animate-in fade-in duration-300">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 border-b border-divider last:border-b-0 bg-surface">
+                <div key={i} className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 border-b border-divider last:border-b-0 bg-surface min-w-[700px]">
                   {/* Raffle Name */}
                   <div className="col-span-2 sm:col-span-1 flex items-center gap-3 pr-4">
                     <div className="w-3 h-3 shrink-0 bg-accent-bg rounded-sm animate-pulse" style={{ animationDelay: `${i * 150}ms` }}></div>
@@ -148,11 +148,11 @@ export default function HostRafflesTable() {
           {!isLoading && raffles.map((raffle: any) => {
             const isExpanded = expandedId === raffle.id;
             return (
-              <div key={raffle.id} className="flex flex-col border-b border-divider last:border-b-0">
+              <div key={raffle.id} className="flex flex-col border-b border-divider last:border-b-0 min-w-[700px]">
                 {/* Main Row */}
                 <div
                   onClick={() => toggleRow(raffle.id)}
-                  className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 cursor-pointer hover:bg-accent-bg/40 transition-colors bg-surface"
+                  className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 cursor-pointer hover:bg-accent-bg/40 transition-colors bg-surface min-w-[700px]"
                 >
                   <div className="col-span-2 sm:col-span-1 flex items-center gap-3 min-w-0 pr-4">
                     <svg

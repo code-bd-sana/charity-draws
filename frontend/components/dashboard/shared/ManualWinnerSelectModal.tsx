@@ -119,13 +119,13 @@ export default function ManualWinnerSelectModal({
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-[620px] bg-[#111210] border border-[#2D3C13] rounded-[20px] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] flex flex-col gap-6 z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="relative w-[95vw] sm:max-w-[540px] md:max-w-[620px] bg-[#111210] border border-[#2D3C13] rounded-[20px] p-5 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.8)] flex flex-col gap-5 z-10 max-h-[85vh] overflow-y-auto custom-scrollbar select-none">
         {/* Header Row */}
-        <div className="flex items-start justify-between border-b border-[#2D3C13] pb-4">
-          <div className="flex flex-col gap-1">
+        <div className="flex items-start justify-between border-b border-[#2D3C13] pb-4 shrink-0">
+          <div className="flex flex-col gap-1 pr-2">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🏆</span>
-              <h3 className="font-heading font-bold text-[20px] text-[#E8EDD4]">
+              <h3 className="font-heading font-bold text-[18px] sm:text-[20px] text-[#E8EDD4]">
                 Winner Selection
               </h3>
             </div>
@@ -135,7 +135,7 @@ export default function ManualWinnerSelectModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-button text-[#72943A] hover:text-[#E8EDD4] hover:bg-[#1A230A] transition-colors"
+            className="p-1.5 rounded-button text-[#72943A] hover:text-[#E8EDD4] hover:bg-[#1A230A] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shrink-0"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

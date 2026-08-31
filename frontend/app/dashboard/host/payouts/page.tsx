@@ -23,7 +23,7 @@ export default function PayoutsAndEarningsPage() {
   const history = historyData ?? [];
 
   return (
-    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col gap-[24px] animate-in fade-in zoom-in-95 duration-300 select-none">
+    <div className="flex-1 w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300 select-none">
       
       {/* Top Banner & Request Withdrawal Header */}
       <div className="w-full bg-surface border border-border rounded-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card">

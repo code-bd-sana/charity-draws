@@ -36,7 +36,7 @@ export default function PayoutHistoryTable({ history }: Props) {
       </div>
 
       {/* Table */}
-      <div className="w-full overflow-x-auto min-h-[300px]">
+      <div className="w-full overflow-x-auto scrollbar-thin min-h-[300px]">
         <table className="w-full min-w-[900px] text-left border-collapse">
           <thead>
             <tr className="border-b border-divider bg-accent-bg/30">

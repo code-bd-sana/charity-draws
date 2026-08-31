@@ -105,7 +105,7 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className='flex flex-col gap-8 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none'>
+    <div className='flex flex-col gap-8 w-full animate-fadeIn select-none'>
       <div className='flex justify-between items-center'>
         <div>
           <h1 className='font-heading font-bold text-[32px] text-text-primary tracking-tight'>

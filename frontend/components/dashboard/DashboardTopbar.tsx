@@ -36,7 +36,7 @@ export default function DashboardTopbar({
   };
 
   return (
-    <header className="h-[88px] w-full bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-between px-5 lg:px-10 shrink-0 sticky top-0 z-30 shadow-sm select-none">
+    <header className="h-[88px] w-full bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 sticky top-0 z-30 shadow-sm select-none">
       <div className="flex items-center gap-3 sm:gap-4">
         {/* Mobile menu trigger */}
         <button

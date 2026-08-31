@@ -4,7 +4,7 @@ import React from "react";
 
 export default function NotificationsPage() {
   return (
-    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300 min-h-[calc(100vh-100px)]">
+    <div className="flex-1 w-full flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300 min-h-[calc(100vh-100px)]">
       
       <div className="bg-[#161810] border border-[#2d3c13] rounded-[16px] w-full h-[300px] flex flex-col items-center justify-center p-[48px] gap-[15px]">
         {/* Bell Icon Placeholder */}

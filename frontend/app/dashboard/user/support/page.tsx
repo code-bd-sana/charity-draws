@@ -2,7 +2,7 @@ import React from "react";
 
 export default function UserSupportPage() {
   return (
-    <div className="p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
       {/* Header */}
       <div className="mb-6">
         <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">Help & Support</h1>

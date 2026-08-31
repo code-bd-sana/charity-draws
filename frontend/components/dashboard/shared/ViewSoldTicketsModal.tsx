@@ -168,16 +168,16 @@ export default function ViewSoldTicketsModal({
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#161810] border border-[#2D3C13] rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden text-[#E8EDD4]">
+      <div className="relative w-[95vw] sm:max-w-[540px] md:max-w-4xl max-h-[85vh] bg-[#161810] border border-[#2D3C13] rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden text-[#E8EDD4] select-none">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#2D3C13] bg-[#111210]">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-[#2D3C13] bg-[#111210] shrink-0">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]">
                 🎟️ Ticket Details
               </span>
-              <h2 className="font-heading font-bold text-lg text-[#E8EDD4] truncate max-w-[450px]">
+              <h2 className="font-heading font-bold text-base sm:text-lg text-[#E8EDD4] truncate max-w-[280px] sm:max-w-[450px]">
                 {raffle.title}
               </h2>
             </div>
@@ -187,20 +187,20 @@ export default function ViewSoldTicketsModal({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={handleExportCSV}
               disabled={tickets.length === 0}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] font-sans font-medium text-[12px] transition-colors disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] font-sans font-medium text-[12px] transition-colors disabled:opacity-50 cursor-pointer min-h-[44px]"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
-              Export CSV
+              <span className="hidden sm:inline">Export CSV</span>
             </button>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-[#0D0D0B] border border-[#2D3C13] text-[#72943A] hover:text-[#E8EDD4] hover:border-[#43581E] transition-colors cursor-pointer"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#0D0D0B] border border-[#2D3C13] text-[#72943A] hover:text-[#E8EDD4] hover:border-[#43581E] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
             >
               ✕
             </button>
@@ -357,13 +357,13 @@ export default function ViewSoldTicketsModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#2D3C13] bg-[#111210]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#2D3C13] bg-[#111210] shrink-0">
           <p className="font-sans text-xs text-[#5A752A]">
             Showing <span className="text-[#E8EDD4] font-medium">{filteredTickets.length}</span> of {tickets.length} total sold tickets
           </p>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] hover:text-[#E8EDD4] font-sans font-medium text-xs transition-colors cursor-pointer"
+            className="min-h-[44px] px-5 py-2 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] hover:text-[#E8EDD4] font-sans font-medium text-xs transition-colors cursor-pointer flex items-center justify-center"
           >
             Close
           </button>

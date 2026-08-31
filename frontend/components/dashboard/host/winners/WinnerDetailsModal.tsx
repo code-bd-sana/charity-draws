@@ -68,21 +68,21 @@ export default function WinnerDetailsModal({ isOpen, onClose, raffle }: Props) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-text-primary/40 backdrop-blur-sm animate-fadeIn">
       {/* Modal Container */}
-      <div className="bg-surface border border-border rounded-card w-full max-w-[820px] shadow-2xl flex flex-col relative max-h-[85vh] overflow-hidden select-none">
+      <div className="bg-surface border border-border rounded-card w-[95vw] sm:max-w-[540px] md:max-w-[760px] shadow-2xl flex flex-col relative max-h-[85vh] overflow-hidden select-none">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-divider bg-surface">
-          <div className="flex flex-col gap-1">
-            <h2 className="font-heading font-bold text-lg md:text-xl text-text-primary">
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-divider bg-surface shrink-0">
+          <div className="flex flex-col gap-1 pr-2">
+            <h2 className="font-heading font-bold text-base sm:text-lg md:text-xl text-text-primary">
               Competition Winners: {raffle.title}
             </h2>
-            <span className="font-sans text-xs md:text-sm text-text-muted font-medium">
+            <span className="font-sans text-xs sm:text-sm text-text-muted font-medium">
               View main draw winner and instant win prize claims. Update dispatch & delivery status.
             </span>
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center text-text-muted hover:text-text-primary transition-colors shrink-0 cursor-pointer"
+            className="w-10 h-10 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center text-text-muted hover:text-text-primary transition-colors shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -90,7 +90,7 @@ export default function WinnerDetailsModal({ isOpen, onClose, raffle }: Props) {
           </button>
         </div>
 
-        <div className="flex flex-col p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="flex flex-col p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
           {/* Tabs */}
           <div className="flex items-center gap-1 bg-bg p-1 rounded-button border border-border w-fit mb-6">
             <button
@@ -211,10 +211,10 @@ export default function WinnerDetailsModal({ isOpen, onClose, raffle }: Props) {
         </div>
         
         {/* Footer */}
-        <div className="p-4 border-t border-divider flex justify-end bg-surface">
+        <div className="p-4 border-t border-divider flex justify-end bg-surface shrink-0">
           <button 
             onClick={onClose}
-            className="px-6 py-2.5 bg-bg border border-border hover:bg-accent-bg/50 transition-all rounded-button font-heading font-semibold text-xs md:text-sm text-text-primary cursor-pointer"
+            className="min-h-[44px] px-6 py-2.5 bg-bg border border-border hover:bg-accent-bg/50 transition-all rounded-button font-heading font-semibold text-xs md:text-sm text-text-primary cursor-pointer flex items-center justify-center"
           >
             Close Details
           </button>
