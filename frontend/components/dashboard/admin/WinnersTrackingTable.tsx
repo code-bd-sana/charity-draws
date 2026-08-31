@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { useState } from 'react';
 import { Winner, winnerService } from '../../../services/winner.service';
 import VerifyWinnerModal from './VerifyWinnerModal';
+import { winnerKeys } from '../../../hooks/queryKeys';
 
 export default function WinnersTrackingTable() {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -45,7 +46,7 @@ export default function WinnersTrackingTable() {
   };
 
   const { data: winnersResponse, isLoading } = useQuery({
-    queryKey: ['adminWinners', activeFilter, winTypeFilter],
+    queryKey: winnerKeys.adminList({ activeFilter, winTypeFilter }),
     queryFn: () =>
       winnerService.getAdminWinners({
         verificationStatus: getVerificationQuery(activeFilter),
@@ -121,7 +122,7 @@ export default function WinnersTrackingTable() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['adminWinners'] });
+    queryClient.invalidateQueries({ queryKey: winnerKeys.admin() });
   };
 
   const getStatusStyle = (winner: Winner) => {

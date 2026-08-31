@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { RaffleDetail } from "../../../types/raffle-details.types";
 import { usePurchaseTicketsMutation } from "../../../hooks/useTicketHooks";
+import { usePublicRaffleDetail } from "../../../hooks/useRaffleHooks";
 import { useAuth } from "../../../features/auth/AuthContext";
 import { useRouter } from "next/navigation";
 import TicketPurchaseSuccessModal, { TicketPurchaseSuccessData } from "./TicketPurchaseSuccessModal";
@@ -23,14 +24,25 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   
   const purchaseMutation = usePurchaseTicketsMutation(raffle.id);
 
+  // Configure 15-second background polling interval for active draws
+  const { data: liveData } = usePublicRaffleDetail(raffle.slug || raffle.id, {
+    refetchInterval: (query: any) => {
+      const data = query?.state?.data;
+      const status = data?.status || raffle.status;
+      const isLive = status === "ACTIVE" || status === "live" || status === "ending_soon";
+      return isLive ? 15_000 : false;
+    },
+  });
+
   const {
     ticketPrice,
     totalPoolValue,
     worthPrice,
-    totalTickets,
-    soldTickets,
-    endDate,
   } = raffle;
+
+  const totalTickets = liveData?.totalTickets ?? raffle.totalTickets;
+  const soldTickets = liveData?.ticketsSold ?? raffle.soldTickets;
+  const endDate = liveData?.endDate ?? raffle.endDate;
 
   useEffect(() => {
     if (!endDate) {

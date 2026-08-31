@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminService, HostData } from "../../../services/admin.service";
 import ReviewHostModal, { HostApplicationData } from "./ReviewHostModal";
 import ConfirmBlockModal from "./ConfirmBlockModal";
+import { hostKeys, adminKeys } from "../../../hooks/queryKeys";
 
 export default function HostsTable() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -18,7 +19,7 @@ export default function HostsTable() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-hosts', page, activeFilter, search],
+    queryKey: hostKeys.adminList({ page, activeFilter, search }),
     queryFn: () => adminService.getHosts({
       page,
       limit: 10,
@@ -30,8 +31,11 @@ export default function HostsTable() {
   const toggleBlockMutation = useMutation({
     mutationFn: (userId: string) => adminService.toggleBlockStatus(userId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts-stats'] });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminList() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.usersStats() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.all });
       setBlockModalHost(null);
     },
   });
@@ -39,8 +43,10 @@ export default function HostsTable() {
   const approveHostMutation = useMutation({
     mutationFn: (hostId: string) => adminService.approveHost(hostId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts-stats'] });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminList() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminStats() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.all });
+      queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
       setIsModalOpen(false);
       setSelectedHost(null);
     },
@@ -49,8 +55,10 @@ export default function HostsTable() {
   const rejectHostMutation = useMutation({
     mutationFn: (hostId: string) => adminService.rejectHost(hostId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-hosts-stats'] });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminList() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.adminStats() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.all });
+      queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
       setIsModalOpen(false);
       setSelectedHost(null);
     },
