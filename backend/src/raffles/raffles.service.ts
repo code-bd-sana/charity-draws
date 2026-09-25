@@ -69,11 +69,12 @@ export class RafflesService {
         hostId: hostProfile.id,
         title: data.title,
         slug,
+        category: data.category || null,
         description: data.description || '',
         mainPrizeValue: data.mainPrizeValue
           ? Number(data.mainPrizeValue)
           : null,
-        pricePerTicket: data.ticketPrice || 0,
+        pricePerTicket: data.ticketPrice ?? data.pricePerTicket ?? 0,
         totalTickets,
         startDate,
         endDate,
@@ -156,9 +157,35 @@ export class RafflesService {
       status: 'ACTIVE',
     };
 
-    // Category filter
+    const andConditions: any[] = [];
+
+    // Category filter (flexible lookup matching slug, name, or case-insensitive text)
     if (category && category !== 'All' && category !== 'all') {
-      whereClause.category = category;
+      const matchedCategory = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { slug: category },
+            { name: { equals: category, mode: 'insensitive' } },
+            { id: category },
+          ],
+        },
+      });
+
+      const possibleMatches: string[] = [category];
+      if (matchedCategory) {
+        if (matchedCategory.name) possibleMatches.push(matchedCategory.name);
+        if (matchedCategory.slug) possibleMatches.push(matchedCategory.slug);
+      }
+      possibleMatches.push(category.replace(/-/g, ' '));
+      possibleMatches.push(category.replace(/\s+/g, '-').toLowerCase());
+
+      const uniqueMatches = Array.from(new Set(possibleMatches.filter(Boolean)));
+
+      andConditions.push({
+        OR: uniqueMatches.map((catVal) => ({
+          category: { equals: catVal, mode: 'insensitive' },
+        })),
+      });
     }
 
     // Instant Win filter
@@ -179,20 +206,26 @@ export class RafflesService {
     }
 
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { host: { businessName: { contains: search, mode: 'insensitive' } } },
-        {
-          host: {
-            user: { firstName: { contains: search, mode: 'insensitive' } },
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { host: { businessName: { contains: search, mode: 'insensitive' } } },
+          {
+            host: {
+              user: { firstName: { contains: search, mode: 'insensitive' } },
+            },
           },
-        },
-        {
-          host: {
-            user: { lastName: { contains: search, mode: 'insensitive' } },
+          {
+            host: {
+              user: { lastName: { contains: search, mode: 'insensitive' } },
+            },
           },
-        },
-      ];
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      whereClause.AND = andConditions;
     }
 
     // Sort logic

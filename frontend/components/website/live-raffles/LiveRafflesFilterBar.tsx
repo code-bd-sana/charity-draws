@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { cn } from "../../../lib/utils";
+import { usePublicCategories } from "../../../hooks/useCategoryHooks";
 
 interface LiveRafflesFilterBarProps {
   activeCategory: string;
@@ -31,15 +32,29 @@ export default function LiveRafflesFilterBar({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const { data: dbCategories = [] } = usePublicCategories();
+
   const categories = [
     { label: "All", value: "all" },
-    { label: "Rifles", value: "rifles" },
-    { label: "Pistols", value: "pistols" },
-    { label: "Snipers", value: "sniper-rifles" },
-    { label: "Accessories", value: "accessories" },
-    { label: "Apparel", value: "gear-and-apparel" },
-    { label: "Cash Prizes", value: "cash-prizes" },
+    ...dbCategories.map((c) => ({
+      label: c.name,
+      value: c.slug,
+    })),
   ];
+
+  const isCatActive = (catValue: string) => {
+    if (activeCategory === catValue) return true;
+    if (catValue === "all" && (!activeCategory || activeCategory === "all")) return true;
+    const matched = dbCategories.find((c) => c.slug === catValue);
+    if (
+      matched &&
+      (activeCategory.toLowerCase() === matched.name.toLowerCase() ||
+        activeCategory.toLowerCase() === matched.slug.toLowerCase())
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const sortOptions = [
     { label: "Featured", value: "featured" },
@@ -74,7 +89,7 @@ export default function LiveRafflesFilterBar({
               onClick={() => setActiveCategory(cat.value)}
               className={cn(
                 "font-sans font-medium text-xs px-4 py-2 rounded-badge border shrink-0 transition-all duration-200 cursor-pointer select-none",
-                activeCategory === cat.value
+                isCatActive(cat.value)
                   ? "bg-primary border-primary text-primary-text font-semibold hover:bg-primary-hover shadow-glow"
                   : "bg-surface border-border text-text-secondary hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
               )}

@@ -40,7 +40,7 @@ export interface RaffleFormData {
 
 const initialData: RaffleFormData = {
   title: "",
-  category: "Charity Rifles",
+  category: "",
   description: "",
   mainPrizeValue: "",
   totalTickets: "",
@@ -108,6 +108,7 @@ export default function CreateRaffleWizard() {
       // 2. Create Raffle
       const created = await createRaffle.mutateAsync({
         title: formData.title,
+        category: formData.category,
         description: formData.description,
         mainPrizeValue: formData.mainPrizeValue ? Number(formData.mainPrizeValue) : undefined,
         pricePerTicket: Number(formData.ticketPrice) || 0,

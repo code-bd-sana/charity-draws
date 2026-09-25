@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { usePublicRaffles } from "@/hooks/useRaffleHooks";
+import { usePublicCategories } from "@/hooks/useCategoryHooks";
 import { Pagination } from "@/components/ui/Pagination";
 import Link from "next/link";
 
@@ -13,6 +14,8 @@ export default function UserRafflesPage() {
   const [statusFilter, setStatusFilter] = useState("All Competitions");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("Latest");
+
+  const { data: dbCategories = [] } = usePublicCategories();
 
   const { data, isLoading, isError } = usePublicRaffles({
     page,
@@ -79,17 +82,27 @@ export default function UserRafflesPage() {
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full pt-2 border-t border-divider">
           <div className="flex flex-wrap items-center gap-2">
-            {["All", "Rifles", "Pistols", "Snipers", "Gas Blowback", "Gear", "Accessories"].map((cat) => (
+            <button
+              onClick={() => { setCategory("All"); setPage(1); }}
+              className={`px-4 py-1.5 rounded-badge font-sans font-semibold text-[12px] transition-all border cursor-pointer ${
+                category === "All" || !category
+                  ? "bg-accent-bg border-border-medium text-text-brand shadow-sm"
+                  : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium"
+              }`}
+            >
+              All
+            </button>
+            {dbCategories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => { setCategory(cat); setPage(1); }}
+                key={cat.id}
+                onClick={() => { setCategory(cat.slug); setPage(1); }}
                 className={`px-4 py-1.5 rounded-badge font-sans font-semibold text-[12px] transition-all border cursor-pointer ${
-                  category === cat
+                  category === cat.slug || category.toLowerCase() === cat.name.toLowerCase()
                     ? "bg-accent-bg border-border-medium text-text-brand shadow-sm"
                     : "bg-surface border-border text-text-muted hover:text-text-primary hover:border-border-medium"
                 }`}
               >
-                {cat}
+                {cat.name}
               </button>
             ))}
           </div>

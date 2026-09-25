@@ -55,9 +55,24 @@ export default function InstantWinsSection() {
   }, []);
 
   // Filter draws
-  const filteredDraws = activeCategory === "all"
-    ? draws
-    : draws.filter((draw) => draw.category === activeCategory);
+  const filteredDraws =
+    activeCategory === "all"
+      ? draws
+      : draws.filter((draw) => {
+          if (!draw.category) return false;
+          if (draw.category === activeCategory) return true;
+          const matchedCat = categories.find(
+            (c) => c.slug === activeCategory || c.id === activeCategory
+          );
+          if (
+            matchedCat &&
+            (draw.category.toLowerCase() === matchedCat.name.toLowerCase() ||
+              draw.category.toLowerCase() === matchedCat.slug.toLowerCase())
+          ) {
+            return true;
+          }
+          return false;
+        });
 
   return (
     <section id="instant-wins" className="py-20 bg-bg border-t border-divider">

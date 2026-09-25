@@ -71,6 +71,7 @@ export interface CreateRaffleData {
   totalTickets: number;
   startDate: string;
   endDate: string;
+  category?: string;
   isAutoDraw?: boolean;
   autoDrawDate?: boolean;
   autoDrawSoldOut?: boolean;

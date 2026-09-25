@@ -98,10 +98,10 @@ export default function UserLoginForm() {
   return (
     <div className="relative w-full max-w-xl mx-auto flex flex-col gap-6 animate-fadeIn">
       {/* Main Login Card wrapper */}
-      <div className="bg-surface border border-divider p-6 md:p-10 rounded-card shadow-card w-full">
+      <div className="bg-surface border border-divider p-5 sm:p-6 md:p-10 rounded-card shadow-card w-full">
         {/* Header section */}
-        <div className="flex flex-col gap-2 mb-8">
-          <h2 className="font-heading font-normal text-3xl md:text-[36px] text-text-primary">
+        <div className="flex flex-col gap-1.5 sm:gap-2 mb-6 sm:mb-8">
+          <h2 className="font-heading font-normal text-2xl sm:text-3xl md:text-[36px] text-text-primary">
             Log In
           </h2>
           <div className="flex flex-wrap items-center gap-1.5 text-xs md:text-sm">
@@ -135,7 +135,7 @@ export default function UserLoginForm() {
               onChange={handleInputChange}
               disabled={isSubmitting}
               className={cn(
-                "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
+                "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-sm md:text-base text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
                 errors.email
                   ? "border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
                   : "focus:border-primary focus:ring-1 focus:ring-primary/20",
@@ -168,7 +168,7 @@ export default function UserLoginForm() {
                 onChange={handleInputChange}
                 disabled={isSubmitting}
                 className={cn(
-                  "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
+                  "w-full bg-bg border border-border rounded-button pl-4 pr-12 py-2.5 font-sans text-sm md:text-base text-text-primary placeholder:text-text-muted/40 transition-all duration-200 outline-none",
                   errors.password
                     ? "border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
                     : "focus:border-primary focus:ring-1 focus:ring-primary/20",

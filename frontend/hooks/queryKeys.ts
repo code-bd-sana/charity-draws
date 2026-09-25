@@ -106,3 +106,9 @@ export const userKeys = {
   all: ['user'] as const,
   current: () => [...userKeys.all, 'current'] as const,
 };
+
+export const categoryKeys = {
+  all: ['categories'] as const,
+  public: () => [...categoryKeys.all, 'public'] as const,
+  admin: () => [...categoryKeys.all, 'admin'] as const,
+};

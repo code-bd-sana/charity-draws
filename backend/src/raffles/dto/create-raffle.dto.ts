@@ -55,6 +55,14 @@ export class CreateRaffleDto {
   description?: string;
 
   @ApiPropertyOptional({
+    example: 'Cash Prizes',
+    description: 'Category of the competition',
+  })
+  @IsString()
+  @IsOptional()
+  category?: string;
+
+  @ApiPropertyOptional({
     example: 1200.0,
     description: 'Estimated retail value of the main prize',
   })
