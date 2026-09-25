@@ -33,6 +33,8 @@ export default function EditRaffleForm({ raffleId }: Props) {
         isAutoDraw: raffle.isAutoDraw,
         autoDrawDate: raffle.autoDrawDate,
         autoDrawSoldOut: raffle.autoDrawSoldOut,
+        minTicketsPerUser: (raffle as any).minTicketsPerUser ?? 1,
+        maxTicketsPerUser: (raffle as any).maxTicketsPerUser ?? "",
       });
     }
   }, [raffle]);
@@ -48,6 +50,25 @@ export default function EditRaffleForm({ raffleId }: Props) {
     try {
       const payload = { ...formData };
       
+      const numTotal = Number(payload.totalTickets) || 0;
+      const numMin = Number(payload.minTicketsPerUser) || 1;
+      const numMax = payload.maxTicketsPerUser ? Number(payload.maxTicketsPerUser) : null;
+
+      if (numTotal > 0 && numMin > numTotal) {
+        toast.error(`Minimum tickets (${numMin}) cannot exceed total competition tickets (${numTotal}).`);
+        return;
+      }
+
+      if (numMax !== null && numMax > 0 && numMin > numMax) {
+        toast.error(`Minimum tickets (${numMin}) cannot be greater than maximum tickets (${numMax}).`);
+        return;
+      }
+
+      if (numTotal > 0 && numMax !== null && numMax > numTotal) {
+        toast.error(`Maximum tickets (${numMax}) cannot exceed total competition tickets (${numTotal}).`);
+        return;
+      }
+
       // Convert dates back to ISO string
       if (payload.startDate) payload.startDate = new Date(payload.startDate).toISOString();
       if (payload.endDate) payload.endDate = new Date(payload.endDate).toISOString();
@@ -55,6 +76,8 @@ export default function EditRaffleForm({ raffleId }: Props) {
       // Convert numbers
       if (payload.totalTickets) payload.totalTickets = Number(payload.totalTickets);
       if (payload.pricePerTicket) payload.pricePerTicket = Number(payload.pricePerTicket);
+      payload.minTicketsPerUser = numMin;
+      payload.maxTicketsPerUser = numMax;
 
       await updateMutation.mutateAsync({ id: raffleId, data: payload });
       toast.success("Competition updated successfully!");
@@ -175,6 +198,42 @@ export default function EditRaffleForm({ raffleId }: Props) {
               disabled={hasSoldTickets}
               className="h-[48px] px-[16px] bg-[#0d0d0b] border border-[#2d3c13] rounded-[8px] text-[#e8edd4] outline-none focus:border-[#8cb34a] disabled:opacity-50"
             />
+          </div>
+        </div>
+
+        {/* Ticket Limits Per User */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
+          <div className="flex flex-col gap-[8px]">
+            <label className="font-sans font-medium text-[13px] text-[#e8edd4]">
+              Minimum Tickets Per Order
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={formData.minTicketsPerUser ?? 1}
+              onChange={(e) => handleChange("minTicketsPerUser", e.target.value)}
+              className="h-[48px] px-[16px] bg-[#0d0d0b] border border-[#2d3c13] rounded-[8px] text-[#e8edd4] outline-none focus:border-[#8cb34a]"
+            />
+            <span className="font-sans text-[11px] text-[#72943A]">
+              Minimum tickets required per entry transaction (default: 1).
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-[8px]">
+            <label className="font-sans font-medium text-[13px] text-[#e8edd4]">
+              Maximum Tickets Per Person (Optional)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={formData.maxTicketsPerUser || ""}
+              onChange={(e) => handleChange("maxTicketsPerUser", e.target.value)}
+              placeholder="e.g. 50 (leave empty for unlimited)"
+              className="h-[48px] px-[16px] bg-[#0d0d0b] border border-[#2d3c13] rounded-[8px] text-[#e8edd4] outline-none focus:border-[#8cb34a]"
+            />
+            <span className="font-sans text-[11px] text-[#72943A]">
+              Maximum total tickets any single user can purchase.
+            </span>
           </div>
         </div>
 

@@ -63,6 +63,20 @@ export class RafflesService {
     const endDate = new Date(data.endDate);
 
     const totalTickets = Number(data.totalTickets) || 0;
+    const minTickets = data.minTicketsPerUser !== undefined ? (Number(data.minTicketsPerUser) || 1) : 1;
+    const maxTickets = data.maxTicketsPerUser !== undefined && data.maxTicketsPerUser !== null && data.maxTicketsPerUser !== '' ? (Number(data.maxTicketsPerUser) || null) : null;
+
+    if (totalTickets > 0 && minTickets > totalTickets) {
+      throw new BadRequestException(`Minimum tickets per order (${minTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
+
+    if (maxTickets !== null && maxTickets > 0 && minTickets > maxTickets) {
+      throw new BadRequestException(`Minimum tickets (${minTickets}) cannot be greater than maximum tickets (${maxTickets})`);
+    }
+
+    if (totalTickets > 0 && maxTickets !== null && maxTickets > totalTickets) {
+      throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
 
     const raffle = await this.prisma.raffle.create({
       data: {
@@ -84,6 +98,8 @@ export class RafflesService {
           data.autoDrawDate !== undefined ? data.autoDrawDate : true,
         autoDrawSoldOut:
           data.autoDrawSoldOut !== undefined ? data.autoDrawSoldOut : false,
+        minTicketsPerUser: data.minTicketsPerUser !== undefined ? (Number(data.minTicketsPerUser) || 1) : 1,
+        maxTicketsPerUser: data.maxTicketsPerUser !== undefined && data.maxTicketsPerUser !== null ? (Number(data.maxTicketsPerUser) || null) : null,
       },
     });
 
@@ -483,6 +499,22 @@ export class RafflesService {
     });
 
     if (!raffle) throw new NotFoundException('Raffle not found');
+
+    const totalTickets = data.totalTickets !== undefined ? Number(data.totalTickets) : raffle.totalTickets;
+    const minTickets = data.minTicketsPerUser !== undefined ? Number(data.minTicketsPerUser) : (raffle as any).minTicketsPerUser ?? 1;
+    const maxTickets = data.maxTicketsPerUser !== undefined ? (data.maxTicketsPerUser ? Number(data.maxTicketsPerUser) : null) : (raffle as any).maxTicketsPerUser;
+
+    if (totalTickets > 0 && minTickets > totalTickets) {
+      throw new BadRequestException(`Minimum tickets per order (${minTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
+
+    if (maxTickets !== null && maxTickets > 0 && minTickets > maxTickets) {
+      throw new BadRequestException(`Minimum tickets (${minTickets}) cannot be greater than maximum tickets (${maxTickets})`);
+    }
+
+    if (totalTickets > 0 && maxTickets !== null && maxTickets > totalTickets) {
+      throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
 
     return this.prisma.raffle.update({
       where: { id },

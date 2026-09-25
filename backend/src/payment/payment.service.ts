@@ -399,7 +399,7 @@ export class PaymentService {
               data: { status: 'EXPIRED' },
             });
 
-            await this.prisma.hostSubscription.create({
+            const newSub = await this.prisma.hostSubscription.create({
               data: {
                 hostId: host.id,
                 planId: plan.id,
@@ -408,6 +408,19 @@ export class PaymentService {
                 endDate,
               },
             });
+
+            // Record transaction for Billing History
+            if (Number(plan.price) > 0) {
+              await this.prisma.transaction.create({
+                data: {
+                  userId: host.userId,
+                  type: 'SUBSCRIPTION_FEE',
+                  amount: plan.price,
+                  status: 'COMPLETED',
+                  relatedEntityId: newSub.id,
+                },
+              });
+            }
 
             this.logger.log(
               `Activated subscription for host ${host.id} with plan ${plan.name} via webhook`,
@@ -530,6 +543,19 @@ export class PaymentService {
               endDate,
             },
           });
+
+          // Record transaction for Billing History
+          if (Number(plan.price) > 0) {
+            await this.prisma.transaction.create({
+              data: {
+                userId: host.userId,
+                type: 'SUBSCRIPTION_FEE',
+                amount: plan.price,
+                status: 'COMPLETED',
+                relatedEntityId: sub.id,
+              },
+            });
+          }
 
           this.logger.log(`Confirmed subscription for host ${host.id} with plan ${plan.name}`);
           return {

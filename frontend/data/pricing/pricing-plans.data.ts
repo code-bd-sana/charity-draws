@@ -7,7 +7,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     description: "Perfect for new hosts wanting to launch their first charity competition.",
     monthlyPrice: 0,
     yearlyPrice: 0,
-    commissionLabel: "10% commission",
+    commissionLabel: "15% commission",
     ctaLabel: "Claim Free Plan — 1 Competition",
     isFeatured: false,
     features: [

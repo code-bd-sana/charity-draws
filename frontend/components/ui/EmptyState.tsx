@@ -25,7 +25,7 @@ export default function EmptyState({
 }: EmptyStateProps) {
   const renderIcon = () => {
     if (!Icon) {
-      return <FolderOpen className="w-12 h-12 text-primary/60" />;
+      return <FolderOpen className="w-8 h-8 text-text-brand" />;
     }
 
     if (React.isValidElement(Icon)) {
@@ -33,26 +33,26 @@ export default function EmptyState({
     }
 
     const IconComponent = Icon as LucideIcon;
-    return <IconComponent className="w-12 h-12 text-primary/60" />;
+    return <IconComponent className="w-8 h-8 text-text-brand" />;
   };
 
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-[#2D3C13]/60 bg-[#161B11]/50 backdrop-blur-xs max-w-lg mx-auto my-6",
+        "flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-divider bg-bg/60 backdrop-blur-xs max-w-lg mx-auto my-6 shadow-sm",
         className
       )}
     >
-      <div className="w-20 h-20 rounded-full bg-[#202914]/80 border border-[#2D3C13] flex items-center justify-center mb-5 shadow-inner">
+      <div className="w-16 h-16 rounded-full bg-accent-bg border border-border flex items-center justify-center mb-4 shadow-sm">
         {renderIcon()}
       </div>
 
-      <h3 className="text-xl font-bold font-serif text-[#E8EDD4] mb-2 tracking-wide">
+      <h3 className="font-heading font-semibold text-xl md:text-2xl text-text-primary mb-2 tracking-tight">
         {title}
       </h3>
 
       {description && (
-        <p className="text-sm font-sans text-[#E8EDD4]/60 max-w-md mb-6 leading-relaxed">
+        <p className="font-sans text-xs sm:text-sm text-text-muted max-w-md mb-6 leading-relaxed">
           {description}
         </p>
       )}

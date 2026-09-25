@@ -52,6 +52,26 @@ export class TicketsService {
           throw new BadRequestException('This competition is not active');
         }
 
+        const minRequired = (raffle as any).minTicketsPerUser || 1;
+        if (quantity < minRequired) {
+          throw new BadRequestException(
+            `Minimum ticket purchase for this competition is ${minRequired} ticket(s)`,
+          );
+        }
+
+        const maxAllowed = (raffle as any).maxTicketsPerUser;
+        if (maxAllowed !== null && maxAllowed !== undefined && maxAllowed > 0) {
+          const userTicketCount = await tx.ticket.count({
+            where: { raffleId, userId },
+          });
+          if (userTicketCount + quantity > maxAllowed) {
+            const allowedMore = Math.max(0, maxAllowed - userTicketCount);
+            throw new BadRequestException(
+              `Maximum ticket limit is ${maxAllowed} per participant. You currently hold ${userTicketCount} ticket(s) and can purchase at most ${allowedMore} more.`,
+            );
+          }
+        }
+
         if (raffle.ticketsSold + quantity > raffle.totalTickets) {
           throw new BadRequestException(
             `Only ${raffle.totalTickets - raffle.ticketsSold} tickets remaining`,
@@ -266,6 +286,26 @@ export class TicketsService {
 
     if (raffle.status !== 'ACTIVE') {
       throw new BadRequestException('This competition is not active');
+    }
+
+    const minRequired = (raffle as any).minTicketsPerUser || 1;
+    if (quantity < minRequired) {
+      throw new BadRequestException(
+        `Minimum ticket purchase for this competition is ${minRequired} ticket(s)`,
+      );
+    }
+
+    const maxAllowed = (raffle as any).maxTicketsPerUser;
+    if (maxAllowed !== null && maxAllowed !== undefined && maxAllowed > 0) {
+      const userTicketCount = await this.prisma.ticket.count({
+        where: { raffleId, userId },
+      });
+      if (userTicketCount + quantity > maxAllowed) {
+        const allowedMore = Math.max(0, maxAllowed - userTicketCount);
+        throw new BadRequestException(
+          `Maximum ticket limit is ${maxAllowed} per participant. You currently hold ${userTicketCount} ticket(s) and can purchase at most ${allowedMore} more.`,
+        );
+      }
     }
 
     if (raffle.ticketsSold + quantity > raffle.totalTickets) {

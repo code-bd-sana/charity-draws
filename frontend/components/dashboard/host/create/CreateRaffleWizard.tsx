@@ -24,6 +24,7 @@ export interface RaffleFormData {
   totalTickets: string;
   ticketPrice: string;
   minTickets: string;
+  maxTickets: string;
   // Step 3
   coverImage: string | null; // URL or mock path
   gallery: string[];
@@ -46,6 +47,7 @@ const initialData: RaffleFormData = {
   totalTickets: "",
   ticketPrice: "",
   minTickets: "1",
+  maxTickets: "",
   coverImage: null,
   gallery: [],
   hasInstantWins: false,
@@ -118,6 +120,8 @@ export default function CreateRaffleWizard() {
         isAutoDraw: formData.isAutoDraw,
         autoDrawDate: formData.autoDrawDate,
         autoDrawSoldOut: formData.autoDrawSoldOut,
+        minTicketsPerUser: formData.minTickets ? (Number(formData.minTickets) || 1) : 1,
+        maxTicketsPerUser: formData.maxTickets ? (Number(formData.maxTickets) || null) : null,
         instantWins: formData.hasInstantWins ? processedInstantWins : [],
       });
 

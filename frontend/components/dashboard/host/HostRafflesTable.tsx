@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useHostRaffles, useDeleteRaffle, useDrawWinner } from "../../../hooks/useRaffleHooks";
 import { cn } from "../../../lib/utils";
 import { Pagination } from "../../ui/Pagination";
-import { toast } from "sonner";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
 import EmptyState from "../../ui/EmptyState";
+import { useMySubscription } from "../../../hooks/useSubscriptionHooks";
+import { toast } from "sonner";
 
 const filters = ["All", "Live", "Pending Review", "Ended", "Drafts"];
 
@@ -18,6 +19,21 @@ export default function HostRafflesTable() {
   const [page, setPage] = useState(1);
   const [selectedCompForDelete, setSelectedCompForDelete] = useState<RaffleDeleteTarget | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data: subData } = useMySubscription();
+  const isPremiumOrPro =
+    !!subData?.plan &&
+    (subData.plan.id === "premium" ||
+      subData.plan.id === "pro" ||
+      subData.plan.name?.toLowerCase().includes("premium") ||
+      subData.plan.name?.toLowerCase().includes("pro") ||
+      Number(subData.plan.price) > 0);
+
+  const feeRate = isPremiumOrPro ? 0.10 : 0.15;
+  const feePercentText = isPremiumOrPro ? "10%" : "15%";
+  const planLabel = isPremiumOrPro ? (subData?.plan?.name || "Premium") : "Free Plan";
+  const netRate = 1 - feeRate;
+  const netPercentText = isPremiumOrPro ? "90%" : "85%";
 
   const { data: response, isLoading } = useHostRaffles({ page, limit: 10, status: activeFilter });
   const raffles = response?.data || [];
@@ -231,11 +247,11 @@ export default function HostRafflesTable() {
                       </span>
                       <div className="flex items-center gap-3">
                         <span className="font-heading font-bold text-2xl text-red-600">
-                          - £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * 0.05).toFixed(2)}
+                          - £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * feeRate).toFixed(2)}
                         </span>
                         <div className="px-2 py-0.5 bg-accent-bg border border-border-medium rounded-full flex items-center justify-center">
                           <span className="font-sans font-semibold text-[10px] text-text-brand">
-                            5% (Standard)
+                            {feePercentText} ({planLabel})
                           </span>
                         </div>
                       </div>
@@ -246,11 +262,11 @@ export default function HostRafflesTable() {
                     {/* Your Earnings */}
                     <div className="flex flex-col gap-1.5 flex-1">
                       <span className="font-sans font-semibold text-[11px] tracking-wider uppercase text-text-muted">
-                        Your Earnings
+                        Your Earnings ({netPercentText} Net)
                       </span>
                       <div className="flex flex-col relative w-full">
                         <span className="font-heading font-bold text-2xl text-text-brand">
-                          £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * 0.95).toFixed(2)}
+                          £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * netRate).toFixed(2)}
                         </span>
                         <span className="font-sans text-xs text-text-muted font-medium">
                           Paid out on completion

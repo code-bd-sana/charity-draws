@@ -124,6 +124,22 @@ export class CreateRaffleDto {
   autoDrawSoldOut?: boolean;
 
   @ApiPropertyOptional({
+    example: 1,
+    description: 'Minimum tickets a user must buy per order/entry',
+  })
+  @IsNumber()
+  @IsOptional()
+  minTicketsPerUser?: number;
+
+  @ApiPropertyOptional({
+    example: 50,
+    description: 'Maximum tickets a user can buy in total for this raffle',
+  })
+  @IsNumber()
+  @IsOptional()
+  maxTicketsPerUser?: number;
+
+  @ApiPropertyOptional({
     type: [InstantWinPrizeDto],
     description: 'Optional list of instant win prizes',
   })

@@ -56,11 +56,45 @@ export class SubscriptionsService {
     });
   }
 
-  async getMyBillingHistory(hostId: string) {
-    return this.prisma.transaction.findMany({
-      where: { userId: hostId, type: 'SUBSCRIPTION_FEE' },
+  async getMyBillingHistory(userId: string) {
+    // Check existing transactions
+    let transactions = await this.prisma.transaction.findMany({
+      where: { userId, type: 'SUBSCRIPTION_FEE' },
       orderBy: { createdAt: 'desc' },
     });
+
+    // If no transactions found yet host has an active/past subscription, synthesize or create records
+    if (transactions.length === 0) {
+      const host = await this.prisma.hostProfile.findUnique({
+        where: { userId },
+        include: {
+          subscriptions: {
+            include: { plan: true },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      });
+
+      if (host && host.subscriptions.length > 0) {
+        for (const sub of host.subscriptions) {
+          if (sub.plan && Number(sub.plan.price) > 0) {
+            const created = await this.prisma.transaction.create({
+              data: {
+                userId,
+                type: 'SUBSCRIPTION_FEE',
+                amount: sub.plan.price,
+                status: 'COMPLETED',
+                relatedEntityId: sub.id,
+                createdAt: sub.createdAt,
+              },
+            });
+            transactions.push(created);
+          }
+        }
+      }
+    }
+
+    return transactions;
   }
 
   async getAllSubscriptions() {

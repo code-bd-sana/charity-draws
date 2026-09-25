@@ -67,9 +67,23 @@ describe('HostsService', () => {
         walletBalance: 250.0,
       });
 
+      prismaMock.hostSubscription.findFirst.mockResolvedValue({
+        id: 'sub-1',
+        hostId: 'host-1',
+        status: 'ACTIVE',
+        plan: {
+          id: 'premium',
+          name: 'Premium',
+          price: 29,
+        },
+      });
+
       prismaMock.withdrawal.aggregate
-        .mockResolvedValueOnce({ _sum: { amount: 50.0 } }) // pending
-        .mockResolvedValueOnce({ _sum: { amount: 100.0 } }); // completed
+        .mockResolvedValueOnce({ _sum: { amount: 50.0 } }); // pending
+
+      prismaMock.withdrawal.findMany.mockResolvedValue([
+        { amount: 100.0, feeAmount: 10.0 },
+      ]);
 
       prismaMock.raffle.findMany.mockResolvedValue([
         { pricePerTicket: 5, ticketsSold: 40 },

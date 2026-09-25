@@ -37,7 +37,7 @@ export default function PayoutsAndEarningsPage() {
             </span>
           </div>
           <p className="font-sans text-xs md:text-sm text-text-muted pl-[26px] font-medium">
-            Every withdrawal deducts a standard <strong className="text-text-primary">10% platform fee</strong>. Net payouts are sent directly to your bank account or PayPal.
+            Platform fee is dynamically applied based on your active plan (<strong className="text-text-primary">{walletStats?.commissionRate ?? 10}% platform fee</strong>). Net payouts are transferred directly to your bank account.
           </p>
         </div>
 

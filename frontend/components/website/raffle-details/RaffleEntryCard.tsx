@@ -44,6 +44,16 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const soldTickets = liveData?.ticketsSold ?? raffle.soldTickets;
   const endDate = liveData?.endDate ?? raffle.endDate;
 
+  const minTickets = Math.max(1, (liveData as any)?.minTicketsPerUser ?? (raffle as any)?.minTicketsPerUser ?? 1);
+  const maxTickets = (liveData as any)?.maxTicketsPerUser ?? (raffle as any)?.maxTicketsPerUser ?? null;
+
+  // Initialize or adjust quantity when minTickets is set
+  useEffect(() => {
+    if (minTickets > 1 && quantity < minTickets) {
+      setQuantity(minTickets);
+    }
+  }, [minTickets]);
+
   useEffect(() => {
     if (!endDate) {
       setTimeLeft("Ended");
@@ -71,13 +81,41 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const remainingTickets = Math.max(totalTickets - soldTickets, 0);
   const totalPrice = quantity * ticketPrice;
 
-  const handleQuickPick = (val: number) => setQuantity(val);
-  const handleDecrement = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
-  const handleIncrement = () => setQuantity(prev => prev + 1);
+  // Adjust quick picks based on minTickets and maxTickets
+  const rawQuickPicks = [1, 5, 10, 20];
+  const quickPicks = rawQuickPicks.map(val => Math.max(val, minTickets)).filter((val, idx, arr) => arr.indexOf(val) === idx && (!maxTickets || val <= maxTickets));
+
+  const handleQuickPick = (val: number) => {
+    let target = Math.max(val, minTickets);
+    if (maxTickets && target > maxTickets) target = maxTickets;
+    setQuantity(target);
+  };
+
+  const handleDecrement = () => {
+    setQuantity(prev => (prev > minTickets ? prev - 1 : minTickets));
+  };
+
+  const handleIncrement = () => {
+    setQuantity(prev => {
+      if (maxTickets && prev >= maxTickets) return prev;
+      if (prev >= remainingTickets) return prev;
+      return prev + 1;
+    });
+  };
 
   const handlePurchase = () => {
     if (!isAuthenticated) {
       router.push('/login');
+      return;
+    }
+
+    if (quantity < minTickets) {
+      setStatusMessage({ type: 'error', text: `Minimum ${minTickets} ticket(s) required to enter.` });
+      return;
+    }
+
+    if (maxTickets && quantity > maxTickets) {
+      setStatusMessage({ type: 'error', text: `Maximum limit is ${maxTickets} ticket(s) per participant.` });
       return;
     }
     
@@ -167,28 +205,42 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
 
       {/* Ticket Selection */}
       <div className="flex flex-col gap-3 mb-6">
-        <span className="font-sans text-[12px] text-[#A0D056]">Number of tickets</span>
-        
-        <div className="grid grid-cols-4 gap-2">
-          {[1, 5, 10, 20].map((num) => (
-            <button
-              key={num}
-              onClick={() => handleQuickPick(num)}
-              className={`h-[36px] rounded-[6px] font-sans font-medium text-[13px] transition-colors ${
-                quantity === num 
-                  ? "bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]" 
-                  : "bg-transparent border border-[#2D3C13] text-[#72943A] hover:border-[#43581E] hover:text-[#E8EDD4]"
-              }`}
-            >
-              {num}
-            </button>
-          ))}
+        <div className="flex items-center justify-between">
+          <span className="font-sans text-[12px] text-[#A0D056]">Number of tickets</span>
+          {(minTickets > 1 || maxTickets) && (
+            <span className="font-sans text-[10px] text-[#72943A]">
+              {minTickets > 1 && `Min: ${minTickets}`}
+              {minTickets > 1 && maxTickets && " • "}
+              {maxTickets && `Max: ${maxTickets}`}
+            </span>
+          )}
         </div>
+        
+        {quickPicks.length > 0 && (
+          <div className="grid grid-cols-4 gap-2">
+            {quickPicks.map((num) => (
+              <button
+                key={num}
+                onClick={() => handleQuickPick(num)}
+                className={`h-[36px] rounded-[6px] font-sans font-medium text-[13px] transition-colors ${
+                  quantity === num 
+                    ? "bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]" 
+                    : "bg-transparent border border-[#2D3C13] text-[#72943A] hover:border-[#43581E] hover:text-[#E8EDD4]"
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center h-[44px] bg-[#111210] border border-[#2D3C13] rounded-[8px] overflow-hidden mt-1">
           <button 
             onClick={handleDecrement}
-            className="w-[44px] h-full flex items-center justify-center bg-[#1A230A] text-[#8CB34A] hover:bg-[#2D3C13] transition-colors"
+            disabled={quantity <= minTickets}
+            className={`w-[44px] h-full flex items-center justify-center bg-[#1A230A] text-[#8CB34A] transition-colors ${
+              quantity <= minTickets ? "opacity-35 cursor-not-allowed" : "hover:bg-[#2D3C13]"
+            }`}
           >
             -
           </button>
@@ -197,7 +249,12 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
           </div>
           <button 
             onClick={handleIncrement}
-            className="w-[44px] h-full flex items-center justify-center bg-[#1A230A] text-[#8CB34A] hover:bg-[#2D3C13] transition-colors"
+            disabled={(maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets}
+            className={`w-[44px] h-full flex items-center justify-center bg-[#1A230A] text-[#8CB34A] transition-colors ${
+              (maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets
+                ? "opacity-35 cursor-not-allowed"
+                : "hover:bg-[#2D3C13]"
+            }`}
           >
             +
           </button>

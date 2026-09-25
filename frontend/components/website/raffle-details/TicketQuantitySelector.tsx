@@ -20,10 +20,13 @@ export default function TicketQuantitySelector({
   maxTickets = 50,
   minTickets = 1,
 }: TicketQuantitySelectorProps) {
-  const quickPicks = [1, 5, 10, 25];
+  const rawQuickPicks = [1, 5, 10, 25];
+  const quickPicks = rawQuickPicks
+    .map((pick) => Math.max(pick, minTickets))
+    .filter((val, idx, arr) => arr.indexOf(val) === idx && (!maxTickets || val <= maxTickets));
 
   const handleIncrement = () => {
-    if (quantity < maxTickets) {
+    if (!maxTickets || quantity < maxTickets) {
       onQuantityChange(quantity + 1);
     }
   };
