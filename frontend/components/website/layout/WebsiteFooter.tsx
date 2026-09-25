@@ -59,7 +59,7 @@ export default function WebsiteFooter() {
           </Link>
 
             <p className="font-sans text-xs text-text-muted leading-relaxed max-w-sm">
-              The premier marketplace for charity gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes.
+              The premier platform for transparent charity prize competitions. Win incredible prizes, luxury rewards, and cash while supporting meaningful causes.
             </p>
 
             {/* Social Icons row */}
