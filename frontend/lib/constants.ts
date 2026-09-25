@@ -22,10 +22,10 @@ export const FOOTER_SECTIONS = [
     title: "Competitions",
     links: [
       { label: "All Live Draws", href: "/live-raffles" },
-      { label: "Rifles & AEGs", href: "/live-raffles?category=rifles" },
-      { label: "Pistols & GBBs", href: "/live-raffles?category=pistols" },
-      { label: "Tactical Gear & Optics", href: "/live-raffles?category=accessories" },
-      { label: "Cash Prize Competitions", href: "/live-raffles?category=cash" },
+      { label: "Cash Prizes", href: "/live-raffles?category=cash-prizes" },
+      { label: "Tech & Gadgets", href: "/live-raffles?category=tech-gadgets" },
+      { label: "Luxury Watches", href: "/live-raffles?category=luxury-watches" },
+      { label: "Cars & Vehicles", href: "/live-raffles?category=cars-vehicles" },
     ],
   },
   {

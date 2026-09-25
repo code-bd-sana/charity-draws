@@ -23,7 +23,7 @@ export default function PayoutsAndEarningsPage() {
   const history = historyData ?? [];
 
   return (
-    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col gap-[24px] animate-in fade-in zoom-in-95 duration-300 select-none">
+    <div className="flex-1 w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300 select-none">
       
       {/* Top Banner & Request Withdrawal Header */}
       <div className="w-full bg-surface border border-border rounded-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card">
@@ -37,7 +37,7 @@ export default function PayoutsAndEarningsPage() {
             </span>
           </div>
           <p className="font-sans text-xs md:text-sm text-text-muted pl-[26px] font-medium">
-            Every withdrawal deducts a standard <strong className="text-text-primary">10% platform fee</strong>. Net payouts are sent directly to your bank account or PayPal.
+            Platform fee is dynamically applied based on your active plan (<strong className="text-text-primary">{walletStats?.commissionRate ?? 10}% platform fee</strong>). Net payouts are transferred directly to your bank account.
           </p>
         </div>
 

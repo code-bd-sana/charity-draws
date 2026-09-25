@@ -3,10 +3,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminService } from "../../../services/admin.service";
+import { hostKeys } from "../../../hooks/queryKeys";
 
 export default function HostsStatsCards() {
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin-hosts-stats'],
+    queryKey: hostKeys.adminStats(),
     queryFn: () => adminService.getHostStats(),
   });
 

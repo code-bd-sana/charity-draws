@@ -6,6 +6,7 @@ import DrawsTable from "./DrawsTable";
 import DrawDetailsPanel from "./DrawDetailsPanel";
 import { useQuery } from "@tanstack/react-query";
 import { raffleService, Raffle } from "../../../../services/raffle.service";
+import { raffleKeys } from "../../../../hooks/queryKeys";
 
 export default function AdminDrawsManager() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -23,7 +24,7 @@ export default function AdminDrawsManager() {
   };
 
   const { data: drawsResponse, isLoading } = useQuery({
-    queryKey: ["adminRaffles", activeFilter],
+    queryKey: raffleKeys.adminAll({ activeFilter }),
     queryFn: () => raffleService.getAdminAllRaffles({ status: getStatusQuery(activeFilter) }),
   });
 

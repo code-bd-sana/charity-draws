@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { Ticket as TicketIcon } from "lucide-react";
 import CompetitionDetailsModal from "./CompetitionDetailsModal";
+import EmptyState from "../ui/EmptyState";
 
 export interface Ticket {
   id: string;
@@ -19,6 +21,18 @@ interface TicketsTableProps {
 
 export default function TicketsTable({ tickets }: TicketsTableProps) {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+
+  if (!tickets || tickets.length === 0) {
+    return (
+      <EmptyState
+        icon={TicketIcon}
+        title="No Tickets Purchased Yet"
+        description="You haven't entered any competitions yet. Browse active draws and claim your tickets to win luxury tactical prizes!"
+        actionText="Explore Competitions"
+        actionHref="/live-raffles"
+      />
+    );
+  }
 
   return (
     <>

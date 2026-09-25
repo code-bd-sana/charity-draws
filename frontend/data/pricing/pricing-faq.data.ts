@@ -13,13 +13,13 @@ export const PRICING_FAQ: FaqItem[] = [
   },
   {
     id: "commission-fee",
-    question: "How is the 10% host commission handled?",
-    answer: "Hosts receive 90% net payout on all completed competition ticket sales. The 10% platform commission is automatically calculated and deducted when requesting a withdrawal, covering escrow security, payment gateways, and draw auditing.",
+    question: "How does the platform commission work?",
+    answer: "Premium and Pro subscribers enjoy a discounted 10% platform commission (keeping 90% net earnings). Free tier hosts have a standard 15% platform fee (keeping 85% net earnings). The platform fee covers escrow security, payment gateways, transparent winner verification, and regulatory compliance.",
   },
   {
     id: "payout-process",
     question: "How are host withdrawals processed?",
-    answer: "Hosts can request a payout directly from the Host Dashboard once a draw completes. Withdrawals are processed to your registered UK bank account within 24-48 hours after winner confirmation.",
+    answer: "Hosts can request a payout directly from the Host Dashboard once a draw completes. Withdrawals are processed via direct Bank Transfer to your verified bank account within 24-48 hours after winner confirmation.",
   },
   {
     id: "free-postal-entry",

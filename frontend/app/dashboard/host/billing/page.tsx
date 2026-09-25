@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import CurrentPlanCard from "../../../../components/dashboard/host/billing/CurrentPlanCard";
-import PaymentMethodCard from "../../../../components/dashboard/host/billing/PaymentMethodCard";
 import BillingHistoryTable from "../../../../components/dashboard/host/billing/BillingHistoryTable";
 import { useMyBillingHistory } from "../../../../hooks/useSubscriptionHooks";
 import { toast } from "sonner";
@@ -31,9 +30,8 @@ export default function SubscriptionBillingPage() {
   })) || [];
 
   return (
-    <div className="flex-1 w-full px-[20px] lg:px-[40px] py-[24px] lg:py-[32px] flex flex-col gap-[24px] animate-in fade-in zoom-in-95 duration-300 select-none">
+    <div className="flex-1 w-full flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300 select-none">
       <CurrentPlanCard />
-      <PaymentMethodCard />
       {isLoading ? (
         <div className="text-text-muted font-sans font-medium text-sm p-4 animate-pulse">Loading billing history...</div>
       ) : (

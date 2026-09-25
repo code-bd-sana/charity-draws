@@ -1,6 +1,7 @@
 import React from "react";
 import { RaffleFormData } from "./CreateRaffleWizard";
 import { cn } from "../../../../lib/utils";
+import { useMySubscription } from "../../../../hooks/useSubscriptionHooks";
 
 interface Props {
   formData: RaffleFormData;
@@ -10,11 +11,24 @@ interface Props {
 }
 
 export default function CreateRaffleStep6({ formData, onPrev, onPublish, isSubmitting = false }: Props) {
+  const { data: subData } = useMySubscription();
+  const isPremiumOrPro =
+    !!subData?.plan &&
+    (subData.plan.id === "premium" ||
+      subData.plan.id === "pro" ||
+      subData.plan.name?.toLowerCase().includes("premium") ||
+      subData.plan.name?.toLowerCase().includes("pro") ||
+      Number(subData.plan.price) > 0);
+
+  const feeRate = isPremiumOrPro ? 0.10 : 0.15;
+  const feePercentText = isPremiumOrPro ? "10%" : "15%";
+  const planLabel = isPremiumOrPro ? (subData?.plan?.name || "Premium") : "Free Plan";
+
   // Calculate potential earnings
   const tickets = parseInt(formData.totalTickets) || 0;
   const price = parseFloat(formData.ticketPrice) || 0;
   const gross = tickets * price;
-  const platformFee = gross * 0.05; // 5% platform fee
+  const platformFee = gross * feeRate;
   const net = gross - platformFee;
 
   return (
@@ -70,12 +84,24 @@ export default function CreateRaffleStep6({ formData, onPrev, onPublish, isSubmi
               <span className="font-sans font-bold text-sm md:text-base text-text-primary">£{price.toFixed(2)}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">Platform Fee</span>
+              <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">Platform Fee ({feePercentText})</span>
               <span className="font-sans font-bold text-sm md:text-base text-red-600">-£{platformFee.toFixed(2)}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">Est. Earnings</span>
+              <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">Est. Earnings ({isPremiumOrPro ? "90%" : "85%"})</span>
               <span className="font-heading font-bold text-lg md:text-xl text-text-brand">£{net.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Ticket Purchase Limits */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-divider text-xs font-sans">
+            <div className="flex justify-between sm:justify-start sm:gap-4 items-center">
+              <span className="text-text-muted font-medium">Min. Tickets Per Order:</span>
+              <span className="font-bold text-text-primary">{formData.minTickets || "1"} ticket(s)</span>
+            </div>
+            <div className="flex justify-between sm:justify-start sm:gap-4 items-center">
+              <span className="text-text-muted font-medium">Max. Tickets Per Person:</span>
+              <span className="font-bold text-text-primary">{formData.maxTickets ? `${formData.maxTickets} tickets` : "Unlimited"}</span>
             </div>
           </div>
         </div>

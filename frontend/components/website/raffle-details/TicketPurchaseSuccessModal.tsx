@@ -57,21 +57,21 @@ export default function TicketPurchaseSuccessModal({
 
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="relative bg-[#111210] border border-[#8CB34A]/50 rounded-[24px] w-full max-w-[560px] overflow-hidden shadow-[0_0_50px_rgba(140,179,74,0.25)] animate-in zoom-in-95 duration-300 flex flex-col z-[10000]">
+      <div className="relative bg-[#111210] border border-[#8CB34A]/50 rounded-[24px] w-[95vw] sm:max-w-[560px] max-h-[85vh] overflow-hidden shadow-[0_0_50px_rgba(140,179,74,0.25)] animate-in zoom-in-95 duration-300 flex flex-col z-[10000] select-none">
         
         {/* Glow Header Accent */}
-        <div className="h-2 w-full bg-gradient-to-r from-[#8CB34A] via-[#A0D056] to-[#5A752A]" />
+        <div className="h-2 w-full bg-gradient-to-r from-[#8CB34A] via-[#A0D056] to-[#5A752A] shrink-0" />
 
         {/* Modal Header */}
-        <div className="p-6 sm:p-7 border-b border-[#2D3C13] bg-[#0D0D0B] flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1A230A] border border-[#8CB34A] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(140,179,74,0.3)]">
-              <svg className="w-6 h-6 text-[#8CB34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <div className="p-5 sm:p-7 border-b border-[#2D3C13] bg-[#0D0D0B] flex items-start justify-between shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 pr-2">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#1A230A] border border-[#8CB34A] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(140,179,74,0.3)]">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#8CB34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </div>
             <div>
-              <h2 className="font-heading font-bold text-xl sm:text-2xl text-[#E8EDD4] leading-tight">
+              <h2 className="font-heading font-bold text-lg sm:text-2xl text-[#E8EDD4] leading-tight">
                 Tickets Allocated!
               </h2>
               <p className="font-sans text-xs text-[#72943A] mt-0.5">
@@ -82,7 +82,7 @@ export default function TicketPurchaseSuccessModal({
 
           <button
             onClick={onClose}
-            className="text-[#72943A] hover:text-[#E8EDD4] p-1.5 rounded-lg hover:bg-[#1A230A] transition-colors"
+            className="text-[#72943A] hover:text-[#E8EDD4] p-1.5 rounded-lg hover:bg-[#1A230A] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shrink-0"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -91,7 +91,7 @@ export default function TicketPurchaseSuccessModal({
         </div>
 
         {/* Body Scroll Area */}
-        <div className="p-6 sm:p-7 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+        <div className="p-5 sm:p-7 space-y-5 sm:space-y-6 overflow-y-auto flex-1 custom-scrollbar">
           
           {/* Instant Win Banner if user won any instant prize */}
           {instantWins.length > 0 && (
@@ -99,7 +99,7 @@ export default function TicketPurchaseSuccessModal({
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-2xl">🎉</span>
                 <div>
-                  <h3 className="font-heading font-bold text-base text-[#EAB308]">
+                  <h3 className="font-heading font-bold text-sm sm:text-base text-[#EAB308]">
                     INSTANT WIN PRIZE CLAIMED!
                   </h3>
                   <p className="font-sans text-xs text-[#E8EDD4] mt-0.5">
@@ -112,7 +112,7 @@ export default function TicketPurchaseSuccessModal({
                 {instantWins.map((iw, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between bg-[#0D0D0B]/80 border border-[#EAB308]/40 p-3 rounded-xl"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-[#0D0D0B]/80 border border-[#EAB308]/40 p-3 rounded-xl gap-2 sm:gap-0"
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="font-heading font-bold text-xs text-[#EAB308] bg-[#EAB308]/15 border border-[#EAB308]/30 px-2 py-0.5 rounded-md">
@@ -122,7 +122,7 @@ export default function TicketPurchaseSuccessModal({
                         {iw.prizeName}
                       </span>
                     </div>
-                    <span className="text-[10px] font-sans font-bold text-[#4ADE80] bg-[#4ADE80]/10 border border-[#4ADE80]/30 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-sans font-bold text-[#4ADE80] bg-[#4ADE80]/10 border border-[#4ADE80]/30 px-2 py-0.5 rounded-full self-start sm:self-auto">
                       Instant Win Claimed
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export default function TicketPurchaseSuccessModal({
               </span>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-h-[180px] overflow-y-auto p-1 custom-scrollbar">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[160px] overflow-y-auto p-1 custom-scrollbar">
               {tickets.map((t) => {
                 const isWinningTicket =
                   instantWinTicketIds.has(t.id) ||
@@ -157,7 +157,7 @@ export default function TicketPurchaseSuccessModal({
                   <div
                     key={t.id}
                     className={cn(
-                      "py-2.5 px-3 rounded-xl font-heading font-bold text-sm text-center border transition-all flex items-center justify-center gap-1",
+                      "py-2.5 px-3 rounded-xl font-heading font-bold text-xs sm:text-sm text-center border transition-all flex items-center justify-center gap-1 min-h-[40px]",
                       isWinningTicket
                         ? "bg-[#EAB308]/15 border-[#EAB308] text-[#EAB308] shadow-[0_0_15px_rgba(234,179,8,0.3)] animate-bounce"
                         : "bg-[#1A230A] border-[#2D3C13] text-[#8CB34A] hover:border-[#43581E]"
@@ -185,12 +185,12 @@ export default function TicketPurchaseSuccessModal({
 
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-6 sm:p-7 border-t border-[#2D3C13] bg-[#0D0D0B] flex flex-col sm:flex-row gap-3 items-center justify-end">
+        {/* Pinned Footer Actions */}
+        <div className="p-4 sm:p-6 border-t border-[#2D3C13] bg-[#0D0D0B] flex flex-col sm:flex-row gap-3 items-center justify-end shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl border border-[#2D3C13] hover:bg-[#1A230A] text-[#72943A] hover:text-[#E8EDD4] font-sans font-semibold text-xs transition-colors"
+            className="w-full sm:w-auto min-h-[44px] px-5 py-3 rounded-xl border border-[#2D3C13] hover:bg-[#1A230A] text-[#72943A] hover:text-[#E8EDD4] font-sans font-semibold text-xs transition-colors flex items-center justify-center cursor-pointer"
           >
             Keep Browsing Competitions
           </button>
@@ -198,7 +198,7 @@ export default function TicketPurchaseSuccessModal({
           <button
             type="button"
             onClick={handleGoToDashboard}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] font-sans font-bold text-xs shadow-[0_0_20px_rgba(140,179,74,0.3)] transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto min-h-[44px] px-6 py-3 rounded-xl bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] font-sans font-bold text-xs shadow-[0_0_20px_rgba(140,179,74,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             View Tickets in Dashboard
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -5,6 +5,9 @@ import Image from "next/image";
  * Highlights a featured winner testimonial with quote text and a photo showcase.
  */
 export default function WinnerHighlightCard() {
+  return null;
+
+  /*
   const quoteIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +24,6 @@ export default function WinnerHighlightCard() {
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 items-center max-w-6xl mx-auto">
           
-          {/* LEFT: Featured Winner Photo Card */}
           <div className="lg:col-span-6 w-full">
             <div className="relative w-full h-[320px] sm:h-[380px] md:h-[420px] rounded-card border border-border overflow-hidden bg-bg shadow-card group">
               <Image
@@ -32,14 +34,12 @@ export default function WinnerHighlightCard() {
                 className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
                 unoptimized
               />
-              {/* Overlay Label Badge */}
               <div className="absolute bottom-4 left-4 bg-surface/90 backdrop-blur-md border border-border-medium px-3.5 py-1.5 rounded-badge text-[11px] font-semibold text-text-brand tracking-wider uppercase shadow-sm">
                 Featured Winner Photo
               </div>
             </div>
           </div>
 
-          {/* RIGHT: Testimonial Quotation */}
           <div className="lg:col-span-6 flex flex-col gap-6 text-left">
             <div className="shrink-0">{quoteIcon}</div>
             
@@ -61,4 +61,5 @@ export default function WinnerHighlightCard() {
       </div>
     </section>
   );
+  */
 }

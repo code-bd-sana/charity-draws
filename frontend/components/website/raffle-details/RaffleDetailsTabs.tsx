@@ -86,7 +86,7 @@ export default function RaffleDetailsTabs({ raffle }: RaffleDetailsTabsProps) {
               </div>
               <div>
                 <h4 className="font-heading font-medium text-[#E8EDD4] text-[13px]">Complete checkout</h4>
-                <p className="text-[12px] text-[#72943A] mt-0.5">Pay securely via card or PayPal. Free postal entry also available — see T&Cs.</p>
+                <p className="text-[12px] text-[#72943A] mt-0.5">Pay securely via card (Cashflows). Free postal entry also available — see T&Cs.</p>
               </div>
             </div>
             <div className="flex gap-4 items-start">

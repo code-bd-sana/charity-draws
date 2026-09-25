@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { userService } from '../services/user.service';
 import { authService } from '../services/auth.service';
+import { winnerKeys, userKeys } from './queryKeys';
 
 export const useMyWinnersQuery = () => {
   return useQuery({
-    queryKey: ['my-winners'],
+    queryKey: winnerKeys.my(),
     queryFn: () => userService.getMyWinners(),
   });
 };
@@ -15,14 +16,13 @@ export const useChangePasswordMutation = () => {
   });
 };
 
-
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: userService.updateProfile,
     onSuccess: (data) => {
-      queryClient.setQueryData(['user'], data.user);
+      queryClient.setQueryData(userKeys.all, data.user);
     },
   });
 };
@@ -33,7 +33,7 @@ export const useUploadAvatarMutation = () => {
   return useMutation({
     mutationFn: userService.uploadAvatar,
     onSuccess: (data) => {
-      queryClient.setQueryData(['user'], data.user);
+      queryClient.setQueryData(userKeys.all, data.user);
     },
   });
 };

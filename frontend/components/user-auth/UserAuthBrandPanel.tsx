@@ -57,9 +57,9 @@ export default function UserAuthBrandPanel({ mode }: UserAuthBrandPanelProps) {
   ];
 
   return (
-    <div className="bg-surface flex flex-col h-full min-h-[500px] lg:min-h-screen justify-between px-6 py-10 md:px-[80px] md:py-[64px] border-b lg:border-b-0 lg:border-r border-divider">
+    <div className="bg-surface flex flex-col h-auto lg:h-full min-h-0 lg:min-h-screen justify-between px-4 py-5 sm:px-6 sm:py-8 md:px-[80px] md:py-[64px] border-b lg:border-b-0 lg:border-r border-divider">
       {/* Top Branding Logo */}
-      <div>
+      <div className="flex items-center justify-between lg:block">
         <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105 select-none">
           <Image
             alt="Charity Draws Logo"
@@ -67,38 +67,38 @@ export default function UserAuthBrandPanel({ mode }: UserAuthBrandPanelProps) {
             height={85}
             width={85}
             priority
-            className="object-contain"
+            className="object-contain w-14 h-auto sm:w-16 md:w-20 lg:w-[85px]"
           />
         </Link>
       </div>
 
       {/* Center Body Panel */}
-      <div className="my-10 lg:my-auto flex flex-col gap-8 w-full max-w-lg">
+      <div className="my-4 sm:my-6 lg:my-auto flex flex-col gap-3 sm:gap-6 md:gap-8 w-full max-w-lg">
         {/* Community Pill Badge */}
-        <div className="self-start bg-accent-bg border border-border px-3 py-1.5 rounded-badge">
+        <div className="self-start bg-accent-bg border border-border px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-badge">
           <p className="font-sans font-medium text-[10px] md:text-xs text-text-brand tracking-wider uppercase">
             JOIN THE COMMUNITY
           </p>
         </div>
 
         {/* Hero Headlines */}
-        <div className="flex flex-col gap-4">
-          <h1 className="font-heading font-bold text-3xl md:text-[48px] text-text-primary leading-[1.1] md:leading-[1.2] tracking-wide select-none">
+        <div className="flex flex-col gap-2 sm:gap-4">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl md:text-[48px] text-text-primary leading-[1.15] md:leading-[1.2] tracking-wide select-none">
             Win Premium Charity Gear
           </h1>
-          <p className="font-sans font-normal text-sm md:text-xl text-text-secondary leading-relaxed">
+          <p className="font-sans font-normal text-xs sm:text-sm md:text-xl text-text-secondary leading-relaxed">
             Create your free account to enter draws, track ticket purchases, and view winners.
           </p>
         </div>
 
-        {/* Bottom Feature Details / Tracker */}
-        <div className="flex flex-col gap-4">
+        {/* Bottom Feature Details / Tracker - show on sm+ screens to keep mobile view sleek */}
+        <div className="hidden sm:flex flex-col gap-3 md:gap-4">
           {trustStats.map((stat, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-bg border border-divider">
+              <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-full bg-accent-bg border border-divider shrink-0">
                 {stat.icon}
               </div>
-              <span className="font-sans font-normal text-sm md:text-base text-text-primary">
+              <span className="font-sans font-normal text-xs md:text-base text-text-primary">
                 {stat.label}
               </span>
             </div>
@@ -107,7 +107,7 @@ export default function UserAuthBrandPanel({ mode }: UserAuthBrandPanelProps) {
       </div>
 
       {/* Bottom Footer Copy */}
-      <div className="mt-8 lg:mt-0 pt-6 border-t border-divider/40 lg:border-t-0">
+      <div className="hidden lg:block mt-8 lg:mt-0 pt-6 border-t border-divider/40 lg:border-t-0">
         <p className="font-sans font-normal text-[10px] md:text-[11px] text-border-medium">
           © {new Date().getFullYear()} Charity Draws · Privacy Policy · Terms
         </p>

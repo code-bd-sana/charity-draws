@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useHostRaffles, useDeleteRaffle, useDrawWinner } from "../../../hooks/useRaffleHooks";
 import { cn } from "../../../lib/utils";
 import { Pagination } from "../../ui/Pagination";
-import { toast } from "sonner";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
+import EmptyState from "../../ui/EmptyState";
+import { useMySubscription } from "../../../hooks/useSubscriptionHooks";
+import { toast } from "sonner";
 
 const filters = ["All", "Live", "Pending Review", "Ended", "Drafts"];
 
@@ -17,6 +19,21 @@ export default function HostRafflesTable() {
   const [page, setPage] = useState(1);
   const [selectedCompForDelete, setSelectedCompForDelete] = useState<RaffleDeleteTarget | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data: subData } = useMySubscription();
+  const isPremiumOrPro =
+    !!subData?.plan &&
+    (subData.plan.id === "premium" ||
+      subData.plan.id === "pro" ||
+      subData.plan.name?.toLowerCase().includes("premium") ||
+      subData.plan.name?.toLowerCase().includes("pro") ||
+      Number(subData.plan.price) > 0);
+
+  const feeRate = isPremiumOrPro ? 0.10 : 0.15;
+  const feePercentText = isPremiumOrPro ? "10%" : "15%";
+  const planLabel = isPremiumOrPro ? (subData?.plan?.name || "Premium") : "Free Plan";
+  const netRate = 1 - feeRate;
+  const netPercentText = isPremiumOrPro ? "90%" : "85%";
 
   const { data: response, isLoading } = useHostRaffles({ page, limit: 10, status: activeFilter });
   const raffles = response?.data || [];
@@ -78,9 +95,9 @@ export default function HostRafflesTable() {
       </div>
 
       {/* Table Container */}
-      <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col shadow-card">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden flex flex-col shadow-card overflow-x-auto scrollbar-thin">
         {/* Table Header */}
-        <div className="grid grid-cols-5 items-center px-6 h-12 border-b border-divider bg-accent-bg/30">
+        <div className="grid grid-cols-5 items-center px-6 h-12 border-b border-divider bg-accent-bg/30 min-w-[700px]">
           <div className="col-span-2 sm:col-span-1">
             <span className="font-sans font-semibold text-[11px] uppercase tracking-wider text-text-muted">
               Raffle Name
@@ -113,7 +130,7 @@ export default function HostRafflesTable() {
           {isLoading && (
             <div className="flex flex-col w-full animate-in fade-in duration-300">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 border-b border-divider last:border-b-0 bg-surface">
+                <div key={i} className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 border-b border-divider last:border-b-0 bg-surface min-w-[700px]">
                   {/* Raffle Name */}
                   <div className="col-span-2 sm:col-span-1 flex items-center gap-3 pr-4">
                     <div className="w-3 h-3 shrink-0 bg-accent-bg rounded-sm animate-pulse" style={{ animationDelay: `${i * 150}ms` }}></div>
@@ -147,11 +164,11 @@ export default function HostRafflesTable() {
           {!isLoading && raffles.map((raffle: any) => {
             const isExpanded = expandedId === raffle.id;
             return (
-              <div key={raffle.id} className="flex flex-col border-b border-divider last:border-b-0">
+              <div key={raffle.id} className="flex flex-col border-b border-divider last:border-b-0 min-w-[700px]">
                 {/* Main Row */}
                 <div
                   onClick={() => toggleRow(raffle.id)}
-                  className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 cursor-pointer hover:bg-accent-bg/40 transition-colors bg-surface"
+                  className="grid grid-cols-5 items-center px-6 min-h-[72px] py-3 cursor-pointer hover:bg-accent-bg/40 transition-colors bg-surface min-w-[700px]"
                 >
                   <div className="col-span-2 sm:col-span-1 flex items-center gap-3 min-w-0 pr-4">
                     <svg
@@ -230,11 +247,11 @@ export default function HostRafflesTable() {
                       </span>
                       <div className="flex items-center gap-3">
                         <span className="font-heading font-bold text-2xl text-red-600">
-                          - £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * 0.05).toFixed(2)}
+                          - £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * feeRate).toFixed(2)}
                         </span>
                         <div className="px-2 py-0.5 bg-accent-bg border border-border-medium rounded-full flex items-center justify-center">
                           <span className="font-sans font-semibold text-[10px] text-text-brand">
-                            5% (Standard)
+                            {feePercentText} ({planLabel})
                           </span>
                         </div>
                       </div>
@@ -245,11 +262,11 @@ export default function HostRafflesTable() {
                     {/* Your Earnings */}
                     <div className="flex flex-col gap-1.5 flex-1">
                       <span className="font-sans font-semibold text-[11px] tracking-wider uppercase text-text-muted">
-                        Your Earnings
+                        Your Earnings ({netPercentText} Net)
                       </span>
                       <div className="flex flex-col relative w-full">
                         <span className="font-heading font-bold text-2xl text-text-brand">
-                          £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * 0.95).toFixed(2)}
+                          £{((Number(raffle.pricePerTicket) * raffle.ticketsSold) * netRate).toFixed(2)}
                         </span>
                         <span className="font-sans text-xs text-text-muted font-medium">
                           Paid out on completion
@@ -316,8 +333,13 @@ export default function HostRafflesTable() {
           })}
           
           {!isLoading && raffles?.length === 0 && (
-            <div className="p-8 text-center text-text-muted font-sans text-xs md:text-sm font-medium">
-              No competitions found.
+            <div className="py-8">
+              <EmptyState
+                title="No Competitions Found"
+                description="You haven't created any competitions matching this filter. Launch a new raffle to start raising funds!"
+                actionText="+ Create Raffle"
+                actionHref="/dashboard/host/create"
+              />
             </div>
           )}
         </div>

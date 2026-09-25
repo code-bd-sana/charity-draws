@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService, AuthResponse } from '../services/auth.service';
 import { useRouter } from 'next/navigation';
+import { userKeys } from './queryKeys';
 
 export const useLoginMutation = () => {
   const queryClient = useQueryClient();
@@ -10,7 +11,7 @@ export const useLoginMutation = () => {
     mutationFn: authService.login,
     onSuccess: (data: AuthResponse) => {
       if (data?.user) {
-        queryClient.setQueryData(['user'], data.user);
+        queryClient.setQueryData(userKeys.all, data.user);
         
         // Redirect to dashboard (dispatcher at /dashboard handles role-based routing)
         router.push('/dashboard');
@@ -39,7 +40,7 @@ export const useResendVerificationMutation = () => {
 
 export const useAuthUser = () => {
   return useQuery({
-    queryKey: ['user'],
+    queryKey: userKeys.all,
     queryFn: async () => {
       try {
         const { user } = await authService.me();
@@ -63,7 +64,7 @@ export const useLogout = () => {
     } catch (e) {
       console.error('Logout failed', e);
     } finally {
-      queryClient.setQueryData(['user'], null);
+      queryClient.setQueryData(userKeys.all, null);
       queryClient.clear();
       router.push('/login');
     }

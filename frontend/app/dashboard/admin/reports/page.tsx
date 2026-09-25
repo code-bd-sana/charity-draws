@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AdminReportsPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full">
+    <div className="flex flex-col gap-6 w-full">
       <ReportsAnalyticsDashboard />
     </div>
   );

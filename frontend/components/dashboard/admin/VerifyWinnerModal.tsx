@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Winner, winnerService } from "../../../services/winner.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { winnerKeys, raffleKeys } from "../../../hooks/queryKeys";
 
 interface VerifyWinnerModalProps {
   isOpen: boolean;
@@ -17,8 +18,9 @@ export default function VerifyWinnerModal({ isOpen, onClose, winner }: VerifyWin
   const mutation = useMutation({
     mutationFn: () => winnerService.verifyWinner(winner!.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminWinners'] });
-      queryClient.invalidateQueries({ queryKey: ['adminWinnersStats'] });
+      queryClient.invalidateQueries({ queryKey: winnerKeys.admin() });
+      queryClient.invalidateQueries({ queryKey: winnerKeys.public() });
+      queryClient.invalidateQueries({ queryKey: raffleKeys.all });
       onClose();
     },
   });

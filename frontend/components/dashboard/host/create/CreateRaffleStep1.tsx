@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RaffleFormData } from "./CreateRaffleWizard";
+import { usePublicCategories } from "../../../../hooks/useCategoryHooks";
 
 interface Props {
   formData: RaffleFormData;
@@ -7,16 +8,21 @@ interface Props {
   onNext: () => void;
 }
 
-const categories = [
-  "Charity Rifles",
-  "Charity Pistols",
-  "Tactical Gear",
-  "Accessories",
-  "Sniper Rifles",
-  "Bundles",
-];
-
 export default function CreateRaffleStep1({ formData, updateForm, onNext }: Props) {
+  const { data: categories = [], isLoading } = usePublicCategories();
+
+  // If formData.category is empty or default, set to first available dynamic category
+  useEffect(() => {
+    if (categories.length > 0) {
+      const exists = categories.some(
+        (c) => c.name.toLowerCase() === formData.category?.toLowerCase() || c.slug === formData.category
+      );
+      if (!exists || !formData.category) {
+        updateForm({ category: categories[0].name });
+      }
+    }
+  }, [categories, formData.category, updateForm]);
+
   return (
     <div className="flex flex-col w-full animate-in fade-in zoom-in-95 duration-200">
       <div className="flex flex-col gap-2 mb-8">
@@ -24,7 +30,7 @@ export default function CreateRaffleStep1({ formData, updateForm, onNext }: Prop
           Basic Details
         </h2>
         <p className="font-sans text-xs md:text-sm text-text-muted font-medium">
-          Start by giving your raffle a catchy title and clear description.
+          Start by giving your raffle a catchy title, choosing a verified category, and adding a clear description.
         </p>
       </div>
 
@@ -38,27 +44,37 @@ export default function CreateRaffleStep1({ formData, updateForm, onNext }: Prop
             type="text"
             value={formData.title}
             onChange={(e) => updateForm({ title: e.target.value })}
-            placeholder="e.g. Tokyo Marui Next Gen HK416"
+            placeholder="e.g. Luxury Tech Bundle or Cash Prize"
             className="h-11 px-4 bg-bg border border-border rounded-button font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
           />
         </div>
 
-        {/* Category */}
+        {/* Dynamic Category Selector */}
         <div className="flex flex-col gap-2">
-          <label className="font-sans font-semibold text-xs md:text-sm text-text-primary">
-            Category
+          <label className="font-sans font-semibold text-xs md:text-sm text-text-primary flex items-center justify-between">
+            <span>Category</span>
+            {isLoading && (
+              <span className="text-[11px] text-primary animate-pulse font-normal">Loading categories...</span>
+            )}
           </label>
           <div className="relative">
             <select
               value={formData.category}
               onChange={(e) => updateForm({ category: e.target.value })}
-              className="w-full h-11 px-4 bg-bg border border-border rounded-button font-sans text-xs md:text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+              disabled={isLoading}
+              className="w-full h-11 px-4 bg-bg border border-border rounded-button font-sans text-xs md:text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none cursor-pointer disabled:opacity-50"
             >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
+              {isLoading ? (
+                <option value="">Loading categories...</option>
+              ) : categories.length === 0 ? (
+                <option value="General">General</option>
+              ) : (
+                categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
             </select>
             <svg
               className="w-5 h-5 text-text-muted absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"

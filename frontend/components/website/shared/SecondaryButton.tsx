@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
-interface SecondaryButtonProps {
+export interface SecondaryButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   href?: string;
@@ -10,6 +11,8 @@ interface SecondaryButtonProps {
   icon?: React.ReactNode;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 /**
@@ -23,7 +26,11 @@ export default function SecondaryButton({
   icon,
   disabled = false,
   type = "button",
+  isLoading = false,
+  loadingText,
 }: SecondaryButtonProps) {
+  const isDisabled = disabled || isLoading;
+
   const baseClasses = cn(
     "inline-flex items-center justify-center bg-accent-bg border border-primary hover:border-primary-hover text-text-primary font-sans font-semibold text-sm px-6 py-3 rounded-button transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-95",
     className
@@ -31,12 +38,15 @@ export default function SecondaryButton({
 
   const content = (
     <>
-      <span>{children}</span>
-      {icon && <span className="ml-2 inline-flex">{icon}</span>}
+      {isLoading && (
+        <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />
+      )}
+      <span>{isLoading && loadingText ? loadingText : children}</span>
+      {!isLoading && icon && <span className="ml-2 inline-flex">{icon}</span>}
     </>
   );
 
-  if (href) {
+  if (href && !isDisabled) {
     return (
       <Link href={href} className={baseClasses}>
         {content}
@@ -48,7 +58,7 @@ export default function SecondaryButton({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isDisabled}
       className={baseClasses}
     >
       {content}

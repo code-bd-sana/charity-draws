@@ -33,6 +33,8 @@ export interface Raffle {
   autoDrawSoldOut?: boolean;
   category?: string;
   guaranteedDraw?: boolean;
+  minTicketsPerUser?: number;
+  maxTicketsPerUser?: number | null;
   _count?: { instantWins: number; [key: string]: number };
   createdAt: string;
   host?: HostProfile;
@@ -71,6 +73,7 @@ export interface CreateRaffleData {
   totalTickets: number;
   startDate: string;
   endDate: string;
+  category?: string;
   isAutoDraw?: boolean;
   autoDrawDate?: boolean;
   autoDrawSoldOut?: boolean;

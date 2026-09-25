@@ -9,6 +9,7 @@ import ManualWinnerSelectModal from "../shared/ManualWinnerSelectModal";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
 import ViewSoldTicketsModal from "../shared/ViewSoldTicketsModal";
 import { Pagination } from "../../ui/Pagination";
+import EmptyState from "../../ui/EmptyState";
 
 export default function AdminCompetitionsTable() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -250,8 +251,11 @@ export default function AdminCompetitionsTable() {
 
             {!isLoading && raffles.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-12 px-6 text-center text-text-muted font-sans text-sm font-medium">
-                  No competitions found.
+                <td colSpan={7} className="py-8 px-6 text-center">
+                  <EmptyState
+                    title="No Competitions Found"
+                    description="No competitions match your search query or filter criteria."
+                  />
                 </td>
               </tr>
             )}

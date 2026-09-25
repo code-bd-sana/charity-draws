@@ -2,7 +2,7 @@ import React from "react";
 
 export default function UserDashboardPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 w-full">
         {/* Total Tickets */}

@@ -3,20 +3,21 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { winnerService } from "../../../services/winner.service";
+import { winnerKeys } from "../../../hooks/queryKeys";
 
 export default function WinnersStatsCards() {
   const { data: allWinners } = useQuery({
-    queryKey: ["adminWinnersStats", "All"],
+    queryKey: winnerKeys.adminStats("All"),
     queryFn: () => winnerService.getAdminWinners({ limit: 1 }),
   });
 
   const { data: pendingVerifications } = useQuery({
-    queryKey: ["adminWinnersStats", "Pending Verification"],
+    queryKey: winnerKeys.adminStats("Pending Verification"),
     queryFn: () => winnerService.getAdminWinners({ limit: 1, verificationStatus: "PENDING" }),
   });
 
   const { data: pendingDeliveries } = useQuery({
-    queryKey: ["adminWinnersStats", "Pending Delivery"],
+    queryKey: winnerKeys.adminStats("Pending Delivery"),
     queryFn: () => winnerService.getAdminWinners({ limit: 1, status: "PENDING" }),
   });
 

@@ -150,7 +150,20 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
     luxury: "Luxury",
   };
 
-  const categoryLabel = categoryLabels[category] || category;
+  const formatCategoryLabel = (cat: string) => {
+    if (!cat) return "Competition";
+    const lower = cat.toLowerCase();
+    if (categoryLabels[lower]) return categoryLabels[lower];
+    if (cat.includes("-") || cat.includes("_")) {
+      return cat
+        .split(/[-_]/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    }
+    return cat;
+  };
+
+  const categoryLabel = formatCategoryLabel(category);
 
   if (viewMode === "list") {
     return (

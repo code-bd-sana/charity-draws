@@ -4,7 +4,7 @@ import WebsiteNavbar from "../../components/website/layout/WebsiteNavbar";
 import WebsiteFooter from "../../components/website/layout/WebsiteFooter";
 import WinnersHero from "../../components/website/winners/WinnersHero";
 import WinnersGrid from "../../components/website/winners/WinnersGrid";
-import WinnerHighlightCard from "../../components/website/winners/WinnerHighlightCard";
+// import WinnerHighlightCard from "../../components/website/winners/WinnerHighlightCard";
 
 export const metadata: Metadata = {
   title: "Winners Gallery | Charity Draws",
@@ -35,8 +35,8 @@ export default function WinnersPage() {
           {/* Stateful timeline grid + pagination card list */}
           <WinnersGrid />
 
-          {/* Featured winner testimonial row */}
-          <WinnerHighlightCard />
+          {/* Featured winner testimonial row (Commented out) */}
+          {/* <WinnerHighlightCard /> */}
         </div>
       </main>
 

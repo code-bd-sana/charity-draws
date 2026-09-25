@@ -99,12 +99,12 @@ export default function ConfirmPayoutModal({
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
       
-      <div className="relative w-[90%] max-w-[540px] bg-surface border border-border rounded-card shadow-card z-[10000] animate-fadeIn flex flex-col p-7 max-h-[90vh] overflow-y-auto select-none">
+      <div className="relative w-[95vw] sm:max-w-[540px] bg-surface border border-border rounded-card shadow-card z-[10000] animate-fadeIn flex flex-col p-6 sm:p-7 max-h-[85vh] overflow-hidden select-none">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+        <div className="flex items-center justify-between pb-4 border-b border-border shrink-0">
           <div>
-            <h2 className="font-heading font-bold text-[20px] text-text-primary">
+            <h2 className="font-heading font-bold text-[18px] sm:text-[20px] text-text-primary">
               {actionType === "APPROVE" ? "Confirm Payout Approval" : actionType === "REJECT" ? "Reject Withdrawal Request" : "Payout Details"}
             </h2>
             <p className="font-sans text-[12px] text-text-muted font-medium">
@@ -113,7 +113,7 @@ export default function ConfirmPayoutModal({
           </div>
           <button 
             onClick={onClose}
-            className="text-text-muted hover:text-text-primary transition-colors p-1 rounded-button hover:bg-accent-bg cursor-pointer"
+            className="text-text-muted hover:text-text-primary transition-colors p-1.5 rounded-button hover:bg-accent-bg cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -121,62 +121,65 @@ export default function ConfirmPayoutModal({
           </button>
         </div>
 
-        {/* Host Info */}
-        <div className="bg-bg border border-border rounded-button p-4 mb-5 space-y-1">
-          <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block">Host Business</span>
-          <div className="flex justify-between items-center">
-            <span className="font-heading font-bold text-[15px] text-text-primary">{payout.hostBusinessName}</span>
-            <span className="font-sans font-semibold text-[12px] text-text-brand">{payout.hostUserEmail}</span>
+        {/* Scrollable Form Body */}
+        <div className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
+          {/* Host Info */}
+          <div className="bg-bg border border-border rounded-button p-4 space-y-1">
+            <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block">Host Business</span>
+            <div className="flex justify-between items-center">
+              <span className="font-heading font-bold text-[15px] text-text-primary">{payout.hostBusinessName}</span>
+              <span className="font-sans font-semibold text-[12px] text-text-brand">{payout.hostUserEmail}</span>
+            </div>
           </div>
+
+          {/* Financial Breakdown (10% Commission) */}
+          <div className="bg-bg border border-border rounded-button p-4 space-y-2.5">
+            <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block">Financial & Commission Breakdown</span>
+            
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-text-muted font-medium">Gross Requested Amount:</span>
+              <span className="font-semibold text-text-primary">£{grossAmount.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between text-xs font-sans text-red-600 font-medium">
+              <span>Platform Commission (10%):</span>
+              <span className="font-semibold">-£{feeAmount.toFixed(2)}</span>
+            </div>
+
+            <div className="pt-2 border-t border-divider flex justify-between text-sm font-bold font-sans">
+              <span className="text-text-brand">Net Payout Sent to Host:</span>
+              <span className="text-text-brand">£{netAmount.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Payment Account Details */}
+          <div className="bg-bg border border-border rounded-button p-4">
+            <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block mb-2">
+              Payment Method: {payout.payoutMethod || 'Bank Transfer'}
+            </span>
+            {renderPayoutAccountInfo()}
+          </div>
+
+          {/* Optional Admin Note */}
+          {actionType !== "VIEW" && (
+            <div>
+              <label className="block font-sans text-xs text-text-muted font-semibold mb-1">Admin Notes / Reference (Optional)</label>
+              <textarea
+                value={adminNotes}
+                onChange={(e) => setAdminNotes(e.target.value)}
+                placeholder="e.g. Bank transfer transaction ref #12345 or reason for rejection"
+                rows={2}
+                className="w-full p-3 bg-bg border border-border rounded-button text-xs text-text-primary focus:outline-none focus:border-primary font-sans"
+              />
+            </div>
+          )}
         </div>
-
-        {/* Financial Breakdown (10% Commission) */}
-        <div className="bg-bg border border-border rounded-button p-4 mb-5 space-y-2.5">
-          <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block">Financial & Commission Breakdown</span>
-          
-          <div className="flex justify-between text-xs font-sans">
-            <span className="text-text-muted font-medium">Gross Requested Amount:</span>
-            <span className="font-semibold text-text-primary">£{grossAmount.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-xs font-sans text-red-600 font-medium">
-            <span>Platform Commission (10%):</span>
-            <span className="font-semibold">-£{feeAmount.toFixed(2)}</span>
-          </div>
-
-          <div className="pt-2 border-t border-divider flex justify-between text-sm font-bold font-sans">
-            <span className="text-text-brand">Net Payout Sent to Host:</span>
-            <span className="text-text-brand">£{netAmount.toFixed(2)}</span>
-          </div>
-        </div>
-
-        {/* Payment Account Details */}
-        <div className="bg-bg border border-border rounded-button p-4 mb-5">
-          <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block mb-2">
-            Payment Method: {payout.payoutMethod || 'Bank Transfer'}
-          </span>
-          {renderPayoutAccountInfo()}
-        </div>
-
-        {/* Optional Admin Note */}
-        {actionType !== "VIEW" && (
-          <div className="mb-6">
-            <label className="block font-sans text-xs text-text-muted font-semibold mb-1">Admin Notes / Reference (Optional)</label>
-            <textarea
-              value={adminNotes}
-              onChange={(e) => setAdminNotes(e.target.value)}
-              placeholder="e.g. Bank transfer transaction ref #12345 or reason for rejection"
-              rows={2}
-              className="w-full p-3 bg-bg border border-border rounded-button text-xs text-text-primary focus:outline-none focus:border-primary font-sans"
-            />
-          </div>
-        )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-divider">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-divider shrink-0">
           <button 
             onClick={onClose}
-            className="px-5 py-2.5 rounded-button border border-border text-xs font-sans font-semibold text-text-primary hover:bg-accent-bg transition-colors cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 rounded-button border border-border text-xs font-sans font-semibold text-text-primary hover:bg-accent-bg transition-colors cursor-pointer flex items-center justify-center"
           >
             Close
           </button>
@@ -185,7 +188,7 @@ export default function ConfirmPayoutModal({
             <button 
               onClick={() => handleConfirm("APPROVED")}
               disabled={updateStatusMutation.isPending}
-              className="px-6 py-2.5 rounded-button bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-6 py-2.5 rounded-button bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center"
             >
               {updateStatusMutation.isPending ? "Processing..." : `Approve & Pay £${netAmount.toFixed(2)}`}
             </button>
@@ -195,7 +198,7 @@ export default function ConfirmPayoutModal({
             <button 
               onClick={() => handleConfirm("REJECTED")}
               disabled={updateStatusMutation.isPending}
-              className="px-6 py-2.5 rounded-button bg-red-600 hover:bg-red-700 text-white font-sans font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50"
+              className="min-h-[44px] px-6 py-2.5 rounded-button bg-red-600 hover:bg-red-700 text-white font-sans font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center"
             >
               {updateStatusMutation.isPending ? "Processing..." : "Reject & Refund Host Wallet"}
             </button>

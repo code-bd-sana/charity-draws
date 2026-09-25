@@ -24,6 +24,7 @@ export interface RaffleFormData {
   totalTickets: string;
   ticketPrice: string;
   minTickets: string;
+  maxTickets: string;
   // Step 3
   coverImage: string | null; // URL or mock path
   gallery: string[];
@@ -40,12 +41,13 @@ export interface RaffleFormData {
 
 const initialData: RaffleFormData = {
   title: "",
-  category: "Charity Rifles",
+  category: "",
   description: "",
   mainPrizeValue: "",
   totalTickets: "",
   ticketPrice: "",
   minTickets: "1",
+  maxTickets: "",
   coverImage: null,
   gallery: [],
   hasInstantWins: false,
@@ -108,6 +110,7 @@ export default function CreateRaffleWizard() {
       // 2. Create Raffle
       const created = await createRaffle.mutateAsync({
         title: formData.title,
+        category: formData.category,
         description: formData.description,
         mainPrizeValue: formData.mainPrizeValue ? Number(formData.mainPrizeValue) : undefined,
         pricePerTicket: Number(formData.ticketPrice) || 0,
@@ -117,6 +120,8 @@ export default function CreateRaffleWizard() {
         isAutoDraw: formData.isAutoDraw,
         autoDrawDate: formData.autoDrawDate,
         autoDrawSoldOut: formData.autoDrawSoldOut,
+        minTicketsPerUser: formData.minTickets ? (Number(formData.minTickets) || 1) : 1,
+        maxTicketsPerUser: formData.maxTickets ? (Number(formData.maxTickets) || null) : null,
         instantWins: formData.hasInstantWins ? processedInstantWins : [],
       });
 

@@ -3,7 +3,20 @@
 import { useEffect, useState } from 'react';
 import { Category, categoryService } from '../../../../services/category.service';
 
-const AVAILABLE_ICONS = ['Crosshair', 'Target', 'Shield', 'Gun', 'Ammo', 'Helmet', 'Star'];
+const AVAILABLE_ICONS = [
+  'Sparkles',
+  'Gift',
+  'Trophy',
+  'Heart',
+  'Laptop',
+  'Watch',
+  'Car',
+  'Plane',
+  'Gamepad',
+  'Star',
+  'Shield',
+  'Tag',
+];
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -105,7 +118,7 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className='flex flex-col gap-8 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none'>
+    <div className='flex flex-col gap-8 w-full animate-fadeIn select-none'>
       <div className='flex justify-between items-center'>
         <div>
           <h1 className='font-heading font-bold text-[32px] text-text-primary tracking-tight'>

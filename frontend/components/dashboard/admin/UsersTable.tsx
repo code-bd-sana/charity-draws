@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import ConfirmBlockModal from "./ConfirmBlockModal";
 import UserDetailsModal from "./UserDetailsModal";
 import { User } from "../../../services/admin.service";
+import EmptyState from "../../ui/EmptyState";
 
 export default function UsersTable() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -136,7 +137,7 @@ export default function UsersTable() {
       </div>
 
       {/* Table Container */}
-      <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto">
+      <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto scrollbar-thin">
         <table className="w-full min-w-[900px] text-left border-collapse">
           <thead>
             <tr className="border-b border-border bg-accent-bg/50">
@@ -183,8 +184,11 @@ export default function UsersTable() {
               ))
             ) : filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-text-muted font-sans text-sm font-medium">
-                  No users found.
+                <td colSpan={6} className="py-8 px-6 text-center">
+                  <EmptyState
+                    title="No Users Found"
+                    description="No user accounts match the search term or selected status filter."
+                  />
                 </td>
               </tr>
             ) : (

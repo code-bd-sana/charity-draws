@@ -9,94 +9,91 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('Seeding categories with new images...');
+  console.log('Seeding authentic Charity Draws categories...');
 
-  const baseUrl = process.env.APP_URL || 'http://127.0.0.1:5000';
+  // Old airsoft categories to clean up if they exist
+  const oldAirsoftSlugs = [
+    'aeg-rifles',
+    'gbb-pistols',
+    'sniper-rifles',
+    'tactical-gear',
+    'charity-rifles',
+    'pistols',
+    'shotguns',
+    'optics-sights',
+    'gear-and-apparel',
+    'tactical-vests',
+    'bbs-and-gas',
+    'bbs-gas',
+  ];
+
+  await prisma.category.deleteMany({
+    where: { slug: { in: oldAirsoftSlugs } },
+  });
 
   const categoriesToSeed = [
     {
-      name: 'Charity Rifles',
-      slug: 'charity-rifles',
-      icon: 'Crosshair',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/rifles.jpg`,
-    },
-    {
-      name: 'Pistols',
-      slug: 'pistols',
-      icon: 'Gun',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/pistols.jpg`,
-    },
-    {
-      name: 'Sniper Rifles',
-      slug: 'sniper-rifles',
-      icon: 'Crosshair',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/sniper.jpg`,
-    },
-    {
-      name: 'Shotguns',
-      slug: 'shotguns',
-      icon: 'Gun',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/shotgun.jpg`,
-    },
-    {
-      name: 'Optics & Sights',
-      slug: 'optics-sights',
-      icon: 'Target',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/optics.jpg`,
-    },
-    {
-      name: 'Gear & Apparel',
-      slug: 'gear-and-apparel',
-      icon: 'Helmet',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/gear_and_apparel.jpg`,
-    },
-    {
-      name: 'Tactical Vests',
-      slug: 'tactical-vests',
-      icon: 'Shield',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/tactical_vests.jpg`,
-    },
-    {
-      name: 'Accessories',
-      slug: 'accessories',
-      icon: 'Ammo',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/accessories.jpg`,
-    },
-    {
-      name: 'BBs & Gas',
-      slug: 'bbs-and-gas',
-      icon: 'Ammo',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/bbs.png`,
-    },
-    {
-      name: 'Bundles',
-      slug: 'bundles',
-      icon: 'Star',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/bundles.jpg`,
-    },
-    {
-      name: 'Mystery Box',
-      slug: 'mystery-box',
-      icon: 'Star',
-      isActive: true,
-      image: `${baseUrl}/uploads/categories/mysterybox.jpg`,
-    },
-    {
       name: 'Cash Prizes',
       slug: 'cash-prizes',
-      icon: 'Star',
+      icon: 'Sparkles',
       isActive: true,
-      image: `${baseUrl}/uploads/categories/cash_prizes.jpg`,
+      image: 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Tech & Gadgets',
+      slug: 'tech-gadgets',
+      icon: 'Laptop',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Luxury Watches',
+      slug: 'luxury-watches',
+      icon: 'Watch',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Cars & Vehicles',
+      slug: 'cars-vehicles',
+      icon: 'Car',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Holidays & Travel',
+      slug: 'holidays-travel',
+      icon: 'Plane',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Gaming & Consoles',
+      slug: 'gaming-consoles',
+      icon: 'Gamepad',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Home & Living',
+      slug: 'home-living',
+      icon: 'Heart',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Gift Cards & Vouchers',
+      slug: 'gift-cards',
+      icon: 'Gift',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+      name: 'Mystery Boxes & Hampers',
+      slug: 'mystery-boxes',
+      icon: 'Trophy',
+      isActive: true,
+      image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop',
     },
   ];
 
@@ -114,7 +111,7 @@ async function main() {
     console.log(`Seeded category: ${cat.name}`);
   }
 
-  console.log('Categories seeded successfully!');
+  console.log('Charity Draws categories seeded successfully!');
 }
 
 main()

@@ -1,16 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { subscriptionService } from '../services/subscription.service';
+import { subscriptionKeys, adminKeys } from './queryKeys';
 
 export const useSubscriptionPlans = () => {
   return useQuery({
-    queryKey: ['subscriptionPlans'],
+    queryKey: subscriptionKeys.plans(),
     queryFn: subscriptionService.getPlans,
   });
 };
 
 export const useMySubscription = () => {
   return useQuery({
-    queryKey: ['mySubscription'],
+    queryKey: subscriptionKeys.my(),
     queryFn: subscriptionService.getMySubscription,
   });
 };
@@ -26,28 +27,31 @@ export const useCancelSubscriptionMutation = () => {
   return useMutation({
     mutationFn: subscriptionService.cancelSubscription,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mySubscription'] });
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.my() });
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminAll() });
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
     },
   });
 };
 
 export const useAllSubscriptionsAdmin = () => {
   return useQuery({
-    queryKey: ['adminSubscriptions'],
+    queryKey: subscriptionKeys.adminAll(),
     queryFn: subscriptionService.getAllSubscriptionsForAdmin,
   });
 };
 
 export const useMyBillingHistory = () => {
   return useQuery({
-    queryKey: ['myBillingHistory'],
+    queryKey: subscriptionKeys.myBilling(),
     queryFn: subscriptionService.getMyBillingHistory,
   });
 };
 
 export const useAdminSubscriptionStats = () => {
   return useQuery({
-    queryKey: ['adminSubscriptionStats'],
+    queryKey: subscriptionKeys.adminStats(),
     queryFn: subscriptionService.getAdminSubscriptionStats,
   });
 };

@@ -9,7 +9,7 @@ export default function AdminWithdrawalsClient() {
   const { data: withdrawals, isLoading } = useAdminWithdrawals();
 
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn select-none">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
       <div>
         <h1 className="font-heading font-bold text-2xl text-text-primary mb-2">Withdraw Requests</h1>
         <p className="font-sans text-sm text-text-muted font-medium">

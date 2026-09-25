@@ -5,7 +5,7 @@ import SubscriptionTable from "../../../../components/dashboard/admin/Subscripti
 
 export default function AdminSubscriptionsManagementPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn">
+    <div className="flex flex-col gap-6 w-full animate-fadeIn">
       {/* Top Stats Cards */}
       <SubscriptionStatsCards />
 

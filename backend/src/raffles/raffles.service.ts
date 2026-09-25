@@ -63,17 +63,32 @@ export class RafflesService {
     const endDate = new Date(data.endDate);
 
     const totalTickets = Number(data.totalTickets) || 0;
+    const minTickets = data.minTicketsPerUser !== undefined ? (Number(data.minTicketsPerUser) || 1) : 1;
+    const maxTickets = data.maxTicketsPerUser !== undefined && data.maxTicketsPerUser !== null && data.maxTicketsPerUser !== '' ? (Number(data.maxTicketsPerUser) || null) : null;
+
+    if (totalTickets > 0 && minTickets > totalTickets) {
+      throw new BadRequestException(`Minimum tickets per order (${minTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
+
+    if (maxTickets !== null && maxTickets > 0 && minTickets > maxTickets) {
+      throw new BadRequestException(`Minimum tickets (${minTickets}) cannot be greater than maximum tickets (${maxTickets})`);
+    }
+
+    if (totalTickets > 0 && maxTickets !== null && maxTickets > totalTickets) {
+      throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
 
     const raffle = await this.prisma.raffle.create({
       data: {
         hostId: hostProfile.id,
         title: data.title,
         slug,
+        category: data.category || null,
         description: data.description || '',
         mainPrizeValue: data.mainPrizeValue
           ? Number(data.mainPrizeValue)
           : null,
-        pricePerTicket: data.ticketPrice || 0,
+        pricePerTicket: data.ticketPrice ?? data.pricePerTicket ?? 0,
         totalTickets,
         startDate,
         endDate,
@@ -83,6 +98,8 @@ export class RafflesService {
           data.autoDrawDate !== undefined ? data.autoDrawDate : true,
         autoDrawSoldOut:
           data.autoDrawSoldOut !== undefined ? data.autoDrawSoldOut : false,
+        minTicketsPerUser: data.minTicketsPerUser !== undefined ? (Number(data.minTicketsPerUser) || 1) : 1,
+        maxTicketsPerUser: data.maxTicketsPerUser !== undefined && data.maxTicketsPerUser !== null ? (Number(data.maxTicketsPerUser) || null) : null,
       },
     });
 
@@ -156,9 +173,35 @@ export class RafflesService {
       status: 'ACTIVE',
     };
 
-    // Category filter
+    const andConditions: any[] = [];
+
+    // Category filter (flexible lookup matching slug, name, or case-insensitive text)
     if (category && category !== 'All' && category !== 'all') {
-      whereClause.category = category;
+      const matchedCategory = await this.prisma.category.findFirst({
+        where: {
+          OR: [
+            { slug: category },
+            { name: { equals: category, mode: 'insensitive' } },
+            { id: category },
+          ],
+        },
+      });
+
+      const possibleMatches: string[] = [category];
+      if (matchedCategory) {
+        if (matchedCategory.name) possibleMatches.push(matchedCategory.name);
+        if (matchedCategory.slug) possibleMatches.push(matchedCategory.slug);
+      }
+      possibleMatches.push(category.replace(/-/g, ' '));
+      possibleMatches.push(category.replace(/\s+/g, '-').toLowerCase());
+
+      const uniqueMatches = Array.from(new Set(possibleMatches.filter(Boolean)));
+
+      andConditions.push({
+        OR: uniqueMatches.map((catVal) => ({
+          category: { equals: catVal, mode: 'insensitive' },
+        })),
+      });
     }
 
     // Instant Win filter
@@ -179,20 +222,26 @@ export class RafflesService {
     }
 
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { host: { businessName: { contains: search, mode: 'insensitive' } } },
-        {
-          host: {
-            user: { firstName: { contains: search, mode: 'insensitive' } },
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { host: { businessName: { contains: search, mode: 'insensitive' } } },
+          {
+            host: {
+              user: { firstName: { contains: search, mode: 'insensitive' } },
+            },
           },
-        },
-        {
-          host: {
-            user: { lastName: { contains: search, mode: 'insensitive' } },
+          {
+            host: {
+              user: { lastName: { contains: search, mode: 'insensitive' } },
+            },
           },
-        },
-      ];
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      whereClause.AND = andConditions;
     }
 
     // Sort logic
@@ -450,6 +499,22 @@ export class RafflesService {
     });
 
     if (!raffle) throw new NotFoundException('Raffle not found');
+
+    const totalTickets = data.totalTickets !== undefined ? Number(data.totalTickets) : raffle.totalTickets;
+    const minTickets = data.minTicketsPerUser !== undefined ? Number(data.minTicketsPerUser) : (raffle as any).minTicketsPerUser ?? 1;
+    const maxTickets = data.maxTicketsPerUser !== undefined ? (data.maxTicketsPerUser ? Number(data.maxTicketsPerUser) : null) : (raffle as any).maxTicketsPerUser;
+
+    if (totalTickets > 0 && minTickets > totalTickets) {
+      throw new BadRequestException(`Minimum tickets per order (${minTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
+
+    if (maxTickets !== null && maxTickets > 0 && minTickets > maxTickets) {
+      throw new BadRequestException(`Minimum tickets (${minTickets}) cannot be greater than maximum tickets (${maxTickets})`);
+    }
+
+    if (totalTickets > 0 && maxTickets !== null && maxTickets > totalTickets) {
+      throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
+    }
 
     return this.prisma.raffle.update({
       where: { id },

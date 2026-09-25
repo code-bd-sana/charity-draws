@@ -42,7 +42,7 @@ export default function WebsiteFooter() {
   };
 
   return (
-    <footer className="bg-bg border-t border-divider py-16 mt-auto">
+    <footer className="bg-bg border-t border-divider pt-16 pb-24 lg:pb-16 mt-auto">
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Logo & Intro Column */}
@@ -59,7 +59,7 @@ export default function WebsiteFooter() {
           </Link>
 
             <p className="font-sans text-xs text-text-muted leading-relaxed max-w-sm">
-              The premier marketplace for charity gear prize competitions. Win top-tier replicas, tactical loadouts, and cash prizes.
+              The premier platform for transparent charity prize competitions. Win incredible prizes, luxury rewards, and cash while supporting meaningful causes.
             </p>
 
             {/* Social Icons row */}
