@@ -236,7 +236,7 @@ export default function HostRegistrationForm({
       )}
 
       {/* Main Form container card */}
-      <div className="bg-surface border border-divider p-6 md:p-10 rounded-card shadow-card w-full">
+      <div className="bg-surface border border-divider p-5 sm:p-6 md:p-10 rounded-card shadow-card w-full">
         <form onSubmit={handleContinue}>
           {/* STEP 1: Account Details */}
           {step === 1 && (

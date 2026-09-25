@@ -95,24 +95,24 @@ export default function HostAuthBrandPanel({
   };
 
   return (
-    <div className="bg-surface flex flex-col h-full min-h-[500px] lg:min-h-screen justify-between px-6 py-10 md:px-[80px] md:py-[64px] border-b lg:border-b-0 lg:border-r-0 lg:w-[795px]">
+    <div className="bg-surface flex flex-col h-auto lg:h-full min-h-0 lg:min-h-screen justify-between px-4 py-5 sm:px-6 sm:py-8 md:px-[80px] md:py-[64px] border-b lg:border-b-0 lg:border-r-0 lg:w-[795px]">
       {/* Top Branding Logo */}
-      <div>
-        <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105 select-none relative w-[85px] h-[85px]">
+      <div className="flex items-center justify-between lg:block">
+        <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105 select-none relative w-14 h-14 sm:w-16 sm:h-16 md:w-[85px] md:h-[85px]">
           <Image
             alt="Charity Draws Logo"
             src={logo}
             fill
             priority
-            className="object-cover"
+            className="object-contain"
           />
         </Link>
       </div>
 
       {/* Center Body Panel */}
-      <div className="my-10 lg:my-auto flex flex-col gap-8 w-full max-w-[635px]">
+      <div className="my-4 sm:my-6 lg:my-auto flex flex-col gap-3 sm:gap-6 md:gap-8 w-full max-w-[635px]">
         {/* Header Text Group */}
-        <div className="flex flex-col gap-5 items-start">
+        <div className="flex flex-col gap-2.5 sm:gap-5 items-start">
           {/* Community Pill Badge */}
           <div className="bg-accent-bg border border-border px-[11px] py-[4px] rounded-[99px]">
             <p className="font-sans font-semibold text-[10px] md:text-[12px] text-text-brand tracking-[0.6px] uppercase whitespace-nowrap">
@@ -122,14 +122,14 @@ export default function HostAuthBrandPanel({
 
           {/* Hero Headlines */}
           <div className="flex flex-col items-start w-full">
-            <h1 className="font-heading font-bold text-[36px] md:text-[48px] text-text-primary leading-[1.1] md:leading-[80px] tracking-[0.24px] select-none">
+            <h1 className="font-heading font-bold text-2xl sm:text-3xl md:text-[48px] text-text-primary leading-tight md:leading-[80px] tracking-[0.24px] select-none">
               {mode === "login"
                 ? "Run Your Own Charity Competitions"
                 : "Become a Verified Host"}
             </h1>
           </div>
-          <div className="max-w-[420px] w-full">
-            <p className="font-sans font-medium text-[15px] md:text-[18px] text-text-muted leading-relaxed w-[593px] max-w-full">
+          <div className="w-full">
+            <p className="font-sans font-medium text-xs sm:text-sm md:text-[18px] text-text-muted leading-relaxed max-w-full">
               {mode === "login"
                 ? "Log in to manage your raffles, track sales, and view your earnings."
                 : "Apply in minutes. Our team typically reviews applications within 24 hours."}
@@ -138,10 +138,10 @@ export default function HostAuthBrandPanel({
         </div>
 
         {/* Bottom Feature Details / Tracker */}
-        <div className="mt-3">
+        <div className="mt-1 sm:mt-3">
           {mode === "login" ? (
             /* Login Trust Stats list */
-            <div className="flex flex-col gap-[16px]">
+            <div className="hidden sm:flex flex-col gap-[16px]">
               {trustStats.map((stat, i) => (
                 <div key={i} className="flex items-center gap-[12px]">
                   <div className="flex items-center justify-center w-[18px] h-[18px] text-text-brand font-bold">
@@ -155,72 +155,95 @@ export default function HostAuthBrandPanel({
             </div>
           ) : (
             /* Registration stepper */
-            <div className="flex flex-col gap-0 select-none">
-              {registrationSteps.map((step, index) => {
-                const status = getStepStatus(step.stepIds);
-                const isLast = index === registrationSteps.length - 1;
+            <div className="flex flex-col select-none">
+              {/* Mobile Compact Stepper (< sm) */}
+              <div className="flex sm:hidden items-center gap-2 overflow-x-auto py-1">
+                {registrationSteps.map((step) => {
+                  const status = getStepStatus(step.stepIds);
+                  return (
+                    <div
+                      key={step.number}
+                      className={cn(
+                        "flex items-center gap-1.5 px-2.5 py-1 rounded-badge text-[11px] font-sans font-semibold whitespace-nowrap shrink-0 border",
+                        status === "active" && "bg-primary text-primary-text border-primary",
+                        status === "completed" && "bg-accent-bg text-primary border-primary",
+                        status === "inactive" && "bg-surface text-text-muted border-border-medium"
+                      )}
+                    >
+                      <span>Step {step.number}</span>
+                    </div>
+                  );
+                })}
+              </div>
 
-                return (
-                  <div key={step.number} className="flex gap-[12px] items-start">
-                    {/* Visual Connector Column */}
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={cn(
-                          "flex items-center justify-center w-[32px] h-[32px] rounded-full border transition-all duration-300 font-heading text-[13px]",
-                          status === "active" && "bg-primary border-primary text-primary-text font-bold shadow-glow",
-                          status === "completed" && "bg-accent-bg border-primary text-primary font-bold",
-                          status === "inactive" && "bg-surface border-border-medium text-text-muted font-semibold"
-                        )}
-                      >
-                        {status === "completed" ? (
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        ) : (
-                          step.number
+              {/* Desktop & Tablet Vertical Stepper (sm+) */}
+              <div className="hidden sm:flex flex-col gap-0">
+                {registrationSteps.map((step, index) => {
+                  const status = getStepStatus(step.stepIds);
+                  const isLast = index === registrationSteps.length - 1;
+
+                  return (
+                    <div key={step.number} className="flex gap-[12px] items-start">
+                      {/* Visual Connector Column */}
+                      <div className="flex flex-col items-center">
+                        <div
+                          className={cn(
+                            "flex items-center justify-center w-[32px] h-[32px] rounded-full border transition-all duration-300 font-heading text-[13px]",
+                            status === "active" && "bg-primary border-primary text-primary-text font-bold shadow-glow",
+                            status === "completed" && "bg-accent-bg border-primary text-primary font-bold",
+                            status === "inactive" && "bg-surface border-border-medium text-text-muted font-semibold"
+                          )}
+                        >
+                          {status === "completed" ? (
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                          ) : (
+                            step.number
+                          )}
+                        </div>
+                        {!isLast && (
+                          <div className="py-[2px]">
+                            <div
+                              className={cn(
+                                "w-px h-[36px] transition-colors duration-300",
+                                status === "completed" ? "bg-primary" : "bg-border-medium"
+                              )}
+                            />
+                          </div>
                         )}
                       </div>
-                      {!isLast && (
-                        <div className="py-[2px]">
-                          <div
-                            className={cn(
-                              "w-px h-[36px] transition-colors duration-300",
-                              status === "completed" ? "bg-primary" : "bg-border-medium"
-                            )}
-                          />
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Step Label Column */}
-                    <div className="pt-[6px] pb-[36px]">
-                      <p
-                        className={cn(
-                          "font-sans text-[13px] md:text-sm leading-[19.5px] transition-colors duration-300 whitespace-nowrap",
-                          status === "active" && "text-text-primary font-bold",
-                          status === "completed" && "text-text-primary/90 font-semibold",
-                          status === "inactive" && "text-text-muted font-medium"
-                        )}
-                      >
-                        {step.label}
-                      </p>
+                      {/* Step Label Column */}
+                      <div className="pt-[6px] pb-[36px]">
+                        <p
+                          className={cn(
+                            "font-sans text-[13px] md:text-sm leading-[19.5px] transition-colors duration-300 whitespace-nowrap",
+                            status === "active" && "text-text-primary font-bold",
+                            status === "completed" && "text-text-primary/90 font-semibold",
+                            status === "inactive" && "text-text-muted font-medium"
+                          )}
+                        >
+                          {step.label}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
       </div>
 
       {/* Bottom Footer Copy */}
-      <div className="mt-8 lg:mt-0">
+      <div className="hidden lg:block mt-8 lg:mt-0">
         <p className="font-sans font-medium text-[12px] leading-[16.5px] text-text-muted whitespace-nowrap">
           © {new Date().getFullYear()} Charity Draws · Privacy Policy · Terms
         </p>
