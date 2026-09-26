@@ -55,6 +55,18 @@ export class RafflesService {
       }
     }
 
+    const planName = activeSub.plan?.name?.toLowerCase() || '';
+    const hasInstantWins =
+      data.instantWins &&
+      Array.isArray(data.instantWins) &&
+      data.instantWins.length > 0;
+
+    if (hasInstantWins && planName !== 'pro' && planName !== 'premium') {
+      throw new ForbiddenException(
+        'Instant Wins are only available on Pro and Premium subscription plans. Please upgrade your subscription to enable Instant Wins.',
+      );
+    }
+
     // Generate unique slug
     const baseSlug = data.title
       .toLowerCase()
@@ -907,9 +919,90 @@ export class RafflesService {
   async getPendingApprovals() {
     return this.prisma.raffle.findMany({
       where: { status: 'PENDING_APPROVAL' },
-      include: { host: { include: { user: true } } },
+      include: {
+        instantWins: {
+          orderBy: { ticketNumber: 'asc' },
+        },
+        host: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                phone: true,
+                location: true,
+                address: true,
+                role: true,
+                isBlocked: true,
+                createdAt: true,
+              },
+            },
+            subscriptions: {
+              where: { status: 'ACTIVE' },
+              include: { plan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+            _count: {
+              select: {
+                raffles: true,
+              },
+            },
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findOneAdmin(id: string) {
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      include: {
+        instantWins: {
+          orderBy: { ticketNumber: 'asc' },
+        },
+        host: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                phone: true,
+                location: true,
+                address: true,
+                role: true,
+                isBlocked: true,
+                createdAt: true,
+              },
+            },
+            subscriptions: {
+              where: { status: 'ACTIVE' },
+              include: { plan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+            _count: {
+              select: {
+                raffles: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!raffle) {
+      throw new NotFoundException('Raffle not found');
+    }
+
+    return raffle;
   }
 
   async findAllAdmin(query: any) {

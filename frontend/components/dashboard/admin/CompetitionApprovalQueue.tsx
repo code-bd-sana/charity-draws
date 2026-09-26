@@ -6,10 +6,12 @@ import { toast } from "sonner";
 import { formatUKDateTime } from "../../../lib/uk-date";
 import { useAdminPendingRaffles, useApproveRaffle } from "../../../hooks/useRaffleHooks";
 import RejectCompetitionModal from "./RejectCompetitionModal";
+import AdminRaffleDetailModal from "./AdminRaffleDetailModal";
 
 export default function CompetitionApprovalQueue() {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState<{ id: string, title: string } | null>(null);
+  const [selectedCompetitionForDetails, setSelectedCompetitionForDetails] = useState<any | null>(null);
   const [approvingId, setApprovingId] = useState<string | null>(null);
 
   const { data: pendingRaffles, isLoading } = useAdminPendingRaffles();
@@ -18,6 +20,7 @@ export default function CompetitionApprovalQueue() {
   const handleReject = (id: string, title: string) => {
     setSelectedCompetition({ id, title });
     setIsRejectModalOpen(true);
+    setSelectedCompetitionForDetails(null);
   };
 
   const handleApprove = async (id: string) => {
@@ -26,6 +29,7 @@ export default function CompetitionApprovalQueue() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       await approveMutation.mutateAsync(id);
       toast.success('Competition approved and is now live!');
+      setSelectedCompetitionForDetails(null);
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to approve');
     } finally {
@@ -80,17 +84,33 @@ export default function CompetitionApprovalQueue() {
             {/* Top Bar (Host Info) */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-divider bg-accent-bg/30">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0">
-                  <span className="font-sans font-bold text-[11px] text-text-brand">
-                    {item.host?.user?.firstName?.[0] || 'A'}
-                  </span>
+                <div className="w-8 h-8 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0 overflow-hidden">
+                  {item.host?.user?.avatarUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={item.host.user.avatarUrl}
+                      alt={item.host.businessName || "Host"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="font-sans font-bold text-[11px] text-text-brand">
+                      {item.host?.user?.firstName?.[0] || 'H'}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-sans font-semibold text-[13px] text-text-primary leading-tight">
-                    {item.host?.user?.firstName || 'Host'} {item.host?.user?.lastName || ''}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-sans font-semibold text-[13px] text-text-primary leading-tight">
+                      {item.host?.businessName || `${item.host?.user?.firstName || 'Host'} ${item.host?.user?.lastName || ''}`}
+                    </span>
+                    {item.host?.isVerified && (
+                      <span className="px-1.5 py-0.2 rounded-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold uppercase">
+                        Verified
+                      </span>
+                    )}
+                  </div>
                   <span className="font-sans text-[11px] text-text-muted leading-tight mt-0.5 font-medium">
-                    Submitted {item.createdAt ? formatDistanceToNow(new Date(item.createdAt)) : 'recently'} ago
+                    Submitted {item.createdAt ? formatDistanceToNow(new Date(item.createdAt)) : 'recently'} ago · {item.host?.user?.firstName} {item.host?.user?.lastName}
                   </span>
                 </div>
               </div>
@@ -99,7 +119,10 @@ export default function CompetitionApprovalQueue() {
             {/* Middle Bar (Content Details) */}
             <div className="flex flex-col sm:flex-row gap-6 p-6 pb-4">
               {/* Image Container */}
-              <div className="w-full sm:w-[140px] h-[100px] shrink-0 bg-accent-bg border border-border rounded-button flex items-center justify-center overflow-hidden">
+              <div 
+                onClick={() => setSelectedCompetitionForDetails(item)}
+                className="w-full sm:w-[140px] h-[100px] shrink-0 bg-accent-bg border border-border rounded-button flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+              >
                 {item.mainImage ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={item.mainImage} alt={item.title} className="w-full h-full object-cover" />
@@ -112,8 +135,25 @@ export default function CompetitionApprovalQueue() {
 
               {/* Text Info */}
               <div className="flex flex-col gap-2 flex-1 min-w-0">
-                <h3 className="font-heading font-bold text-[18px] text-text-primary">{item.title}</h3>
-                <p className="font-sans text-[13px] text-text-muted leading-relaxed max-w-[800px] font-medium">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 
+                    onClick={() => setSelectedCompetitionForDetails(item)}
+                    className="font-heading font-bold text-[18px] text-text-primary hover:text-text-brand cursor-pointer transition-colors"
+                  >
+                    {item.title}
+                  </h3>
+                  {item.category && (
+                    <span className="px-2 py-0.5 rounded-badge bg-elevated text-text-brand border border-border-medium text-[10px] font-bold">
+                      {item.category}
+                    </span>
+                  )}
+                  {item.instantWins && item.instantWins.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-badge bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold">
+                      {item.instantWins.length} Instant Wins
+                    </span>
+                  )}
+                </div>
+                <p className="font-sans text-[13px] text-text-muted leading-relaxed max-w-[800px] font-medium line-clamp-2">
                   {item.description || 'No description provided.'}
                 </p>
                 <span className="font-sans text-[12px] text-text-brand font-semibold mt-1">
@@ -123,7 +163,19 @@ export default function CompetitionApprovalQueue() {
             </div>
 
             {/* Bottom Bar (Actions) */}
-            <div className="flex flex-col sm:flex-row items-center justify-end p-6 pt-4 gap-4 mt-2 border-t border-divider">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-6 pt-4 gap-4 mt-2 border-t border-divider">
+              <button
+                onClick={() => setSelectedCompetitionForDetails(item)}
+                disabled={approvingId !== null}
+                className="w-full sm:w-auto h-[40px] px-5 rounded-button bg-surface border border-border hover:bg-accent-bg/40 text-text-primary cursor-pointer font-sans font-semibold text-[13px] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+              >
+                <svg className="w-4 h-4 text-text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+                <span>View Full Details & Host Profile</span>
+              </button>
+
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => handleReject(item.id, item.title)}
@@ -155,6 +207,15 @@ export default function CompetitionApprovalQueue() {
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         competitionData={selectedCompetition}
+      />
+
+      <AdminRaffleDetailModal
+        isOpen={Boolean(selectedCompetitionForDetails)}
+        onClose={() => setSelectedCompetitionForDetails(null)}
+        raffle={selectedCompetitionForDetails}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        isApproving={approvingId === selectedCompetitionForDetails?.id}
       />
     </div>
   );

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { RaffleFormData } from "./CreateRaffleWizard";
+import { useMySubscription } from "../../../../hooks/useSubscriptionHooks";
 
 interface Props {
   formData: RaffleFormData;
@@ -9,11 +11,26 @@ interface Props {
 }
 
 export default function CreateRaffleStep4({ formData, updateForm, onNext, onPrev }: Props) {
+  const { data: mySubscription, isLoading: isSubscriptionLoading } = useMySubscription();
+
+  const planName = mySubscription?.plan?.name?.toLowerCase() || "free";
+  const isPaidActive =
+    mySubscription?.status === "ACTIVE" &&
+    (planName === "pro" || planName === "premium");
+
+  // Automatically reset instant wins if user is on Free plan
+  useEffect(() => {
+    if (!isSubscriptionLoading && !isPaidActive && formData.hasInstantWins) {
+      updateForm({ hasInstantWins: false, instantWins: [] });
+    }
+  }, [isSubscriptionLoading, isPaidActive, formData.hasInstantWins, updateForm]);
+
   const [numInstantWins, setNumInstantWins] = useState(
     formData.instantWins.length > 0 ? formData.instantWins.length.toString() : "1"
   );
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isPaidActive) return;
     const hasInstantWins = e.target.checked;
     updateForm({ hasInstantWins });
     if (hasInstantWins && formData.instantWins.length === 0) {
@@ -81,7 +98,7 @@ export default function CreateRaffleStep4({ formData, updateForm, onNext, onPrev
 
   return (
     <div className="flex flex-col w-full animate-in fade-in zoom-in-95 duration-200">
-      <div className="flex flex-col gap-2 mb-8">
+      <div className="flex flex-col gap-2 mb-6">
         <h2 className="font-heading font-bold text-xl md:text-2xl text-text-primary">
           Instant Wins
         </h2>
@@ -90,18 +107,93 @@ export default function CreateRaffleStep4({ formData, updateForm, onNext, onPrev
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="checkbox" 
-            className="w-5 h-5 rounded border-border bg-bg text-primary focus:ring-primary accent-primary"
-            checked={formData.hasInstantWins}
-            onChange={handleToggle}
-          />
-          <span className="font-sans font-semibold text-xs md:text-sm text-text-primary">Enable Instant Wins</span>
-        </label>
+      {/* Free Plan Notice / Upgrade Banner */}
+      {!isSubscriptionLoading && !isPaidActive && (
+        <div className="mb-6 p-5 rounded-card border border-amber-500/40 bg-amber-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-600 text-white shadow-xs">
+                  Pro &amp; Premium Exclusive
+                </span>
+                <span className="text-amber-950 dark:text-text-muted text-xs font-medium">
+                  Current plan: <strong className="text-amber-950 dark:text-text-primary font-bold capitalize">{mySubscription?.plan?.name || "Free"}</strong>
+                </span>
+              </div>
+              <h3 className="font-heading font-bold text-sm md:text-base text-amber-950 dark:text-text-primary">
+                Instant Wins are not available on the Free Plan
+              </h3>
+              <p className="font-sans text-xs md:text-sm text-amber-900/90 dark:text-text-muted leading-relaxed max-w-xl">
+                Instant Wins are only applicable for <strong>Pro</strong> and <strong>Premium</strong> subscribers. If you want to enable Instant Wins for your competitions, please subscribe to upgrade your plan.
+              </p>
+            </div>
+          </div>
 
-        {formData.hasInstantWins && (
+          <Link
+            href="/dashboard/host/billing"
+            className="shrink-0 h-10 px-5 rounded-button bg-primary hover:bg-primary-hover text-primary-text font-heading font-semibold text-xs transition-all shadow-glow flex items-center justify-center gap-2 cursor-pointer self-stretch md:self-auto text-center"
+          >
+            <span>Subscribe / Upgrade</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-6">
+        {!isPaidActive ? (
+          <div className="flex items-center justify-between p-4 bg-bg border border-border/80 rounded-button opacity-75">
+            <label className="flex items-center gap-3 cursor-not-allowed select-none">
+              <input 
+                type="checkbox" 
+                className="w-5 h-5 rounded border-border bg-bg text-primary focus:ring-primary accent-primary cursor-not-allowed opacity-50"
+                checked={false}
+                disabled
+              />
+              <div className="flex flex-col">
+                <span className="font-sans font-semibold text-xs md:text-sm text-text-muted flex items-center gap-2">
+                  Enable Instant Wins
+                  <span className="text-[10px] bg-accent-bg border border-border px-2 py-0.5 rounded-badge text-text-muted font-medium">
+                    Locked on Free Plan
+                  </span>
+                </span>
+                <span className="font-sans text-[11px] text-text-muted">
+                  If you want to enable Instant Wins, please subscribe to a Pro or Premium plan.
+                </span>
+              </div>
+            </label>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-4 bg-bg border border-border rounded-button">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <input 
+                type="checkbox" 
+                className="w-5 h-5 rounded border-border bg-bg text-primary focus:ring-primary accent-primary cursor-pointer"
+                checked={formData.hasInstantWins}
+                onChange={handleToggle}
+              />
+              <div className="flex flex-col">
+                <span className="font-sans font-semibold text-xs md:text-sm text-text-primary flex items-center gap-2">
+                  Enable Instant Wins
+                  <span className="text-[10px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-badge font-bold uppercase">
+                    Unlocked ({mySubscription?.plan?.name})
+                  </span>
+                </span>
+                <span className="font-sans text-[11px] text-text-muted">
+                  Add instant prizes that participants can win immediately when buying tickets.
+                </span>
+              </div>
+            </label>
+          </div>
+        )}
+
+        {isPaidActive && formData.hasInstantWins && (
           <div className="flex flex-col gap-6 mt-2 border-t border-divider pt-6">
             <div className="flex flex-col gap-2">
               <label className="font-sans font-semibold text-xs md:text-sm text-text-primary">

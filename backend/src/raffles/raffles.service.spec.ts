@@ -84,6 +84,65 @@ describe('RafflesService', () => {
       expect(result.id).toBe('raffle-1');
       expect(result.status).toBe('PENDING');
     });
+
+    it('should throw ForbiddenException if host is on Free plan and tries to add instant wins', async () => {
+      prismaMock.hostProfile.findUnique.mockResolvedValue({
+        id: 'host-1',
+        userId: 'user-1',
+        subscriptions: [
+          {
+            id: 'sub-free',
+            status: 'ACTIVE',
+            plan: { name: 'Free', maxActiveRaffles: 1 },
+          },
+        ],
+        raffles: [],
+      });
+
+      await expect(
+        service.create('user-1', {
+          title: 'Free Raffle with Instant Wins',
+          pricePerTicket: 1,
+          totalTickets: 100,
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + 86400000).toISOString(),
+          instantWins: [{ prizeName: 'Gun Case', rrpValue: 50 }],
+        }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should allow instant wins if host is on Premium or Pro plan', async () => {
+      prismaMock.hostProfile.findUnique.mockResolvedValue({
+        id: 'host-1',
+        userId: 'user-1',
+        subscriptions: [
+          {
+            id: 'sub-premium',
+            status: 'ACTIVE',
+            plan: { name: 'Premium', maxActiveRaffles: 5 },
+          },
+        ],
+        raffles: [],
+      });
+
+      prismaMock.raffle.create.mockResolvedValue({
+        id: 'raffle-premium',
+        title: 'Premium Draw',
+        status: 'PENDING',
+      });
+      prismaMock.instantWin.createMany.mockResolvedValue({ count: 1 });
+
+      const result = await service.create('user-1', {
+        title: 'Premium Draw',
+        pricePerTicket: 5,
+        totalTickets: 100,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 86400000).toISOString(),
+        instantWins: [{ prizeName: 'Optic Sight', rrpValue: 120 }],
+      });
+
+      expect(result.id).toBe('raffle-premium');
+    });
   });
 
   describe('drawWinner', () => {

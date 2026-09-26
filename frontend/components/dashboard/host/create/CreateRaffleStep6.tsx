@@ -133,6 +133,49 @@ export default function CreateRaffleStep6({ formData, onPrev, onPublish, isSubmi
             </div>
           </div>
         </div>
+
+        {/* Instant Wins Summary */}
+        <div className="flex flex-col p-6 bg-bg border border-border rounded-card gap-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-divider pb-2">
+            <h3 className="font-heading font-bold text-base text-text-primary">
+              Instant Wins
+            </h3>
+            <span
+              className={cn(
+                "px-2.5 py-0.5 rounded-badge text-[10px] font-bold uppercase",
+                formData.hasInstantWins
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                  : "bg-surface border border-border text-text-muted"
+              )}
+            >
+              {formData.hasInstantWins ? `${formData.instantWins.length} Prizes Enabled` : "Disabled (Not Applicable)"}
+            </span>
+          </div>
+
+          {formData.hasInstantWins && formData.instantWins.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {formData.instantWins.map((iw, idx) => (
+                <div key={idx} className="p-3 bg-surface border border-border rounded-button flex items-center gap-3">
+                  {iw.imageUrl ? (
+                    <img src={iw.imageUrl} alt={iw.prizeName} className="w-10 h-10 rounded-button object-cover shrink-0" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-button bg-accent-bg flex items-center justify-center shrink-0 text-text-brand text-xs font-bold">
+                      #{idx + 1}
+                    </div>
+                  )}
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-sans font-bold text-xs text-text-primary truncate">{iw.prizeName || `Prize #${idx + 1}`}</span>
+                    <span className="font-sans text-[11px] text-text-muted">{iw.rrpValue ? `£${iw.rrpValue}` : "No RRP"}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="font-sans text-xs text-text-muted">
+              {isPremiumOrPro ? "No instant wins added for this competition." : "Instant Wins are not included (exclusive to Pro & Premium plans)."}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Footer Actions */}
