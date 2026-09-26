@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import * as bcrypt from 'bcrypt';
+import { processAndSaveImage } from '../common/utils/image.util';
 
 @Injectable()
 export class UsersService {
@@ -48,7 +49,13 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    const { businessName, bio, ...userData } = updateProfileDto;
+    const { businessName, bio, avatarUrl, logo, ...userData } = updateProfileDto;
+
+    const rawAvatar = avatarUrl || logo;
+    if (rawAvatar !== undefined) {
+      const processed = await processAndSaveImage(rawAvatar, 'avatars');
+      (userData as any).avatarUrl = processed;
+    }
 
     const updatedUser = await this.prisma.$transaction(async (prisma) => {
       const u = await prisma.user.update({
@@ -103,11 +110,12 @@ export class UsersService {
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { avatarUrl },
+      include: { hostProfile: true },
     });
 
     const { passwordHash, ...userWithoutPassword } = updatedUser;
     return {
-      message: 'Avatar updated successfully',
+      message: 'Logo updated successfully',
       user: userWithoutPassword,
     };
   }

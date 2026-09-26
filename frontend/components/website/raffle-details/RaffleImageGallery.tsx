@@ -81,7 +81,7 @@ export default function RaffleImageGallery({
   return (
     <div className="flex flex-col gap-4 w-full select-none">
       {/* Main Image Frame */}
-      <div className="relative w-full h-[320px] sm:h-[400px] md:h-[460px] bg-surface border border-border rounded-card overflow-hidden">
+      <div className="relative w-full h-[320px] sm:h-[400px] md:h-[460px] bg-white border border-[#E9D5FF] rounded-[24px] overflow-hidden shadow-sm">
         {images.length > 0 ? (
           <Image
             src={images[activeImageIndex]}
@@ -89,7 +89,7 @@ export default function RaffleImageGallery({
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 980px"
-            className="object-cover opacity-85 transition-all duration-300"
+            className="object-cover opacity-95 transition-all duration-300"
             unoptimized
           />
         ) : (
@@ -100,38 +100,38 @@ export default function RaffleImageGallery({
 
         {/* Floating WOW Countdown Badge (Bottom Center) */}
         {timeData && !timeData.ended && (
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-6 bg-[#0a0e04]/85 backdrop-blur-md border border-[#8cb34a]/30 flex flex-col items-center justify-center gap-1.5 px-6 py-3 rounded-2xl select-none shadow-[0_4px_30px_rgba(140,179,74,0.15)] pointer-events-none z-20 transition-all duration-300">
-            <div className="flex items-center gap-1.5 text-[#8cb34a]">
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-6 bg-[#1A0B2E]/90 backdrop-blur-md border border-[#8B5CF6]/40 flex flex-col items-center justify-center gap-1.5 px-6 py-3 rounded-2xl select-none shadow-[0_8px_30px_rgba(113,49,200,0.25)] pointer-events-none z-20 transition-all duration-300">
+            <div className="flex items-center gap-1.5 text-[#C084FC]">
               <svg className="w-3.5 h-3.5 animate-[spin_3s_linear_infinite]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
-              <span className="text-[9px] font-bold tracking-widest uppercase">Ends In</span>
+              <span className="text-[9px] font-extrabold tracking-widest uppercase text-[#C084FC]">Ends In</span>
             </div>
             
             <div className="flex items-center gap-2.5 sm:gap-3">
               {timeData.d! > 0 && (
                 <div className="flex flex-col items-center min-w-[36px]">
-                  <span className="text-xl sm:text-2xl font-heading font-bold text-white tabular-nums tracking-tight">{timeData.d}</span>
-                  <span className="text-[9px] text-[#a0d056] font-semibold uppercase tracking-wider">Days</span>
+                  <span className="text-xl sm:text-2xl font-heading font-extrabold text-white tabular-nums tracking-tight">{timeData.d}</span>
+                  <span className="text-[9px] text-[#D8B4FE] font-bold uppercase tracking-wider">Days</span>
                 </div>
               )}
-              {timeData.d! > 0 && <span className="text-[#8cb34a]/30 text-xl font-light mb-2.5">:</span>}
+              {timeData.d! > 0 && <span className="text-[#8B5CF6]/40 text-xl font-light mb-2.5">:</span>}
 
               <div className="flex flex-col items-center min-w-[36px]">
-                <span className="text-xl sm:text-2xl font-heading font-bold text-white tabular-nums tracking-tight">{timeData.h}</span>
-                <span className="text-[9px] text-[#a0d056] font-semibold uppercase tracking-wider">Hrs</span>
+                <span className="text-xl sm:text-2xl font-heading font-extrabold text-white tabular-nums tracking-tight">{timeData.h}</span>
+                <span className="text-[9px] text-[#D8B4FE] font-bold uppercase tracking-wider">Hrs</span>
               </div>
-              <span className="text-[#8cb34a]/30 text-xl font-light mb-2.5">:</span>
+              <span className="text-[#8B5CF6]/40 text-xl font-light mb-2.5">:</span>
 
               <div className="flex flex-col items-center min-w-[36px]">
-                <span className="text-xl sm:text-2xl font-heading font-bold text-white tabular-nums tracking-tight">{timeData.m}</span>
-                <span className="text-[9px] text-[#a0d056] font-semibold uppercase tracking-wider">Mins</span>
+                <span className="text-xl sm:text-2xl font-heading font-extrabold text-white tabular-nums tracking-tight">{timeData.m}</span>
+                <span className="text-[9px] text-[#D8B4FE] font-bold uppercase tracking-wider">Mins</span>
               </div>
-              <span className="text-[#8cb34a]/30 text-xl font-light mb-2.5">:</span>
+              <span className="text-[#8B5CF6]/40 text-xl font-light mb-2.5">:</span>
 
               <div className="flex flex-col items-center min-w-[36px]">
-                <span className="text-xl sm:text-2xl font-heading font-bold text-[#8cb34a] tabular-nums tracking-tight drop-shadow-[0_0_12px_rgba(140,179,74,0.5)] animate-pulse">{timeData.s}</span>
-                <span className="text-[9px] text-[#8cb34a] font-semibold uppercase tracking-wider">Secs</span>
+                <span className="text-xl sm:text-2xl font-heading font-extrabold text-[#A855F7] tabular-nums tracking-tight drop-shadow-[0_0_12px_rgba(168,85,247,0.6)] animate-pulse">{timeData.s}</span>
+                <span className="text-[9px] text-[#C084FC] font-bold uppercase tracking-wider">Secs</span>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function RaffleImageGallery({
 
         {/* Floating Host Name Badge (Top Left) */}
         {hostName && (
-          <div className="absolute left-4 top-4 bg-[#1a230a]/90 backdrop-blur-sm border border-[#2d3c13] px-3 py-1.5 rounded-[6px] text-[11px] font-bold text-[#a0d056] shadow-md truncate max-w-[200px] pointer-events-none z-20">
+          <div className="absolute left-4 top-4 bg-white/95 backdrop-blur-md border border-[#E9D5FF] px-3.5 py-1.5 rounded-full text-xs font-bold text-[#7131C8] shadow-md truncate max-w-[220px] pointer-events-none z-20">
             By {hostName}
           </div>
         )}
@@ -153,10 +153,10 @@ export default function RaffleImageGallery({
               key={idx}
               onClick={() => setActiveImageIndex(idx)}
               className={cn(
-                "relative w-20 h-16 sm:w-24 sm:h-20 bg-surface rounded-button overflow-hidden border transition-all duration-200 cursor-pointer",
+                "relative w-20 h-16 sm:w-24 sm:h-20 bg-white rounded-xl overflow-hidden border transition-all duration-200 cursor-pointer",
                 activeImageIndex === idx
-                  ? "border-primary shadow-glow opacity-100"
-                  : "border-border opacity-60 hover:opacity-100"
+                  ? "border-[#7131C8] ring-2 ring-[#7131C8]/30 shadow-md opacity-100"
+                  : "border-[#E9D5FF] opacity-60 hover:opacity-100"
               )}
             >
               <Image

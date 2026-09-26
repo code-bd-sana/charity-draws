@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Draw } from "../../../types/draw.types";
 import { formatCurrency } from "../../../lib/utils";
+import { formatUKDate } from "../../../lib/uk-date";
 import PrimaryButton from "./PrimaryButton";
 
 interface DrawCardProps {
@@ -259,7 +260,7 @@ export default function DrawCard({ draw, variant = "grid" }: DrawCardProps) {
         {/* Countdown timer */}
         <div className="flex items-center gap-1.5 text-xs text-text-muted mb-5 bg-bg/50 px-2.5 py-1.5 rounded-button border border-divider w-fit">
           {clockIcon}
-          <span>{endDate}</span>
+          <span>Closes {formatUKDate(endDate)}</span>
         </div>
 
         {/* Pricing & CTA Row */}

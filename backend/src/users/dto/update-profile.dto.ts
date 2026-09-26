@@ -64,4 +64,23 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @ApiProperty({
+    example: 'https://example.com/logo.png',
+    description: 'User avatar / Host logo URL or Base64',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string;
+
+  @ApiProperty({
+    example: 'https://example.com/logo.png',
+    description: 'Alias for host logo URL or Base64',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  logo?: string;
 }
+

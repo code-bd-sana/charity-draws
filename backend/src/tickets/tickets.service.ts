@@ -9,6 +9,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
 import { RafflesService } from '../raffles/raffles.service';
 
+import { CheckoutDto } from './dto/checkout.dto';
+
 @Injectable()
 export class TicketsService {
   constructor(
@@ -16,6 +18,72 @@ export class TicketsService {
     @Inject(forwardRef(() => RafflesService))
     private readonly rafflesService: RafflesService,
   ) {}
+
+  async checkout(userId: string, checkoutDto: CheckoutDto) {
+    if (!checkoutDto.items || checkoutDto.items.length === 0) {
+      throw new BadRequestException('Basket is empty');
+    }
+
+    // 1. Update user profile with latest contact info and shipping address
+    const fullAddress = [
+      checkoutDto.shippingAddress.addressLine1,
+      checkoutDto.shippingAddress.addressLine2,
+      checkoutDto.shippingAddress.city,
+      checkoutDto.shippingAddress.postalCode,
+      checkoutDto.shippingAddress.country || 'United Kingdom',
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    try {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          firstName: checkoutDto.contactInfo.firstName,
+          lastName: checkoutDto.contactInfo.lastName,
+          phone: checkoutDto.contactInfo.phone,
+          location: checkoutDto.shippingAddress.city,
+          address: fullAddress,
+        },
+      });
+    } catch (err) {
+      console.warn('Could not auto-update user profile during checkout:', err);
+    }
+
+    // 2. Process each item in the basket
+    const allTickets: any[] = [];
+    const allInstantWins: any[] = [];
+    let totalAmount = 0;
+
+    for (const item of checkoutDto.items) {
+      const purchaseResult = await this.allocateTicketsInDatabase(
+        userId,
+        item.raffleId,
+        item.quantity,
+      );
+
+      const tickets = purchaseResult.tickets || (purchaseResult as any).createdTickets;
+      if (tickets) {
+        allTickets.push(...tickets);
+      }
+      const instantWins = purchaseResult.instantWins || (purchaseResult as any).userInstantWins;
+      if (instantWins) {
+        allInstantWins.push(...instantWins);
+      }
+      if (purchaseResult.transaction?.amount) {
+        totalAmount += Number(purchaseResult.transaction.amount);
+      }
+    }
+
+    return {
+      success: true,
+      tickets: allTickets,
+      instantWins: allInstantWins,
+      totalAmount,
+      shippingAddress: checkoutDto.shippingAddress,
+      contactInfo: checkoutDto.contactInfo,
+    };
+  }
 
   async purchaseTickets(userId: string, raffleId: string, quantity: number) {
     if (quantity <= 0) {
@@ -50,6 +118,15 @@ export class TicketsService {
 
         if (raffle.status !== 'ACTIVE') {
           throw new BadRequestException('This competition is not active');
+        }
+
+        const now = new Date();
+        if (raffle.startDate && new Date(raffle.startDate) > now) {
+          throw new BadRequestException('This competition has not started yet');
+        }
+
+        if (raffle.endDate && new Date(raffle.endDate) < now) {
+          throw new BadRequestException('This competition has already ended');
         }
 
         const minRequired = (raffle as any).minTicketsPerUser || 1;
@@ -286,6 +363,15 @@ export class TicketsService {
 
     if (raffle.status !== 'ACTIVE') {
       throw new BadRequestException('This competition is not active');
+    }
+
+    const now = new Date();
+    if (raffle.startDate && new Date(raffle.startDate) > now) {
+      throw new BadRequestException('This competition has not started yet');
+    }
+
+    if (raffle.endDate && new Date(raffle.endDate) < now) {
+      throw new BadRequestException('This competition has already ended');
     }
 
     const minRequired = (raffle as any).minTicketsPerUser || 1;

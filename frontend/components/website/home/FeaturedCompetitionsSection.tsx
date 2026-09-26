@@ -31,7 +31,7 @@ export default function FeaturedCompetitionsSection() {
             ticketPrice: Number(r.pricePerTicket),
             totalTickets: r.totalTickets,
             soldTickets: r.ticketsSold,
-            endDate: new Date(r.endDate).toLocaleDateString(),
+            endDate: r.endDate,
             status: (r.status === 'ACTIVE' ? 'live' : 'ended') as "live" | "ended",
             category: r.category || 'general',
             slug: r.slug,

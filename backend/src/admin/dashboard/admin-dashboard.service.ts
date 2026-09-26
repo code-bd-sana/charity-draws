@@ -13,9 +13,13 @@ export class AdminDashboardService {
       this.prisma.hostProfile.count({
         where: { isVerified: true, user: { isBlocked: false } },
       }),
-      // Live active raffles count
+      // Live active raffles count (between startDate and endDate)
       this.prisma.raffle.count({
-        where: { status: 'ACTIVE' },
+        where: {
+          status: 'ACTIVE',
+          startDate: { lte: new Date() },
+          endDate: { gte: new Date() },
+        },
       }),
       // Total platform revenue sum
       this.prisma.transaction.aggregate({

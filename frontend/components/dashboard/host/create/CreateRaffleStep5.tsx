@@ -22,11 +22,19 @@ export default function CreateRaffleStep5({ formData, updateForm, onNext, onPrev
       </div>
 
       <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-badge bg-accent-bg border border-border text-xs text-text-brand font-medium">
+          <svg className="w-4 h-4 text-text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <span>All times are configured and displayed in <strong>UK Time (Europe/London - BST/GMT)</strong>.</span>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Start Date */}
           <div className="flex flex-col gap-2">
-            <label className="font-sans font-semibold text-xs md:text-sm text-text-primary">
-              Start Date & Time
+            <label className="font-sans font-semibold text-xs md:text-sm text-text-primary flex items-center justify-between">
+              <span>Start Date & Time</span>
+              <span className="text-[10px] text-text-brand font-bold bg-accent-bg px-2 py-0.5 rounded border border-border">UK Time</span>
             </label>
             <input
               type="datetime-local"
@@ -38,8 +46,9 @@ export default function CreateRaffleStep5({ formData, updateForm, onNext, onPrev
 
           {/* End Date */}
           <div className="flex flex-col gap-2">
-            <label className="font-sans font-semibold text-xs md:text-sm text-text-primary">
-              Draw Date & Time
+            <label className="font-sans font-semibold text-xs md:text-sm text-text-primary flex items-center justify-between">
+              <span>Draw Date & Time (End)</span>
+              <span className="text-[10px] text-text-brand font-bold bg-accent-bg px-2 py-0.5 rounded border border-border">UK Time</span>
             </label>
             <input
               type="datetime-local"

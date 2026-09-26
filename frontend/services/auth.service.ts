@@ -27,6 +27,17 @@ export interface AuthResponse {
 }
 
 export const authService = {
+  async uploadAvatar(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/auth/upload-avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   async register(data: any) {
     const response = await api.post('/auth/register', data);
     return response.data;

@@ -14,6 +14,7 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { processAndSaveImage } from '../common/utils/image.util';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +47,13 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(registerDto.password, salt);
 
+    const rawLogo =
+      registerDto.avatarUrl ||
+      registerDto.logoUrl ||
+      registerDto.businessLogo ||
+      registerDto.profilePhoto;
+    const processedAvatarUrl = await processAndSaveImage(rawLogo, 'avatars');
+
     const user = await this.prisma.$transaction(async (prisma) => {
       const newUser = await prisma.user.create({
         data: {
@@ -53,6 +61,7 @@ export class AuthService {
           passwordHash,
           firstName: registerDto.firstName,
           lastName: registerDto.lastName,
+          avatarUrl: processedAvatarUrl || null,
           location: registerDto.location,
           phone: registerDto.phone,
           address: registerDto.address,
@@ -61,10 +70,22 @@ export class AuthService {
       });
 
       if (role === 'HOST') {
+        const rawName =
+          registerDto.businessName ||
+          `${registerDto.firstName || ''} ${registerDto.lastName || ''}`.trim() ||
+          'host';
+        const baseSlug = rawName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+        const slug = `${baseSlug || 'host'}-${uniqueSuffix}`;
+
         await prisma.hostProfile.create({
           data: {
             userId: newUser.id,
             businessName: registerDto.businessName!,
+            slug,
             bio: registerDto.bio,
             phone: registerDto.phone,
             address: registerDto.address,

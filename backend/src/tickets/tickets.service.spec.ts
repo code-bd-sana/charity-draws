@@ -80,4 +80,52 @@ describe('TicketsService', () => {
       ).rejects.toThrow(new BadRequestException('Only 5 tickets remaining'));
     });
   });
+
+  describe('checkout', () => {
+    it('should throw BadRequestException if basket items array is empty', async () => {
+      const mockCheckoutDto: any = {
+        items: [],
+        contactInfo: { firstName: 'John', lastName: 'Doe', email: 'j@d.com', phone: '123' },
+        shippingAddress: { addressLine1: '10 St', city: 'London', postalCode: 'W1' },
+      };
+
+      await expect(
+        service.checkout('user-1', mockCheckoutDto),
+      ).rejects.toThrow(new BadRequestException('Basket is empty'));
+    });
+
+    it('should process items and update user address during checkout', async () => {
+      const mockCheckoutDto: any = {
+        items: [{ raffleId: 'raffle-1', quantity: 2 }],
+        contactInfo: { firstName: 'John', lastName: 'Doe', email: 'j@d.com', phone: '123' },
+        shippingAddress: { addressLine1: '10 St', city: 'London', postalCode: 'W1', country: 'United Kingdom' },
+      };
+
+      prismaMock.user.update.mockResolvedValue({ id: 'user-1' });
+
+      jest.spyOn(service, 'allocateTicketsInDatabase').mockResolvedValue({
+        message: 'Tickets purchased successfully',
+        tickets: [{ id: 't-1', ticketNumber: 10 }, { id: 't-2', ticketNumber: 20 }],
+        instantWins: [],
+        transaction: { amount: 10 },
+      } as any);
+
+      const result = await service.checkout('user-1', mockCheckoutDto);
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          phone: '123',
+          location: 'London',
+          address: '10 St, London, W1, United Kingdom',
+        },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.tickets).toHaveLength(2);
+      expect(result.totalAmount).toBe(10);
+    });
+  });
 });

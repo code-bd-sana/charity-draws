@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Ticket } from "./TicketsTable";
+import { formatUKDateTime } from "../../lib/uk-date";
 
 interface CompetitionDetailsModalProps {
   isOpen: boolean;
@@ -149,7 +150,7 @@ export default function CompetitionDetailsModal({
             <div className="bg-bg border border-border rounded-button p-5 shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <span className="font-heading font-bold text-[14px] text-text-primary">Draw Countdown</span>
-                <span className="font-sans text-[12px] text-text-muted font-medium">Drawn {new Date(raffle.endDate).toLocaleDateString()}</span>
+                <span className="font-sans text-[12px] text-text-muted font-medium">Draws {formatUKDateTime(raffle.endDate)}</span>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {[

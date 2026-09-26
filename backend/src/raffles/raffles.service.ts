@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import {
+  parseUKDateTimeToUTC,
+  getUKEndOfDay,
+} from '../common/utils/uk-date.util';
 
 @Injectable()
 export class RafflesService {
@@ -51,6 +55,18 @@ export class RafflesService {
       }
     }
 
+    const planName = activeSub.plan?.name?.toLowerCase() || '';
+    const hasInstantWins =
+      data.instantWins &&
+      Array.isArray(data.instantWins) &&
+      data.instantWins.length > 0;
+
+    if (hasInstantWins && planName !== 'pro' && planName !== 'premium') {
+      throw new ForbiddenException(
+        'Instant Wins are only available on Pro and Premium subscription plans. Please upgrade your subscription to enable Instant Wins.',
+      );
+    }
+
     // Generate unique slug
     const baseSlug = data.title
       .toLowerCase()
@@ -59,8 +75,20 @@ export class RafflesService {
     const uniqueStr = Math.random().toString(36).substring(2, 8);
     const slug = `${baseSlug}-${uniqueStr}`;
 
-    const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
+    const startDate = data.startDate
+      ? parseUKDateTimeToUTC(data.startDate)
+      : new Date();
+    const endDate = data.endDate
+      ? parseUKDateTimeToUTC(data.endDate)
+      : new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw new BadRequestException('Invalid start date or end date format');
+    }
+
+    if (endDate <= startDate) {
+      throw new BadRequestException('End date must be after start date');
+    }
 
     const totalTickets = Number(data.totalTickets) || 0;
     const minTickets = data.minTicketsPerUser !== undefined ? (Number(data.minTicketsPerUser) || 1) : 1;
@@ -212,13 +240,14 @@ export class RafflesService {
     }
 
     // Status filter
-    if (statusFilter === 'Live') {
-      whereClause.startDate = { lte: now };
-      whereClause.endDate = { gte: now };
-    } else if (statusFilter === 'Upcoming') {
+    if (statusFilter === 'Upcoming') {
       whereClause.startDate = { gt: now };
     } else if (statusFilter === 'Past') {
       whereClause.endDate = { lt: now };
+    } else {
+      // Default & 'Live': Strictly only show raffles whose current date is between startDate and endDate
+      whereClause.startDate = { lte: now };
+      whereClause.endDate = { gte: now };
     }
 
     if (search) {
@@ -516,9 +545,32 @@ export class RafflesService {
       throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
     }
 
+    const updatePayload: any = { ...data };
+
+    if (data.startDate !== undefined) {
+      updatePayload.startDate = parseUKDateTimeToUTC(data.startDate);
+      if (isNaN(updatePayload.startDate.getTime())) {
+        throw new BadRequestException('Invalid start date format');
+      }
+    }
+
+    if (data.endDate !== undefined) {
+      updatePayload.endDate = parseUKDateTimeToUTC(data.endDate);
+      if (isNaN(updatePayload.endDate.getTime())) {
+        throw new BadRequestException('Invalid end date format');
+      }
+    }
+
+    const effectiveStartDate = updatePayload.startDate ?? raffle.startDate;
+    const effectiveEndDate = updatePayload.endDate ?? raffle.endDate;
+
+    if (effectiveEndDate <= effectiveStartDate) {
+      throw new BadRequestException('End date must be after start date');
+    }
+
     return this.prisma.raffle.update({
       where: { id },
-      data,
+      data: updatePayload,
     });
   }
 
@@ -867,9 +919,90 @@ export class RafflesService {
   async getPendingApprovals() {
     return this.prisma.raffle.findMany({
       where: { status: 'PENDING_APPROVAL' },
-      include: { host: { include: { user: true } } },
+      include: {
+        instantWins: {
+          orderBy: { ticketNumber: 'asc' },
+        },
+        host: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                phone: true,
+                location: true,
+                address: true,
+                role: true,
+                isBlocked: true,
+                createdAt: true,
+              },
+            },
+            subscriptions: {
+              where: { status: 'ACTIVE' },
+              include: { plan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+            _count: {
+              select: {
+                raffles: true,
+              },
+            },
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findOneAdmin(id: string) {
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      include: {
+        instantWins: {
+          orderBy: { ticketNumber: 'asc' },
+        },
+        host: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                phone: true,
+                location: true,
+                address: true,
+                role: true,
+                isBlocked: true,
+                createdAt: true,
+              },
+            },
+            subscriptions: {
+              where: { status: 'ACTIVE' },
+              include: { plan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+            _count: {
+              select: {
+                raffles: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!raffle) {
+      throw new NotFoundException('Raffle not found');
+    }
+
+    return raffle;
   }
 
   async findAllAdmin(query: any) {
@@ -1069,16 +1202,23 @@ export class RafflesService {
   }
 
   async getLiveRafflesStats() {
+    const now = new Date();
+    const liveWhere: any = {
+      status: 'ACTIVE',
+      startDate: { lte: now },
+      endDate: { gte: now },
+    };
+
     const liveCount = await this.prisma.raffle.count({
-      where: { status: 'ACTIVE' },
+      where: liveWhere,
     });
 
-    const now = new Date();
-    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    const endOfToday = getUKEndOfDay(now);
 
     const closingTodayCount = await this.prisma.raffle.count({
       where: {
         status: 'ACTIVE',
+        startDate: { lte: now },
         endDate: {
           gte: now,
           lte: endOfToday,
@@ -1087,7 +1227,7 @@ export class RafflesService {
     });
 
     const activeRaffles = await this.prisma.raffle.findMany({
-      where: { status: 'ACTIVE' },
+      where: liveWhere,
       select: {
         totalTickets: true,
         pricePerTicket: true,

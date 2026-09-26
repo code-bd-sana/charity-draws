@@ -23,6 +23,7 @@ import {
 import type { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { PurchaseTicketsDto } from './dto/purchase-tickets.dto';
+import { CheckoutDto } from './dto/checkout.dto';
 
 @ApiTags('Tickets')
 @Controller('api/v1/tickets')
@@ -42,6 +43,25 @@ export class TicketsController {
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
+  }
+
+  @Post('checkout')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT', 'USER', 'HOST', 'ADMIN')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Checkout basket with contact and shipping details' })
+  @ApiResponse({ status: 201, description: 'Tickets successfully purchased' })
+  @ApiResponse({
+    status: 400,
+    description: 'Insufficient tickets or invalid quantity',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async checkout(
+    @Req() req: Request,
+    @Body() body: CheckoutDto,
+  ) {
+    const userId = this.extractUserId(req);
+    return this.ticketsService.checkout(userId, body);
   }
 
   @Post('purchase/:raffleId')

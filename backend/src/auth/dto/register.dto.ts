@@ -66,4 +66,25 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   bio?: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/logo.png', description: 'Host logo or user avatar URL / Base64 image' })
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/logo.png', description: 'Alias for host logo URL / Base64 image' })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/logo.png', description: 'Alias for business logo' })
+  @IsOptional()
+  @IsString()
+  businessLogo?: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/logo.png', description: 'Alias for profile photo' })
+  @IsOptional()
+  @IsString()
+  profilePhoto?: string;
 }
+

@@ -6,13 +6,13 @@ import WebsiteFooter from "../../../components/website/layout/WebsiteFooter";
 import RaffleImageGallery from "../../../components/website/raffle-details/RaffleImageGallery";
 import RaffleEntryCard from "../../../components/website/raffle-details/RaffleEntryCard";
 import RaffleDetailsTabs from "../../../components/website/raffle-details/RaffleDetailsTabs";
-import RelatedRafflesSection from "../../../components/website/raffle-details/RelatedRafflesSection";
 import RaffleDetailsEmptyState from "../../../components/website/raffle-details/RaffleDetailsEmptyState";
 import FreePostalEntryButton from "../../../components/website/legal/FreePostalEntryButton";
 import { raffleDetailsData } from "../../../data/raffles/raffle-details.data";
 import { liveRafflesData } from "../../../data/live-raffles.data";
 import { RaffleDetail } from "../../../types/raffle-details.types";
 import { cn } from "../../../lib/utils";
+import { formatUKDateTime } from "../../../lib/uk-date";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -45,8 +45,9 @@ async function getRaffle(slug: string): Promise<RaffleDetail | undefined> {
       totalTickets: draw.totalTickets,
       soldTickets: draw.ticketsSold || 0,
       remainingTickets: Math.max(draw.totalTickets - (draw.ticketsSold || 0), 0),
-      drawEndDate: new Date(draw.endDate).toLocaleDateString(),
+      startDate: draw.startDate,
       endDate: draw.endDate,
+      drawEndDate: formatUKDateTime(draw.endDate),
       description: draw.description || `Enter this premium draw for a chance to win the ${draw.title}! Premium gear, fast shipping, and live draw.`,
       highlights: [
         `Main Prize: ${draw.title}`,
@@ -119,16 +120,16 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
   const getBadgeStyle = (text: string) => {
     switch (text.toUpperCase()) {
       case "ALMOST GONE":
-        return "bg-[#4a2e00] border-[#ef9f27]/30 text-[#ef9f27]";
+        return "bg-amber-100 border-amber-300 text-amber-800 font-semibold";
       case "HOT":
-        return "bg-red-950 border-red-800 text-red-400";
+        return "bg-rose-100 border-rose-300 text-rose-800 font-semibold";
       default:
-        return "bg-[#161810] border-[#2d3c13] text-[#5a752a]";
+        return "bg-[#F3E8FF] border-[#D8B4FE] text-[#7131C8]";
     }
   };
 
   const fireIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#ef9f27]">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-3.5 h-3.5 text-amber-500">
       <path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-3.66-2.61-6.72-6.07-7.39.37.76.57 1.62.57 2.53 0 1.95-1.07 3.65-2.67 4.54l-.06.03c.53-2.14-.17-4.47-1.78-6.1l-.32-.33c-.09.33-.14.67-.14 1.02 0 2.27 1.34 4.22 3.28 5.11l.08.04c-1.61-.31-3.23.36-4.13 1.73A7.514 7.514 0 0 0 7 17.5c0 4.14 3.36 7.5 7.5 7.5s7.5-3.36 7.5-7.5c0-1.65-.54-3.18-1.57-4.52z" />
     </svg>
   );
@@ -141,7 +142,7 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
       viewBox="0 0 24 24"
       strokeWidth={2.5}
       stroke="currentColor"
-      className="w-4 h-4 text-[#72943a]"
+      className="w-4 h-4 text-[#7131C8]"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
     </svg>
@@ -154,20 +155,20 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
 
       <main className="min-h-screen flex flex-col bg-bg pt-20 md:pt-[68px]">
         {/* Back Link Sub-header */}
-        <div className="bg-[#0d0d0b] border-b border-[#2d3c13] h-14 flex items-center shrink-0">
+        <div className="bg-[#FAF5FF] border-b border-[#E9D5FF] h-12 flex items-center shrink-0">
           <div className="container-custom flex items-center">
-            {/* <Link
+            <Link
               href="/live-raffles"
-              className="flex items-center gap-2 group text-xs font-semibold text-[#72943a] hover:text-text-brand select-none transition-colors duration-200"
+              className="flex items-center gap-2 group text-xs font-semibold text-[#7131C8] hover:text-[#5B20B5] select-none transition-colors duration-200"
             >
               {backArrowIcon}
-              <span>Back to Live Draws</span>
-            </Link> */}
+              <span>Back to Competitions</span>
+            </Link>
           </div>
         </div>
 
         {/* Main Details Section */}
-        <section className="py-12 md:py-16 flex-grow">
+        <section className="py-10 md:py-14 flex-grow">
           <div className="container-custom">
 
             {/* Grid Layout: two-column desktop, single-column stacked mobile */}
@@ -187,27 +188,27 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
 
                 {/* Title & Badges */}
                 <div className="flex flex-col gap-3 mt-2">
-                  <h1 className="font-heading font-bold text-3xl md:text-4xl text-text-primary tracking-tight">
+                  <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#2E0B57] tracking-tight">
                     {raffle.title}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="bg-[#1A230A] border border-[#8CB34A] px-2.5 py-1 rounded-[6px] text-[11px] font-semibold text-[#8CB34A] tracking-wide select-none font-sans uppercase">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <span className="bg-[#F3E8FF] border border-[#D8B4FE] px-3 py-1 rounded-full text-[11px] font-bold text-[#7131C8] tracking-wide select-none font-sans uppercase">
                       {raffle.status === 'live' ? 'LIVE' : 'ENDING SOON'}
                     </span>
                     {badgeText && (
-                      <span className={cn("inline-flex items-center gap-1 border px-2.5 py-1 rounded-[6px] text-[11px] font-semibold tracking-wider uppercase", getBadgeStyle(badgeText))}>
+                      <span className={cn("inline-flex items-center gap-1 border px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase", getBadgeStyle(badgeText))}>
                         {badgeText === "ALMOST GONE" && fireIcon}
                         <span>{badgeText}</span>
                       </span>
                     )}
                     {raffle.isAutoDraw && (
-                      <span className="bg-[#1A230A] border border-[#8CB34A]/30 px-2.5 py-1 rounded-[6px] text-[11px] font-semibold text-[#8CB34A] tracking-wide select-none font-sans uppercase">
+                      <span className="bg-[#EDE9FE] border border-[#C4B5FD] px-3 py-1 rounded-full text-[11px] font-bold text-[#6D28D9] tracking-wide select-none font-sans uppercase">
                         AUTO DRAW
                       </span>
                     )}
                     {raffle.instantWinPrizes.length > 0 && (
-                      <span className="text-[12px] font-sans text-[#72943A] select-none">
+                      <span className="text-[12px] font-sans text-text-muted font-medium select-none">
                         • {raffle.instantWinPrizes.length} instant wins
                       </span>
                     )}
@@ -218,11 +219,10 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
                 </div>
 
                 {/* Interactive Details, How-to, and T&Cs Tabs */}
-                {/* <RaffleDetailsTabs raffle={raffle} /> */}
+                <RaffleDetailsTabs raffle={raffle} />
 
-                {/* New Host Profile Banner */}
-                {/* Host banner goes here later */}
-                <div id="host-banner-placeholder" className="mt-6" />
+                {/* Host Profile Banner */}
+                <div id="host-banner-placeholder" className="mt-2" />
 
               </div>
 
@@ -235,11 +235,6 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
 
           </div>
         </section>
-
-        {/* You Might Also Like Section */}
-        <Suspense fallback={<div className="py-20 text-center text-text-muted font-sans">Loading related competitions...</div>}>
-          <RelatedRafflesSection currentRaffleId={raffle.id} category={raffle.category} />
-        </Suspense>
       </main>
 
       {/* Global website footer */}

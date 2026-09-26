@@ -7,6 +7,23 @@ interface VerifiedHostCardProps {
 }
 
 export default function VerifiedHostCard({ host }: VerifiedHostCardProps) {
+  const isImageLogo = Boolean(
+    host.logo &&
+      (host.logo.startsWith('http://') ||
+        host.logo.startsWith('https://') ||
+        host.logo.startsWith('/') ||
+        host.logo.startsWith('data:') ||
+        host.logo.includes('/uploads/'))
+  );
+
+  const logoSrc = isImageLogo
+    ? host.logo!.startsWith('http') || host.logo!.startsWith('/') || host.logo!.startsWith('data:')
+      ? host.logo!
+      : `/${host.logo}`
+    : null;
+
+  const initials = host.name ? host.name.substring(0, 2).toUpperCase() : 'H';
+
   return (
     <Link href={`/hosts/${host.slug}`} className="block h-full">
       <div className="bg-surface border border-border rounded-card p-6 shadow-card hover:border-border-medium hover:shadow-glow transition-all duration-300 w-full min-h-[200px] flex flex-col justify-between group cursor-pointer relative overflow-hidden">
@@ -17,10 +34,10 @@ export default function VerifiedHostCard({ host }: VerifiedHostCardProps) {
         <div className="flex flex-col gap-4 relative z-10">
           <div className="flex items-center justify-between">
             <div className="w-[56px] h-[56px] rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0 shadow-sm overflow-hidden text-text-brand font-heading font-bold text-[20px]">
-              {host.logo && (host.logo.startsWith('http') || host.logo.startsWith('/')) ? (
-                <img src={host.logo} alt={host.name} className="w-full h-full object-cover" />
+              {logoSrc ? (
+                <img src={logoSrc} alt={host.name} className="w-full h-full object-cover" />
               ) : (
-                <span>{host.logo || host.name.charAt(0)}</span>
+                <span>{initials}</span>
               )}
             </div>
             {host.isVerified && (
