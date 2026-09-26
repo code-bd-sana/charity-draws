@@ -104,8 +104,9 @@ describe('TicketsService', () => {
       prismaMock.user.update.mockResolvedValue({ id: 'user-1' });
 
       jest.spyOn(service, 'allocateTicketsInDatabase').mockResolvedValue({
-        createdTickets: [{ id: 't-1', ticketNumber: 10 }, { id: 't-2', ticketNumber: 20 }],
-        userInstantWins: [],
+        message: 'Tickets purchased successfully',
+        tickets: [{ id: 't-1', ticketNumber: 10 }, { id: 't-2', ticketNumber: 20 }],
+        instantWins: [],
         transaction: { amount: 10 },
       } as any);
 

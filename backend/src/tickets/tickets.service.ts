@@ -62,11 +62,13 @@ export class TicketsService {
         item.quantity,
       );
 
-      if (purchaseResult.createdTickets) {
-        allTickets.push(...purchaseResult.createdTickets);
+      const tickets = purchaseResult.tickets || (purchaseResult as any).createdTickets;
+      if (tickets) {
+        allTickets.push(...tickets);
       }
-      if (purchaseResult.userInstantWins) {
-        allInstantWins.push(...purchaseResult.userInstantWins);
+      const instantWins = purchaseResult.instantWins || (purchaseResult as any).userInstantWins;
+      if (instantWins) {
+        allInstantWins.push(...instantWins);
       }
       if (purchaseResult.transaction?.amount) {
         totalAmount += Number(purchaseResult.transaction.amount);
