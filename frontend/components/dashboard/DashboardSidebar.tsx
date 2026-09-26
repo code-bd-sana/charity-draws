@@ -46,7 +46,7 @@ export default function DashboardSidebar({ account, isCollapsed = false, onToggl
         isCollapsed ? "justify-center" : "justify-between"
       )}>
         {!isCollapsed ? (
-          <Link href="/" className="relative h-[44px] w-[140px] shrink-0 select-none block">
+          <Link href="/" className="relative h-[48px] w-[150px] shrink-0 select-none block">
             <Image
               alt="Charity Draws Logo"
               src={logo}
@@ -56,8 +56,14 @@ export default function DashboardSidebar({ account, isCollapsed = false, onToggl
             />
           </Link>
         ) : (
-          <Link href="/" className="relative w-9 h-9 shrink-0 flex items-center justify-center bg-accent-bg border border-border-medium rounded-xl text-text-brand font-heading font-black text-xs shadow-sm hover:border-primary transition-colors" title="Home">
-            CD
+          <Link href="/" className="relative w-10 h-10 shrink-0 flex items-center justify-center p-1 rounded-xl hover:scale-105 transition-transform" title="Charity Draws Home">
+            <Image
+              alt="Charity Draws Logo"
+              src="/logo_icon.png"
+              width={36}
+              height={36}
+              className="object-contain"
+            />
           </Link>
         )}
 

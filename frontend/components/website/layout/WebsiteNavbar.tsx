@@ -48,16 +48,16 @@ export default function WebsiteNavbar() {
       >
         <div className='container-custom flex items-center justify-between'>
           {/* Branding Logo */}
-          <Link href='/' className='flex items-center gap-2 select-none group py-0.5'>
+          <Link href='/' className='flex items-center gap-3 select-none group py-0.5'>
             <Image
               alt='Charity Draws Logo'
-              src={logo}
-              height={150}
-              width={150}
+              src='/logo_icon.png'
+              height={50}
+              width={50}
               priority
-              className='w-20 sm:w-24 md:w-[130px] h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-md'
+              className='w-9 sm:w-11 md:w-12 h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm'
             />
-            <span className='font-sans font-bold text-sm sm:text-lg md:text-xl tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] uppercase text-[#7131C8] whitespace-nowrap'>
+            <span className='font-sans font-extrabold text-base sm:text-xl md:text-2xl tracking-[0.12em] sm:tracking-[0.18em] uppercase text-[#7131C8] whitespace-nowrap'>
               Charity Draws
             </span>
           </Link>
