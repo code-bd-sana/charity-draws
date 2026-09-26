@@ -26,6 +26,7 @@ export interface RaffleDetail {
   soldTickets: number;
   remainingTickets: number;
   drawEndDate: string;
+  startDate?: string;
   endDate?: string;
   description: string;
   highlights: string[];

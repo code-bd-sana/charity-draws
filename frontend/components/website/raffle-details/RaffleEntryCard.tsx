@@ -8,6 +8,12 @@ import { useAuth } from "../../../features/auth/AuthContext";
 import { useRouter } from "next/navigation";
 import TicketPurchaseSuccessModal, { TicketPurchaseSuccessData } from "./TicketPurchaseSuccessModal";
 import FreePostalEntryButton from "../legal/FreePostalEntryButton";
+import {
+  formatUKDateTime,
+  formatUKDate,
+  getRaffleTimingStatus,
+  RaffleTimingStatus,
+} from "../../../lib/uk-date";
 
 interface RaffleEntryCardProps {
   raffle: RaffleDetail;
@@ -18,6 +24,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const [statusMessage, setStatusMessage] = useState<{type: 'success'|'error'|'info', text: string} | null>(null);
   const [purchaseSuccessData, setPurchaseSuccessData] = useState<TicketPurchaseSuccessData | null>(null);
   const [timeLeft, setTimeLeft] = useState("");
+  const [timingStatus, setTimingStatus] = useState<RaffleTimingStatus>('LIVE');
 
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -42,6 +49,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
 
   const totalTickets = liveData?.totalTickets ?? raffle.totalTickets;
   const soldTickets = liveData?.ticketsSold ?? raffle.soldTickets;
+  const startDate = (liveData as any)?.startDate ?? raffle.startDate;
   const endDate = liveData?.endDate ?? raffle.endDate;
 
   const minTickets = Math.max(1, (liveData as any)?.minTicketsPerUser ?? (raffle as any)?.minTicketsPerUser ?? 1);
@@ -57,17 +65,34 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   useEffect(() => {
     if (!endDate) {
       setTimeLeft("Ended");
+      setTimingStatus("ENDED");
       return;
     }
     const calc = () => {
-      const diff = new Date(endDate).getTime() - Date.now();
-      if (diff <= 0) return "Ended";
+      const timing = getRaffleTimingStatus(startDate, endDate);
+      setTimingStatus(timing.status);
+
+      const pad = (n: number) => n.toString().padStart(2, '0');
+
+      if (timing.status === 'UPCOMING') {
+        const diff = timing.startsInMs;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        if (d > 0) return `Starts in ${d}d ${pad(h)}h ${pad(m)}m`;
+        return `Starts in ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+      }
+
+      if (timing.status === 'ENDED') {
+        return "Ended";
+      }
+
+      const diff = timing.endsInMs;
       const d = Math.floor(diff / (1000 * 60 * 60 * 24));
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / 1000 / 60) % 60);
       const s = Math.floor((diff / 1000) % 60);
-      
-      const pad = (n: number) => n.toString().padStart(2, '0');
       
       if (d > 0) return `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
       return `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
@@ -75,7 +100,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
     setTimeLeft(calc());
     const interval = setInterval(() => setTimeLeft(calc()), 1000);
     return () => clearInterval(interval);
-  }, [endDate]);
+  }, [startDate, endDate]);
 
   const soldPercent = Math.min(Math.round((soldTickets / totalTickets) * 100), 100);
   const remainingTickets = Math.max(totalTickets - soldTickets, 0);
@@ -104,6 +129,16 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   };
 
   const handlePurchase = () => {
+    if (timingStatus === 'UPCOMING') {
+      setStatusMessage({ type: 'error', text: 'This competition has not started yet.' });
+      return;
+    }
+
+    if (timingStatus === 'ENDED') {
+      setStatusMessage({ type: 'error', text: 'This competition has already ended.' });
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -175,9 +210,11 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
       {/* Stats Rows */}
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex items-center justify-between pb-3 border-b border-[#2D3C13]/50">
-          <span className="font-sans text-[12px] text-[#72943A]">End Date</span>
+          <span className="font-sans text-[12px] text-[#72943A]">
+            {timingStatus === 'UPCOMING' ? 'Starts (UK Time)' : 'Draw Closes (UK Time)'}
+          </span>
           <span className="font-heading font-semibold text-[13px] text-[#8cb34a] tabular-nums tracking-wider animate-pulse">
-            {timeLeft || "Ended"}
+            {timeLeft || (timingStatus === 'UPCOMING' ? formatUKDateTime(startDate) : "Ended")}
           </span>
         </div>
         <div className="flex items-center justify-between pb-3 border-b border-[#2D3C13]/50">
@@ -268,17 +305,33 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
           <span className="font-heading font-semibold text-[16px] text-[#8CB34A]">£{totalPrice.toFixed(2)}</span>
         </div>
 
-        <button 
-          onClick={handlePurchase}
-          disabled={purchaseMutation.isPending || remainingTickets === 0}
-          className={`w-full h-[48px] rounded-[8px] font-heading font-medium text-[14px] transition-colors flex items-center justify-center ${
-            purchaseMutation.isPending || remainingTickets === 0
-              ? 'bg-[#2D3C13] text-[#72943A] cursor-not-allowed'
-              : 'bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] shadow-[0_0_15px_rgba(140,179,74,0.15)]'
-          }`}
-        >
-          {purchaseMutation.isPending ? 'Processing...' : `Enter Draw — £${totalPrice.toFixed(2)}`}
-        </button>
+        {timingStatus === 'UPCOMING' ? (
+          <button 
+            disabled={true}
+            className="w-full h-[48px] rounded-[8px] font-heading font-semibold text-[14px] bg-[#2D3C13] text-[#8CB34A] border border-[#43581E] cursor-not-allowed flex items-center justify-center shadow-sm"
+          >
+            Draw Starts {startDate ? formatUKDate(startDate) : "Soon"}
+          </button>
+        ) : timingStatus === 'ENDED' ? (
+          <button 
+            disabled={true}
+            className="w-full h-[48px] rounded-[8px] font-heading font-semibold text-[14px] bg-[#1A1A18] text-[#72943A] border border-[#2D3C13] cursor-not-allowed flex items-center justify-center shadow-sm"
+          >
+            Competition Ended
+          </button>
+        ) : (
+          <button 
+            onClick={handlePurchase}
+            disabled={purchaseMutation.isPending || remainingTickets === 0}
+            className={`w-full h-[48px] rounded-[8px] font-heading font-medium text-[14px] transition-colors flex items-center justify-center cursor-pointer ${
+              purchaseMutation.isPending || remainingTickets === 0
+                ? 'bg-[#2D3C13] text-[#72943A] cursor-not-allowed'
+                : 'bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] shadow-[0_0_15px_rgba(140,179,74,0.15)]'
+            }`}
+          >
+            {purchaseMutation.isPending ? 'Processing...' : `Enter Draw — £${totalPrice.toFixed(2)}`}
+          </button>
+        )}
 
         {/* UK-Compliant Free Postal Entry Route Button */}
         <FreePostalEntryButton raffleTitle={raffle.title} variant="button" />

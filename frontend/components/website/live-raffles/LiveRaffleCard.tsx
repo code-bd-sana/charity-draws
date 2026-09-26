@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Draw } from "../../../types/draw.types";
 import { formatCurrency } from "../../../lib/utils";
 import { cn } from "../../../lib/utils";
+import { formatUKDateTime, getRaffleTimingStatus } from "../../../lib/uk-date";
 
 interface LiveRaffleCardProps {
   raffle: Draw;
@@ -41,27 +42,39 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
   const hostName = host?.businessName || (host?.user?.firstName ? `${host.user.firstName} ${host.user.lastName || ''}`.trim() : "");
   const hostLocation = host?.user?.location || host?.address || "";
 
+  const rawStartDate = r.startDate;
   const rawEndDate = r.endDate;
-  const isValidDate = rawEndDate && !isNaN(new Date(rawEndDate).getTime());
-  const formattedEndDate = isValidDate
-    ? new Date(rawEndDate).toLocaleDateString()
+  const isValidEndDate = rawEndDate && !isNaN(new Date(rawEndDate).getTime());
+  const formattedEndDate = isValidEndDate
+    ? formatUKDateTime(rawEndDate)
     : (typeof rawEndDate === "string" ? rawEndDate : "Closing Soon");
 
   const [timeLeft, setTimeLeft] = useState<string>(() => {
-    if (!isValidDate) return typeof rawEndDate === "string" ? rawEndDate : "Closing Soon";
+    if (!isValidEndDate) return typeof rawEndDate === "string" ? rawEndDate : "Closing Soon";
     return "";
   });
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
-    if (!isValidDate) {
+    if (!isValidEndDate) {
       if (typeof rawEndDate === "string") setTimeLeft(rawEndDate);
       return;
     }
 
     const calculateTime = () => {
-      const diff = new Date(rawEndDate).getTime() - new Date().getTime();
-      if (diff <= 0) return "Ended";
+      const timing = getRaffleTimingStatus(rawStartDate, rawEndDate);
+      if (timing.status === 'UPCOMING') {
+        const diff = timing.startsInMs;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        return `Starts in ${d > 0 ? `${d}d ${h}h` : `${h}h ${m}m ${s}s`}`;
+      }
+      if (timing.status === 'ENDED') {
+        return "Ended";
+      }
+      const diff = timing.endsInMs;
       const d = Math.floor(diff / (1000 * 60 * 60 * 24));
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / 1000 / 60) % 60);
@@ -74,7 +87,7 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
     setTimeLeft(calculateTime());
     const interval = setInterval(() => setTimeLeft(calculateTime()), 1000);
     return () => clearInterval(interval);
-  }, [rawEndDate, isValidDate]);
+  }, [rawStartDate, rawEndDate, isValidEndDate]);
 
   // SVG Icons
   const fireIcon = (

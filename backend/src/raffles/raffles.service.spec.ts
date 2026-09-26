@@ -77,7 +77,8 @@ describe('RafflesService', () => {
         description: 'High tier rifle',
         pricePerTicket: 5,
         totalTickets: 100,
-        endDate: new Date().toISOString(),
+        startDate: new Date(Date.now() - 3600000).toISOString(),
+        endDate: new Date(Date.now() + 86400000).toISOString(),
       });
 
       expect(result.id).toBe('raffle-1');

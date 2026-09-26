@@ -84,6 +84,7 @@ export default function LiveRaffleGrid() {
     limit: 6,
     category: activeCategory !== "all" ? activeCategory : undefined,
     sort: sortBy,
+    statusFilter: "Live",
   });
 
   const filteredRaffles = rafflesResponse?.data || [];

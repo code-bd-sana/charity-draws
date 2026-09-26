@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useHostRaffles, useDeleteRaffle, useDrawWinner } from "../../../hooks/useRaffleHooks";
 import { cn } from "../../../lib/utils";
+import { formatUKDateTime, getRaffleTimingStatus } from "../../../lib/uk-date";
 import { Pagination } from "../../ui/Pagination";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
 import EmptyState from "../../ui/EmptyState";
@@ -201,23 +202,44 @@ export default function HostRafflesTable() {
                   </div>
                   
                   <div>
-                    <div className={cn(
-                      "inline-flex px-2.5 py-0.5 items-center justify-center rounded-badge border shadow-sm",
-                      raffle.status === "ACTIVE" && "bg-emerald-50 border-emerald-200 text-emerald-700",
-                      raffle.status === "ENDED" && "bg-red-50 border-red-200 text-red-700",
-                      raffle.status === "DRAFT" && "bg-purple-50 border-border-medium text-text-brand",
-                      raffle.status === "PENDING_APPROVAL" && "bg-amber-50 border-amber-200 text-amber-700",
-                      raffle.status === "CANCELLED" && "bg-red-50 border-red-200 text-red-700"
-                    )}>
-                      <span className="font-sans font-bold text-[11px]">
-                        {raffle.status === "ACTIVE" ? "Live" : raffle.status === "PENDING_APPROVAL" ? "Pending Review" : raffle.status}
-                      </span>
-                    </div>
+                    {(() => {
+                      const timing = getRaffleTimingStatus(raffle.startDate, raffle.endDate);
+                      let label = raffle.status;
+                      let badgeClass = "bg-accent-bg border-border text-text-muted";
+
+                      if (raffle.status === "ACTIVE") {
+                        if (timing.status === "UPCOMING") {
+                          label = "Upcoming";
+                          badgeClass = "bg-amber-50 border-amber-200 text-amber-700";
+                        } else if (timing.status === "ENDED") {
+                          label = "Ended";
+                          badgeClass = "bg-red-50 border-red-200 text-red-700";
+                        } else {
+                          label = "Live";
+                          badgeClass = "bg-emerald-50 border-emerald-200 text-emerald-700";
+                        }
+                      } else if (raffle.status === "PENDING_APPROVAL") {
+                        label = "Pending Review";
+                        badgeClass = "bg-amber-50 border-amber-200 text-amber-700";
+                      } else if (raffle.status === "ENDED") {
+                        label = "Ended";
+                        badgeClass = "bg-red-50 border-red-200 text-red-700";
+                      } else if (raffle.status === "DRAFT") {
+                        label = "Draft";
+                        badgeClass = "bg-purple-50 border-border-medium text-text-brand";
+                      }
+
+                      return (
+                        <div className={cn("inline-flex px-2.5 py-0.5 items-center justify-center rounded-badge border shadow-sm", badgeClass)}>
+                          <span className="font-sans font-bold text-[11px]">{label}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   <div className="hidden md:flex justify-end min-w-0">
                     <span className="font-sans font-medium text-xs text-text-muted truncate">
-                      {new Date(raffle.endDate).toLocaleDateString()}
+                      {formatUKDateTime(raffle.endDate)}
                     </span>
                   </div>
                 </div>

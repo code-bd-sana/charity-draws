@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useHostRaffles } from "../../../hooks/useRaffleHooks";
+import { formatUKDateTime, formatUKDate } from "../../../lib/uk-date";
 import Link from "next/link";
 
 interface HostUpcomingDrawsProps {
@@ -51,8 +52,7 @@ export default function HostUpcomingDraws({ draws, isLoading: propIsLoading }: H
         )}
 
         {!isLoading && upcomingDraws.map((draw: any) => {
-          const dateObj = new Date(draw.endDate);
-          const dayNumber = dateObj.getDate();
+          const dayNumber = formatUKDate(draw.endDate, { day: 'numeric' });
           
           return (
             <Link 
@@ -73,7 +73,7 @@ export default function HostUpcomingDraws({ draws, isLoading: propIsLoading }: H
                   {draw.title}
                 </p>
                 <p className="font-sans text-xs text-text-muted font-medium truncate">
-                  {draw.ticketsSold} / {draw.totalTickets} tickets sold &bull; Ends {dateObj.toLocaleDateString()}
+                  {draw.ticketsSold} / {draw.totalTickets} tickets sold &bull; Ends {formatUKDateTime(draw.endDate)}
                 </p>
               </div>
             </Link>

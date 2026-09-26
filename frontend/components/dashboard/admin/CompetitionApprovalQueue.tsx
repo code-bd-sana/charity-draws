@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
+import { formatUKDateTime } from "../../../lib/uk-date";
 import { useAdminPendingRaffles, useApproveRaffle } from "../../../hooks/useRaffleHooks";
 import RejectCompetitionModal from "./RejectCompetitionModal";
 
@@ -116,7 +117,7 @@ export default function CompetitionApprovalQueue() {
                   {item.description || 'No description provided.'}
                 </p>
                 <span className="font-sans text-[12px] text-text-brand font-semibold mt-1">
-                  Price: £{item.pricePerTicket} / ticket · Total: {item.totalTickets} tickets · Draw: {item.endDate ? new Date(item.endDate).toLocaleDateString() : 'TBD'}
+                  Price: £{item.pricePerTicket} / ticket · Total: {item.totalTickets} tickets · Starts: {item.startDate ? formatUKDateTime(item.startDate) : 'Immediate'} · Draw: {item.endDate ? formatUKDateTime(item.endDate) : 'TBD'}
                 </span>
               </div>
             </div>

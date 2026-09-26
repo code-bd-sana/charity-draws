@@ -5,6 +5,7 @@ import { useAdminAllRaffles, useAdminDeleteRaffle } from "../../../hooks/useRaff
 import { raffleService } from "../../../services/raffle.service";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { formatUKDate, formatUKDateTime, getRaffleTimingStatus } from "../../../lib/uk-date";
 import ManualWinnerSelectModal from "../shared/ManualWinnerSelectModal";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
 import ViewSoldTicketsModal from "../shared/ViewSoldTicketsModal";
@@ -104,7 +105,7 @@ export default function AdminCompetitionsTable() {
         const gatewayTxId = t.gatewayTransactionId || "N/A";
         const gateway = t.paymentGateway || "N/A";
         const payStatus = t.paymentStatus || "COMPLETED";
-        const purchaseDate = t.createdAt ? format(new Date(t.createdAt), "dd MMM yyyy HH:mm:ss") : "N/A";
+        const purchaseDate = t.createdAt ? formatUKDateTime(t.createdAt) : "N/A";
 
         return [
           ticketNum,
@@ -308,7 +309,7 @@ export default function AdminCompetitionsTable() {
                   </td>
                   <td className="py-4 px-6 text-center">
                     <span className="font-sans text-[12px] text-text-muted font-medium">
-                      {comp.createdAt ? format(new Date(comp.createdAt), 'dd MMM yyyy') : 'N/A'}
+                      {comp.createdAt ? formatUKDate(comp.createdAt) : 'N/A'}
                     </span>
                   </td>
                   <td className="py-4 px-6">

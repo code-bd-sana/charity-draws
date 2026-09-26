@@ -13,6 +13,7 @@ import { raffleDetailsData } from "../../../data/raffles/raffle-details.data";
 import { liveRafflesData } from "../../../data/live-raffles.data";
 import { RaffleDetail } from "../../../types/raffle-details.types";
 import { cn } from "../../../lib/utils";
+import { formatUKDateTime } from "../../../lib/uk-date";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -45,8 +46,9 @@ async function getRaffle(slug: string): Promise<RaffleDetail | undefined> {
       totalTickets: draw.totalTickets,
       soldTickets: draw.ticketsSold || 0,
       remainingTickets: Math.max(draw.totalTickets - (draw.ticketsSold || 0), 0),
-      drawEndDate: new Date(draw.endDate).toLocaleDateString(),
+      startDate: draw.startDate,
       endDate: draw.endDate,
+      drawEndDate: formatUKDateTime(draw.endDate),
       description: draw.description || `Enter this premium draw for a chance to win the ${draw.title}! Premium gear, fast shipping, and live draw.`,
       highlights: [
         `Main Prize: ${draw.title}`,

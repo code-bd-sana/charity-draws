@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useMySubscription } from "../../../../hooks/useSubscriptionHooks";
 import { useCreateRaffle, useUploadRaffleImage } from "../../../../hooks/useRaffleHooks";
 import { extractApiError } from "../../../../lib/utils";
+import { parseUKInputToISO } from "../../../../lib/uk-date";
 
 export interface RaffleFormData {
   // Step 1
@@ -115,8 +116,8 @@ export default function CreateRaffleWizard() {
         mainPrizeValue: formData.mainPrizeValue ? Number(formData.mainPrizeValue) : undefined,
         pricePerTicket: Number(formData.ticketPrice) || 0,
         totalTickets: Number(formData.totalTickets) || 0,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        startDate: parseUKInputToISO(formData.startDate),
+        endDate: parseUKInputToISO(formData.endDate),
         isAutoDraw: formData.isAutoDraw,
         autoDrawDate: formData.autoDrawDate,
         autoDrawSoldOut: formData.autoDrawSoldOut,

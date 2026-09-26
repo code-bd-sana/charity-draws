@@ -52,6 +52,15 @@ export class TicketsService {
           throw new BadRequestException('This competition is not active');
         }
 
+        const now = new Date();
+        if (raffle.startDate && new Date(raffle.startDate) > now) {
+          throw new BadRequestException('This competition has not started yet');
+        }
+
+        if (raffle.endDate && new Date(raffle.endDate) < now) {
+          throw new BadRequestException('This competition has already ended');
+        }
+
         const minRequired = (raffle as any).minTicketsPerUser || 1;
         if (quantity < minRequired) {
           throw new BadRequestException(
@@ -286,6 +295,15 @@ export class TicketsService {
 
     if (raffle.status !== 'ACTIVE') {
       throw new BadRequestException('This competition is not active');
+    }
+
+    const now = new Date();
+    if (raffle.startDate && new Date(raffle.startDate) > now) {
+      throw new BadRequestException('This competition has not started yet');
+    }
+
+    if (raffle.endDate && new Date(raffle.endDate) < now) {
+      throw new BadRequestException('This competition has already ended');
     }
 
     const minRequired = (raffle as any).minTicketsPerUser || 1;

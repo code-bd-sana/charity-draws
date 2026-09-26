@@ -6,6 +6,7 @@ import { usePublicRaffles } from "@/hooks/useRaffleHooks";
 import { usePublicCategories } from "@/hooks/useCategoryHooks";
 import { Pagination } from "@/components/ui/Pagination";
 import Link from "next/link";
+import { getRaffleTimingStatus, formatUKDate, formatUKDateTime } from "@/lib/uk-date";
 
 export default function UserRafflesPage() {
   const [page, setPage] = useState(1);
@@ -163,15 +164,19 @@ export default function UserRafflesPage() {
             {raffles.map((raffle: any) => {
               const progressPercentage = Math.min((raffle.ticketsSold / raffle.totalTickets) * 100, 100);
               
-              const now = new Date();
-              const startDate = new Date(raffle.startDate);
-              const endDate = new Date(raffle.endDate);
-              const isLive = startDate <= now && endDate >= now;
+              const timing = getRaffleTimingStatus(raffle.startDate, raffle.endDate);
+              const isLive = timing.isLive;
               
-              const timeDiff = endDate.getTime() - now.getTime();
-              const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-              const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
-              const drawsIn = timeDiff > 0 ? `${days}d ${hours}h` : 'Ended';
+              let drawsIn = 'Ended';
+              if (timing.status === 'UPCOMING') {
+                const days = Math.floor(timing.startsInMs / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timing.startsInMs / (1000 * 60 * 60)) % 24);
+                drawsIn = days > 0 ? `Starts in ${days}d ${hours}h` : `Starts in ${hours}h`;
+              } else if (timing.status === 'LIVE') {
+                const days = Math.floor(timing.endsInMs / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timing.endsInMs / (1000 * 60 * 60)) % 24);
+                drawsIn = days > 0 ? `${days}d ${hours}h` : `${hours}h`;
+              }
 
               return (
                 <div
@@ -227,9 +232,19 @@ export default function UserRafflesPage() {
                         <span className="font-sans text-[11px] font-medium">Draws in {drawsIn}</span>
                       </div>
                       
-                      {isLive && (
+                      {timing.status === 'LIVE' && (
                         <div className="px-2 py-0.5 rounded-badge border border-emerald-200 bg-emerald-50">
                           <span className="font-sans font-semibold text-[10px] text-emerald-700 uppercase tracking-wider">Live</span>
+                        </div>
+                      )}
+                      {timing.status === 'UPCOMING' && (
+                        <div className="px-2 py-0.5 rounded-badge border border-amber-200 bg-amber-50">
+                          <span className="font-sans font-semibold text-[10px] text-amber-700 uppercase tracking-wider">Upcoming</span>
+                        </div>
+                      )}
+                      {timing.status === 'ENDED' && (
+                        <div className="px-2 py-0.5 rounded-badge border border-zinc-200 bg-zinc-100">
+                          <span className="font-sans font-semibold text-[10px] text-zinc-600 uppercase tracking-wider">Ended</span>
                         </div>
                       )}
                     </div>
@@ -241,9 +256,13 @@ export default function UserRafflesPage() {
                             Buy Tickets
                           </button>
                         </Link>
+                      ) : timing.status === 'UPCOMING' ? (
+                        <button disabled className="w-full h-[38px] rounded-button bg-surface border border-border text-text-muted font-sans font-semibold text-[13px] opacity-75 cursor-not-allowed flex items-center justify-center gap-2">
+                          Starts {formatUKDate(raffle.startDate)}
+                        </button>
                       ) : (
                         <button disabled className="w-full h-[38px] rounded-button bg-surface border border-border text-text-muted font-sans font-semibold text-[13px] opacity-60 cursor-not-allowed flex items-center justify-center gap-2">
-                          Not Live
+                          Ended
                         </button>
                       )}
                     </div>

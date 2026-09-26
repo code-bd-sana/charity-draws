@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGetRaffleById, useUpdateRaffle } from "../../../../hooks/useRaffleHooks";
 import { usePublicCategories } from "../../../../hooks/useCategoryHooks";
 import { cn } from "../../../../lib/utils";
+import { formatDateForUKInput, parseUKInputToISO } from "../../../../lib/uk-date";
 import { toast } from "sonner";
 
 interface Props {
@@ -28,8 +29,8 @@ export default function EditRaffleForm({ raffleId }: Props) {
         prizeName: raffle.prizeName,
         totalTickets: raffle.totalTickets,
         pricePerTicket: raffle.pricePerTicket,
-        startDate: raffle.startDate ? new Date(raffle.startDate).toISOString().slice(0, 16) : "",
-        endDate: raffle.endDate ? new Date(raffle.endDate).toISOString().slice(0, 16) : "",
+        startDate: formatDateForUKInput(raffle.startDate),
+        endDate: formatDateForUKInput(raffle.endDate),
         isAutoDraw: raffle.isAutoDraw,
         autoDrawDate: raffle.autoDrawDate,
         autoDrawSoldOut: raffle.autoDrawSoldOut,
@@ -69,9 +70,9 @@ export default function EditRaffleForm({ raffleId }: Props) {
         return;
       }
 
-      // Convert dates back to ISO string
-      if (payload.startDate) payload.startDate = new Date(payload.startDate).toISOString();
-      if (payload.endDate) payload.endDate = new Date(payload.endDate).toISOString();
+      // Convert dates to UK ISO string
+      if (payload.startDate) payload.startDate = parseUKInputToISO(payload.startDate);
+      if (payload.endDate) payload.endDate = parseUKInputToISO(payload.endDate);
       
       // Convert numbers
       if (payload.totalTickets) payload.totalTickets = Number(payload.totalTickets);
@@ -238,9 +239,19 @@ export default function EditRaffleForm({ raffleId }: Props) {
         </div>
 
         {/* Schedule */}
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-badge bg-[#111210] border border-[#2d3c13] text-xs text-[#a0d056] font-medium">
+          <svg className="w-4 h-4 text-[#8cb34a] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <span>All times are configured and displayed in <strong>UK Time (Europe/London - BST/GMT)</strong>.</span>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
           <div className="flex flex-col gap-[8px]">
-            <label className="font-sans font-medium text-[13px] text-[#e8edd4]">Start Date</label>
+            <label className="font-sans font-medium text-[13px] text-[#e8edd4] flex items-center justify-between">
+              <span>Start Date & Time</span>
+              <span className="text-[10px] text-[#8cb34a] font-bold bg-[#1a230a] px-2 py-0.5 rounded border border-[#2d3c13]">UK Time</span>
+            </label>
             <input
               type="datetime-local"
               value={formData.startDate || ""}
@@ -250,7 +261,10 @@ export default function EditRaffleForm({ raffleId }: Props) {
           </div>
 
           <div className="flex flex-col gap-[8px]">
-            <label className="font-sans font-medium text-[13px] text-[#e8edd4]">End/Draw Date</label>
+            <label className="font-sans font-medium text-[13px] text-[#e8edd4] flex items-center justify-between">
+              <span>End/Draw Date & Time</span>
+              <span className="text-[10px] text-[#8cb34a] font-bold bg-[#1a230a] px-2 py-0.5 rounded border border-[#2d3c13]">UK Time</span>
+            </label>
             <input
               type="datetime-local"
               value={formData.endDate || ""}
