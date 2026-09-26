@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuthUser } from '../../../hooks/useAuthHooks';
+import { useBasket } from '../../../features/basket/BasketContext';
 import { NAV_LINKS } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
 import logo from '../../../public/logo3.png';
@@ -18,6 +19,7 @@ export default function WebsiteNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { data: user } = useAuthUser();
+  const { totalTicketsCount, openBasket } = useBasket();
 
   // Monitor scrolling to add backdrop background
   useEffect(() => {
@@ -46,18 +48,18 @@ export default function WebsiteNavbar() {
             : 'bg-white/72 backdrop-blur-sm border-[#e6d8f7]/50 py-5',
         )}
       >
-        <div className='container-custom flex items-center justify-between'>
+        <div className='container-custom flex items-center justify-between gap-2 px-3 sm:px-5'>
           {/* Branding Logo */}
-          <Link href='/' className='flex items-center gap-3 select-none group py-0.5'>
+          <Link href='/' className='flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-3 select-none group py-0.5 min-w-0 shrink'>
             <Image
               alt='Charity Draws Logo'
               src='/logo_icon.png'
               height={50}
               width={50}
               priority
-              className='w-9 sm:w-11 md:w-12 h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm'
+              className='w-7 min-[360px]:w-8 sm:w-10 md:w-12 h-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm shrink-0'
             />
-            <span className='font-sans font-extrabold text-base sm:text-xl md:text-2xl tracking-[0.12em] sm:tracking-[0.18em] uppercase text-[#7131C8] whitespace-nowrap'>
+            <span className='font-sans font-extrabold text-xs min-[360px]:text-sm sm:text-xl md:text-2xl tracking-tight min-[360px]:tracking-normal sm:tracking-[0.18em] uppercase text-[#7131C8] whitespace-nowrap truncate'>
               Charity Draws
             </span>
           </Link>
@@ -82,8 +84,35 @@ export default function WebsiteNavbar() {
             })}
           </nav>
 
-          {/* Auth Buttons */}
-          <div className='hidden xl:flex items-center gap-4'>
+          {/* Desktop Actions & Basket */}
+          <div className='hidden xl:flex items-center gap-3'>
+            {/* Basket Button */}
+            <button
+              onClick={openBasket}
+              className='relative p-2 text-text-primary hover:text-text-brand hover:bg-accent-bg/60 rounded-button transition-colors flex items-center justify-center cursor-pointer mr-1'
+              aria-label={`Shopping basket with ${totalTicketsCount} tickets`}
+              title='View Shopping Basket'
+            >
+              <svg
+                className='w-5 h-5'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+                strokeWidth={1.8}
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z'
+                />
+              </svg>
+              {totalTicketsCount > 0 && (
+                <span className='absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-sm'>
+                  {totalTicketsCount > 99 ? '99+' : totalTicketsCount}
+                </span>
+              )}
+            </button>
+
             {user ? (
               <PrimaryButton href='/dashboard' className='px-5 py-2 text-xs'>
                 Dashboard
@@ -103,27 +132,56 @@ export default function WebsiteNavbar() {
             )}
           </div>
 
-          {/* Hamburger Mobile Menu Toggle */}
-          <button
-            onClick={toggleMobileMenu}
-            className='xl:hidden flex items-center justify-center p-2 text-text-primary hover:text-text-brand transition-colors duration-200 cursor-pointer'
-            aria-label='Toggle Navigation Menu'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={2}
-              stroke='currentColor'
-              className='w-6 h-6'
+          {/* Mobile Right Icons (Basket + Hamburger Toggle) */}
+          <div className='xl:hidden flex items-center gap-1 sm:gap-2 shrink-0'>
+            {/* Mobile Basket Button */}
+            <button
+              onClick={openBasket}
+              className='relative p-1.5 sm:p-2 text-text-primary hover:text-text-brand hover:bg-accent-bg/60 rounded-button transition-colors flex items-center justify-center cursor-pointer'
+              aria-label={`Shopping basket with ${totalTicketsCount} tickets`}
             >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
-              />
-            </svg>
-          </button>
+              <svg
+                className='w-5 h-5'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+                strokeWidth={1.8}
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z'
+                />
+              </svg>
+              {totalTicketsCount > 0 && (
+                <span className='absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm'>
+                  {totalTicketsCount > 99 ? '99+' : totalTicketsCount}
+                </span>
+              )}
+            </button>
+
+            {/* Hamburger Mobile Menu Toggle */}
+            <button
+              onClick={toggleMobileMenu}
+              className='p-1.5 sm:p-2 text-text-primary hover:text-text-brand transition-colors duration-200 cursor-pointer'
+              aria-label='Toggle Navigation Menu'
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={2}
+                stroke='currentColor'
+                className='w-6 h-6'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 

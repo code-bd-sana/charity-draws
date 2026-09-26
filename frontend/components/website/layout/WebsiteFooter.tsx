@@ -108,7 +108,7 @@ export default function WebsiteFooter() {
               © {new Date().getFullYear()} {BRAND_NAME}. All rights reserved. Registered in England & Wales.
             </p>
             <p>
-              Prize draws are operated in accordance with the UK Gambling Act 2005 as compliant prize competitions. Participation is limited to individuals aged 18 or older resident in eligible jurisdictions. Ticket purchases are final.
+              Prize draws are operated in accordance with the UK Gambling Act 2005 as compliant prize competitions. Participation is limited to individuals resident in eligible jurisdictions. Ticket purchases are final.
             </p>
           </div>
 

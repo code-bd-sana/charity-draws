@@ -5,6 +5,7 @@ import { RaffleDetail } from "../../../types/raffle-details.types";
 import { usePurchaseTicketsMutation } from "../../../hooks/useTicketHooks";
 import { usePublicRaffleDetail } from "../../../hooks/useRaffleHooks";
 import { useAuth } from "../../../features/auth/AuthContext";
+import { useBasket } from "../../../features/basket/BasketContext";
 import { useRouter } from "next/navigation";
 import TicketPurchaseSuccessModal, { TicketPurchaseSuccessData } from "./TicketPurchaseSuccessModal";
 import FreePostalEntryButton from "../legal/FreePostalEntryButton";
@@ -27,6 +28,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const [timingStatus, setTimingStatus] = useState<RaffleTimingStatus>('LIVE');
 
   const { isAuthenticated } = useAuth();
+  const { addItem } = useBasket();
   const router = useRouter();
   
   const purchaseMutation = usePurchaseTicketsMutation(raffle.id);
@@ -126,6 +128,76 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
       if (prev >= remainingTickets) return prev;
       return prev + 1;
     });
+  };
+
+  const validateConstraints = (): boolean => {
+    if (timingStatus === 'UPCOMING') {
+      setStatusMessage({ type: 'error', text: 'This competition has not started yet.' });
+      return false;
+    }
+
+    if (timingStatus === 'ENDED') {
+      setStatusMessage({ type: 'error', text: 'This competition has already ended.' });
+      return false;
+    }
+
+    if (quantity < minTickets) {
+      setStatusMessage({ type: 'error', text: `Minimum ${minTickets} ticket(s) required to enter.` });
+      return false;
+    }
+
+    if (maxTickets && quantity > maxTickets) {
+      setStatusMessage({ type: 'error', text: `Maximum limit is ${maxTickets} ticket(s) per participant.` });
+      return false;
+    }
+    
+    if (quantity > remainingTickets) {
+      setStatusMessage({ type: 'error', text: `Only ${remainingTickets} tickets left.` });
+      return false;
+    }
+
+    setStatusMessage(null);
+    return true;
+  };
+
+  const handleAddToBasket = () => {
+    if (!validateConstraints()) return;
+
+    addItem({
+      raffleId: raffle.id,
+      title: raffle.title,
+      slug: raffle.slug || raffle.id,
+      image: (raffle as any).mainImage || (raffle as any).image || '',
+      ticketPrice: ticketPrice,
+      quantity,
+      totalTickets,
+      ticketsSold: soldTickets,
+      minTickets,
+      maxTickets,
+      endDate: raffle.endDate,
+      category: (raffle as any).category,
+    });
+  };
+
+  const handleBuyNow = () => {
+    if (!validateConstraints()) return;
+
+    addItem({
+      raffleId: raffle.id,
+      title: raffle.title,
+      slug: raffle.slug || raffle.id,
+      image: (raffle as any).mainImage || (raffle as any).image || '',
+      ticketPrice: ticketPrice,
+      quantity,
+      totalTickets,
+      ticketsSold: soldTickets,
+      minTickets,
+      maxTickets,
+      endDate: raffle.endDate,
+      category: (raffle as any).category,
+    });
+
+    router.push('/checkout');
   };
 
   const handlePurchase = () => {
@@ -320,17 +392,35 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
             Competition Ended
           </button>
         ) : (
-          <button 
-            onClick={handlePurchase}
-            disabled={purchaseMutation.isPending || remainingTickets === 0}
-            className={`w-full h-12 rounded-xl font-heading font-bold text-sm sm:text-base transition-all flex items-center justify-center cursor-pointer ${
-              purchaseMutation.isPending || remainingTickets === 0
-                ? 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
-                : 'bg-gradient-to-r from-[#7131C8] to-[#8B5CF6] hover:from-[#5B20B5] hover:to-[#7C3AED] text-white shadow-[0_6px_20px_rgba(113,49,200,0.3)] hover:shadow-[0_8px_25px_rgba(113,49,200,0.45)]'
-            }`}
-          >
-            {purchaseMutation.isPending ? 'Processing...' : `Enter Draw — £${totalPrice.toFixed(2)}`}
-          </button>
+          <div className="flex flex-col gap-2.5">
+            {/* Primary: Add to Basket */}
+            <button 
+              onClick={handleAddToBasket}
+              disabled={remainingTickets === 0}
+              className={`w-full h-12 rounded-xl font-heading font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                remainingTickets === 0
+                  ? 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
+                  : 'bg-primary hover:bg-primary-hover text-white shadow-[0_6px_20px_rgba(113,49,200,0.3)] hover:shadow-[0_8px_25px_rgba(113,49,200,0.45)]'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+              </svg>
+              <span>Add to Basket — £{totalPrice.toFixed(2)}</span>
+            </button>
+
+            {/* Secondary: Instant Checkout */}
+            <button 
+              onClick={handleBuyNow}
+              disabled={remainingTickets === 0}
+              className="w-full h-11 px-3 rounded-xl font-heading font-bold text-xs sm:text-sm bg-accent-bg hover:bg-elevated text-text-brand border border-border-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <span className="truncate">Instant Checkout (Direct Entry)</span>
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+          </div>
         )}
 
         {/* UK-Compliant Free Postal Entry Route Button */}
@@ -345,7 +435,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
         )}
 
         <p className="font-sans text-[11px] text-[#6B7280] text-center">
-          Secure checkout. Competitions fully audited. 18+
+          Secure checkout. Competitions fully audited.
         </p>
       </div>
 

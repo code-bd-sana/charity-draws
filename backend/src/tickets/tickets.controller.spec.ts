@@ -65,6 +65,25 @@ describe('TicketsController', () => {
     });
   });
 
+  describe('checkout', () => {
+    it('should extract userId and call ticketsService.checkout with body', async () => {
+      const mockReq: any = {
+        cookies: { accessToken: 'valid-token' },
+      };
+      const mockBody: any = {
+        items: [{ raffleId: 'r-1', quantity: 2 }],
+        contactInfo: { firstName: 'John', lastName: 'Doe', email: 'j@d.com', phone: '123' },
+        shippingAddress: { addressLine1: '10 St', city: 'London', postalCode: 'W1' },
+      };
+      const mockResult = { success: true, tickets: [] };
+      ticketsService.checkout = jest.fn().mockResolvedValue(mockResult);
+
+      const result = await controller.checkout(mockReq, mockBody);
+      expect(result).toEqual(mockResult);
+      expect(ticketsService.checkout).toHaveBeenCalledWith('user-123', mockBody);
+    });
+  });
+
   describe('getMyTickets', () => {
     it('should extract userId and return user ticket list', async () => {
       const mockReq: any = {
