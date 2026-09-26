@@ -43,25 +43,25 @@ export default function FreePostalEntryModal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="relative bg-[#111210] border border-[#8CB34A]/50 rounded-[24px] w-full max-w-[620px] overflow-hidden shadow-[0_0_50px_rgba(140,179,74,0.25)] animate-in zoom-in-95 duration-300 flex flex-col z-[10000]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="relative bg-white border border-[#E9D5FF] rounded-[24px] w-full max-w-[620px] overflow-hidden shadow-[0_20px_60px_rgba(113,49,200,0.15)] animate-in zoom-in-95 duration-300 flex flex-col z-[10000]">
         
         {/* Glow Header Accent */}
-        <div className="h-2 w-full bg-gradient-to-r from-[#8CB34A] via-[#A0D056] to-[#5A752A]" />
+        <div className="h-2 w-full bg-gradient-to-r from-[#7131C8] via-[#8B5CF6] to-[#A855F7]" />
 
         {/* Modal Header */}
-        <div className="p-6 sm:p-7 border-b border-[#2D3C13] bg-[#0D0D0B] flex items-start justify-between">
+        <div className="p-6 sm:p-7 border-b border-[#E9D5FF] bg-[#FAF5FF] flex items-start justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#1A230A] border border-[#8CB34A] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(140,179,74,0.3)] text-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-[#F3E8FF] border border-[#D8B4FE] flex items-center justify-center shrink-0 shadow-sm text-2xl">
               ✉️
             </div>
             <div>
-              <h2 className="font-heading font-bold text-xl sm:text-2xl text-[#E8EDD4] leading-tight">
+              <h2 className="font-heading font-bold text-xl sm:text-2xl text-[#2E0B57] leading-tight">
                 {title}
               </h2>
-              <p className="font-sans text-xs text-[#8CB34A] mt-0.5 font-semibold">
+              <p className="font-sans text-xs text-[#7131C8] mt-0.5 font-bold">
                 {raffleTitle ? (
-                  <>Entering: <span className="text-[#E8EDD4] underline">{raffleTitle}</span></>
+                  <>Entering: <span className="text-[#2E0B57] underline">{raffleTitle}</span></>
                 ) : (
                   "Free Postal Entry Route (UK Compliant)"
                 )}
@@ -71,7 +71,7 @@ export default function FreePostalEntryModal({
 
           <button
             onClick={onClose}
-            className="text-[#72943A] hover:text-[#E8EDD4] p-1.5 rounded-lg hover:bg-[#1A230A] transition-colors"
+            className="text-[#6B7280] hover:text-[#7131C8] p-1.5 rounded-lg hover:bg-[#F3E8FF] transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -80,23 +80,23 @@ export default function FreePostalEntryModal({
         </div>
 
         {/* Body Scroll Area */}
-        <div className="p-6 sm:p-7 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar text-xs leading-relaxed text-[#B3B8AA]">
+        <div className="p-6 sm:p-7 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar text-xs leading-relaxed text-[#4B5563]">
           
           {/* Legal Subtitle Banner */}
-          <div className="bg-[#1A230A] border border-[#43581E] rounded-xl p-4 text-[#E8EDD4]">
+          <div className="bg-[#FAF5FF] border border-[#E9D5FF] rounded-xl p-4 text-[#2E0B57]">
             <p>{subtitle}</p>
           </div>
 
           {/* Postal Address Card */}
-          <div className="bg-[#0D0D0B] border border-[#2D3C13] rounded-2xl p-5 space-y-3">
+          <div className="bg-[#FBF8FF] border border-[#E9D5FF] rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#8CB34A]">
+              <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#7131C8]">
                 📬 Send Postal Entries To:
               </h3>
               <button
                 type="button"
                 onClick={handleCopyAddress}
-                className="px-3 py-1 rounded-lg bg-[#1A230A] border border-[#43581E] text-[#A0D056] font-sans font-bold text-[11px] hover:bg-[#2D3C13] transition-colors flex items-center gap-1.5"
+                className="px-3 py-1 rounded-lg bg-[#F3E8FF] border border-[#D8B4FE] text-[#7131C8] font-sans font-bold text-[11px] hover:bg-[#E9D5FF] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 {copied ? "✓ Address Copied!" : "📋 Copy Address"}
               </button>
