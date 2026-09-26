@@ -6,7 +6,6 @@ import WebsiteFooter from "../../../components/website/layout/WebsiteFooter";
 import RaffleImageGallery from "../../../components/website/raffle-details/RaffleImageGallery";
 import RaffleEntryCard from "../../../components/website/raffle-details/RaffleEntryCard";
 import RaffleDetailsTabs from "../../../components/website/raffle-details/RaffleDetailsTabs";
-import RelatedRafflesSection from "../../../components/website/raffle-details/RelatedRafflesSection";
 import RaffleDetailsEmptyState from "../../../components/website/raffle-details/RaffleDetailsEmptyState";
 import FreePostalEntryButton from "../../../components/website/legal/FreePostalEntryButton";
 import { raffleDetailsData } from "../../../data/raffles/raffle-details.data";
@@ -236,11 +235,6 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
 
           </div>
         </section>
-
-        {/* You Might Also Like Section */}
-        <Suspense fallback={<div className="py-20 text-center text-text-muted font-sans">Loading related competitions...</div>}>
-          <RelatedRafflesSection currentRaffleId={raffle.id} category={raffle.category} />
-        </Suspense>
       </main>
 
       {/* Global website footer */}
