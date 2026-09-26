@@ -56,12 +56,12 @@ export default function HostProfileForm() {
       return userService.uploadAvatar(file);
     },
     onSuccess: (data) => {
-      setMessage("Avatar updated successfully!");
+      setMessage("Logo updated successfully!");
       queryClient.setQueryData(["user"], data.user);
       setTimeout(() => setMessage(""), 3000);
     },
     onError: () => {
-      setMessage("Failed to update avatar.");
+      setMessage("Failed to update logo.");
     },
   });
 
@@ -118,7 +118,17 @@ export default function HostProfileForm() {
           />
           <div className="relative w-40 h-40 rounded-full border-2 border-dashed border-border-medium flex items-center justify-center bg-bg overflow-hidden shadow-inner">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="Logo" className="w-full h-full object-cover" />
+              <img
+                src={
+                  user.avatarUrl.startsWith('http') ||
+                  user.avatarUrl.startsWith('/') ||
+                  user.avatarUrl.startsWith('data:')
+                    ? user.avatarUrl
+                    : `/${user.avatarUrl}`
+                }
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="font-heading font-bold text-4xl text-primary">{initials}</span>
             )}

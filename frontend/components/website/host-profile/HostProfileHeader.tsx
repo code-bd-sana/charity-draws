@@ -21,13 +21,28 @@ export default function HostProfileHeader({
   rating,
   memberSince
 }: HostProfileHeaderProps) {
+  const isImageLogo = Boolean(
+    logo &&
+      (logo.startsWith('http://') ||
+        logo.startsWith('https://') ||
+        logo.startsWith('/') ||
+        logo.startsWith('data:') ||
+        logo.includes('/uploads/'))
+  );
+
+  const logoSrc = isImageLogo
+    ? logo.startsWith('http') || logo.startsWith('/') || logo.startsWith('data:')
+      ? logo
+      : `/${logo}`
+    : null;
+
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-border">
       <div className="flex items-center gap-5">
         <div className="w-[88px] h-[88px] rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-          {logo && (logo.startsWith('http') || logo.startsWith('/')) ? (
+          {logoSrc ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={logo} alt={name} className="w-full h-full object-cover" />
+            <img src={logoSrc} alt={name} className="w-full h-full object-cover" />
           ) : (
             <span className="font-heading font-bold text-text-brand text-[32px]">{logo}</span>
           )}

@@ -8,8 +8,14 @@ import {
   Res,
   Req,
   UnauthorizedException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import type { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -23,6 +29,52 @@ import { ResendVerificationDto } from './dto/resend-verification.dto';
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('upload-avatar')
+  @ApiOperation({ summary: 'Upload avatar/logo before or during registration' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/avatars',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/i)) {
+          return cb(
+            new BadRequestException(
+              'Only image files (jpg, jpeg, png, webp) are allowed!',
+            ),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5 MB
+      },
+    }),
+  )
+  async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host =
+      req.headers['x-forwarded-host'] || req.headers.host || '127.0.0.1:5000';
+    const baseUrl = process.env.APP_URL || `${protocol}://${host}`;
+    const url = `${baseUrl}/uploads/avatars/${file.filename}`;
+    return { url };
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })

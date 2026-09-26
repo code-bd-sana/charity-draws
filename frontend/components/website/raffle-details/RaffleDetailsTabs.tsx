@@ -166,8 +166,22 @@ export default function RaffleDetailsTabs({ raffle }: RaffleDetailsTabsProps) {
       {raffle.hostName && (
         <div className="mt-8 bg-[#111210] border border-[#2D3C13] rounded-[12px] p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1A230A] border border-[#43581E] flex items-center justify-center shrink-0">
-              <span className="font-heading font-semibold text-[#8CB34A] text-[14px]">{raffle.hostLogo || raffle.hostName.charAt(0)}</span>
+            <div className="w-10 h-10 rounded-full bg-[#1A230A] border border-[#43581E] flex items-center justify-center shrink-0 overflow-hidden">
+              {raffle.hostLogo && (raffle.hostLogo.startsWith('http') || raffle.hostLogo.startsWith('/') || raffle.hostLogo.startsWith('data:') || raffle.hostLogo.includes('/uploads/')) ? (
+                <img
+                  src={
+                    raffle.hostLogo.startsWith('http') || raffle.hostLogo.startsWith('/') || raffle.hostLogo.startsWith('data:')
+                      ? raffle.hostLogo
+                      : `/${raffle.hostLogo}`
+                  }
+                  alt={raffle.hostName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="font-heading font-semibold text-[#8CB34A] text-[14px]">
+                  {raffle.hostName ? raffle.hostName.substring(0, 2).toUpperCase() : 'H'}
+                </span>
+              )}
             </div>
             <div className="flex flex-col">
               <span className="font-sans text-[10px] text-[#72943A] uppercase tracking-wide">Hosted by</span>

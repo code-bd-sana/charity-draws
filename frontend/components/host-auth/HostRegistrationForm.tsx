@@ -15,6 +15,7 @@ import PrimaryButton from "../website/shared/PrimaryButton";
 import AuthSuccessState from "./AuthSuccessState";
 import { cn } from "../../lib/utils";
 import { useRegisterMutation } from "../../hooks/useAuthHooks";
+import { authService } from "../../services/auth.service";
 import { extractApiError } from "../../lib/utils";
 import { toast } from "sonner";
 
@@ -101,8 +102,8 @@ export default function HostRegistrationForm({
     }
   };
 
-  // Profile photo / logo file selection with local uploader data URL preview
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Profile photo / logo file selection with local uploader data URL preview & server upload
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -115,6 +116,20 @@ export default function HostRegistrationForm({
         }));
       };
       reader.readAsDataURL(file);
+
+      try {
+        const res = await authService.uploadAvatar(file);
+        if (res?.url) {
+          setFormData((prev) => ({
+            ...prev,
+            profilePhoto: res.url,
+            businessLogo: res.url,
+          }));
+        }
+      } catch (err) {
+        // Fallback: base64 payload is supported and auto-saved by backend register endpoint
+        console.warn("Direct upload fallback to base64 registration payload", err);
+      }
     }
   };
 
@@ -175,6 +190,7 @@ export default function HostRegistrationForm({
       }));
 
       try {
+        const hostLogo = formData.businessLogo || formData.profilePhoto || undefined;
         await registerMutation.mutateAsync({
           email: formData.email,
           password: formData.password,
@@ -182,7 +198,11 @@ export default function HostRegistrationForm({
           lastName: formData.lastName,
           location: formData.city ? `${formData.city}, ${formData.country}` : formData.country,
           role: 'HOST',
-          businessName: formData.businessName || `${formData.firstName} ${formData.lastName}`, // Fallback for individual
+          businessName: formData.businessName || `${formData.firstName} ${formData.lastName}`.trim(), // Fallback for individual
+          avatarUrl: hostLogo,
+          logoUrl: hostLogo,
+          phone: formData.phone || formData.businessPhone,
+          bio: formData.bio,
         });
         
         toast.success("Host registration successful! Check your email to verify.");
