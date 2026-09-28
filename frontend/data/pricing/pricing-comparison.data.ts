@@ -37,22 +37,4 @@ export const COMPARISON_ROWS: ComparisonRow[] = [
     premiumValue: true,
     proValue: true,
   },
-  {
-    featureName: "Custom branding",
-    freeValue: false,
-    premiumValue: false,
-    proValue: true,
-  },
-  {
-    featureName: "Advanced analytics",
-    freeValue: false,
-    premiumValue: false,
-    proValue: true,
-  },
-  {
-    featureName: "Dedicated account manager",
-    freeValue: false,
-    premiumValue: false,
-    proValue: true,
-  },
 ];

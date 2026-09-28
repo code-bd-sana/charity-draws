@@ -36,8 +36,18 @@ export class AdminHostsService {
         include: {
           user: {
             select: {
+              id: true,
               email: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+              location: true,
+              phone: true,
+              address: true,
+              role: true,
               isBlocked: true,
+              isEmailVerified: true,
+              createdAt: true,
             },
           },
           subscriptions: {
@@ -46,8 +56,22 @@ export class AdminHostsService {
             take: 1,
             orderBy: { createdAt: 'desc' },
           },
+          raffles: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              status: true,
+              pricePerTicket: true,
+              ticketsSold: true,
+              totalTickets: true,
+              createdAt: true,
+            },
+            take: 5,
+            orderBy: { createdAt: 'desc' },
+          },
           _count: {
-            select: { raffles: true },
+            select: { raffles: true, withdrawals: true },
           },
         },
       }),
@@ -59,21 +83,39 @@ export class AdminHostsService {
       const revenue = Number(host.walletBalance) || 0;
 
       const activePlan =
-        host.subscriptions.length > 0
+        host.subscriptions && host.subscriptions.length > 0
           ? host.subscriptions[0].plan.name
           : 'Free';
+
+      const ownerName =
+        `${host.user?.firstName || ''} ${host.user?.lastName || ''}`.trim() ||
+        'Not specified';
 
       return {
         id: host.id,
         userId: host.userId,
         businessName: host.businessName,
-        email: host.user.email,
-        isBlocked: host.user.isBlocked,
+        slug: host.slug || null,
+        bio: host.bio || null,
+        phone: host.phone || host.user?.phone || null,
+        address: host.address || host.user?.address || null,
+        location: host.address || host.user?.location || host.user?.address || null,
+        email: host.user?.email || '',
+        avatarUrl: host.user?.avatarUrl || null,
+        ownerName,
+        firstName: host.user?.firstName || null,
+        lastName: host.user?.lastName || null,
+        role: host.user?.role || 'HOST',
+        isBlocked: host.user?.isBlocked || false,
+        isEmailVerified: host.user?.isEmailVerified || false,
         isVerified: host.isVerified,
         plan: !host.isVerified ? 'Pending Approval' : activePlan,
-        raffles: host._count.raffles,
+        walletBalance: Number(host.walletBalance) || 0,
+        raffles: host._count?.raffles || 0,
+        recentRaffles: host.raffles || [],
         revenue: revenue,
         createdAt: host.createdAt,
+        userCreatedAt: host.user?.createdAt || host.createdAt,
       };
     });
 
@@ -84,6 +126,54 @@ export class AdminHostsService {
       limit,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  async getHostById(id: string) {
+    const host = await this.prisma.hostProfile.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            location: true,
+            phone: true,
+            address: true,
+            role: true,
+            isBlocked: true,
+            isEmailVerified: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        subscriptions: {
+          include: { plan: true },
+          orderBy: { createdAt: 'desc' },
+        },
+        raffles: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            instantWins: true,
+            winners: true,
+          },
+        },
+        withdrawals: {
+          orderBy: { createdAt: 'desc' },
+        },
+        _count: {
+          select: { raffles: true, withdrawals: true },
+        },
+      },
+    });
+
+    if (!host) {
+      throw new NotFoundException('Host profile not found');
+    }
+
+    return host;
   }
 
   async getStats() {

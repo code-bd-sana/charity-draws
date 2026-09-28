@@ -49,10 +49,10 @@ export default function FaqSection() {
             </h2>
             
             <p className="font-sans text-sm md:text-base text-text-muted leading-relaxed mb-8">
-              Everything you need to know about entering prize draws, list creation guidelines, ticket escrow hold limits, and reward deliveries on Charity Draws.
+              Everything you need to know about entering prize draws, host commission tiers (15% vs 10%), secure escrow bank withdrawals, and transparent winner selection on Charity Draws.
             </p>
 
-            <SecondaryButton href="#" icon={envelopeIcon} className="px-6 py-3">
+            <SecondaryButton href="/contact" icon={envelopeIcon} className="px-6 py-3">
               Contact Support
             </SecondaryButton>
           </div>

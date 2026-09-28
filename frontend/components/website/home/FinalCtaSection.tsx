@@ -82,7 +82,7 @@ export default function FinalCtaSection() {
             </h2>
             
             <p className="font-sans text-sm md:text-base text-text-muted leading-relaxed mb-6">
-              Turn your surplus charity gear into cash or launch competitions as an established retailer. We handle everything from secure payment collections to automated random draws.
+              Host high-impact prize competitions for luxury goods, tech, vehicles, or cash rewards. We handle everything from secure payment collections to automated random draws and verified payouts.
             </p>
 
             {/* Benefits Bullet Grid */}
@@ -102,11 +102,11 @@ export default function FinalCtaSection() {
 
             {/* CTA Buttons Row */}
             <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-              <PrimaryButton href="#" icon={boltIcon} className="w-full sm:w-auto px-8 py-3.5">
+              <PrimaryButton href="/host/register" icon={boltIcon} className="w-full sm:w-auto px-8 py-3.5">
                 Start Hosting
               </PrimaryButton>
-              <SecondaryButton href="#" className="w-full sm:w-auto px-8 py-3.5">
-                View Pricing
+              <SecondaryButton href="/pricing" className="w-full sm:w-auto px-8 py-3.5">
+                See Pricing
               </SecondaryButton>
             </div>
           </div>

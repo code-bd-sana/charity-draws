@@ -58,15 +58,15 @@ export default function VerifiedHostCard({ host }: VerifiedHostCardProps) {
         </div>
         
         <div className="flex items-center justify-between mt-6 pt-5 border-t border-divider relative z-10">
-          <div className="flex items-center gap-4 text-[12px] font-sans text-text-brand font-semibold">
-            <span>{host.competitionCount} Competitions</span>
-            {host.averageRating && (
-              <span className="flex items-center gap-1.5">
-                <span className="text-amber-400">★</span> {host.averageRating}
+          <div className="flex flex-wrap items-center gap-3 text-[12px] font-sans text-text-brand font-semibold">
+            <span>{host.competitionCount} {host.competitionCount === 1 ? 'Competition' : 'Competitions'}</span>
+            {host.location && (
+              <span className="text-text-muted flex items-center gap-1 font-normal text-[11px] truncate max-w-[140px]" title={host.location}>
+                <span>📍</span> {host.location}
               </span>
             )}
           </div>
-          <span className="text-primary font-bold text-[13px] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex items-center gap-1">
+          <span className="text-primary font-bold text-[13px] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex items-center gap-1 shrink-0">
             View Profile 
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

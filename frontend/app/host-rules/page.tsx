@@ -13,15 +13,15 @@ const hostRules = [
   {
     number: "01",
     title: "Prize Authenticity",
-    badge: "VCRA & UKARA Compliant",
+    badge: "100% Genuine & Brand New",
     icon: (
       <svg className="w-6 h-6 text-[#8CB34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
       </svg>
     ),
     description:
-      "All items offered as prizes must be exactly as described in the competition listing. The prize must be brand new and unused, it can be opened for photo and marketing purposes. All Charity Replicas must comply with the VCRA and the winner must provide a valid UKARA or equivalent defence.",
-    highlights: ["Brand New & Unused", "VCRA Compliance", "Mandatory UKARA Defence Check"],
+      "All items offered as prizes must be authentic, exactly as described in the competition listing, and meet all UK safety and compliance standards. Physical prizes must be brand new and unused (may only be unboxed briefly for promotional photography).",
+    highlights: ["Brand New & Unused", "Authenticity Guaranteed", "UK Safety & Quality Compliant"],
   },
   {
     number: "02",
@@ -174,7 +174,7 @@ export default function HostRulesPage() {
                 Have Questions About Host Rules?
               </h3>
               <p className="font-sans text-xs sm:text-sm text-[#B3B8AA]">
-                If you have questions regarding these rules or UKARA compliance, please contact our support team.
+                If you have questions regarding these rules or prize compliance, please contact our support team.
               </p>
             </div>
 

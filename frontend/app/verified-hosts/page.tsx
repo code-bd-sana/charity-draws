@@ -1,9 +1,10 @@
 import React from "react";
 import { Metadata } from "next";
-import { verifiedHostsData } from "../../data/hosts/hosts.data";
 import VerifiedHostsList from "../../components/website/verified-hosts/VerifiedHostsList";
 import WebsiteNavbar from "../../components/website/layout/WebsiteNavbar";
 import WebsiteFooter from "../../components/website/layout/WebsiteFooter";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Verified Hosts | Charity Draws",
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 export default async function VerifiedHostsPage() {
   let verifiedHosts = [];
   try {
-    const apiUrl = process.env.BACKEND_API_URL || 'http://127.0.0.1:5000/api/v1';
+    const apiUrl =
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:5000/api/v1';
     const res = await fetch(`${apiUrl}/hosts/verified`, {
       cache: 'no-store'
     });
