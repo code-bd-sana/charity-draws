@@ -238,7 +238,7 @@ export default function TermsContent() {
                 6.1. The prize details are described on the Website. Prizes are non-transferable and subject to availability.
               </p>
               <p>
-                6.2. Vehicle & Charity Replica Prizes: Winners are solely responsible for ensuring appropriate UKARA / defence registration, safety gear, valid insurance, and lawful usage on public/private property.
+                6.2. Vehicle & Special Category Prizes: For vehicle or high-value experiential prizes, winners are solely responsible for ensuring valid driving licences, road tax, comprehensive insurance, safety compliance, and lawful operation under UK regulations.
               </p>
               <p>
                 6.3. Charity Draws reserves the right to substitute a prize with an equivalent cash alternative if circumstances beyond reasonable control make it necessary.

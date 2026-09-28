@@ -20,32 +20,55 @@ export class HostsService {
             firstName: true,
             lastName: true,
             avatarUrl: true,
+            location: true,
+            address: true,
           },
         },
         _count: {
           select: {
-            raffles: {
-              where: {
-                status: 'ACTIVE',
-              },
-            },
+            raffles: true,
+          },
+        },
+        raffles: {
+          select: {
+            id: true,
+            status: true,
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    return hosts.map((host) => ({
-      id: host.id,
-      slug: host.slug || host.id,
-      name: host.businessName,
-      logo: host.user.avatarUrl,
-      description: host.bio || null,
-      category: null,
-      competitionCount: host._count.raffles,
-      averageRating: 5.0, // Mocked for now
-      totalReviews: 12, // Mocked for now
-      isVerified: host.isVerified,
-    }));
+    return hosts.map((host) => {
+      const businessOrUserName =
+        host.businessName?.trim() ||
+        `${host.user?.firstName || ''} ${host.user?.lastName || ''}`.trim() ||
+        'Verified Host';
+
+      const activeCompetitions = host.raffles.filter(
+        (r) => r.status === 'ACTIVE',
+      ).length;
+      const pastCompetitions = host.raffles.filter(
+        (r) => r.status === 'ENDED' || r.status === 'COMPLETED',
+      ).length;
+
+      return {
+        id: host.id,
+        slug: host.slug || host.id,
+        name: businessOrUserName,
+        logo: host.user?.avatarUrl || null,
+        description: host.bio || null,
+        location: host.address || host.user?.location || host.user?.address || null,
+        category: null,
+        competitionCount: host._count.raffles,
+        activeCompetitions,
+        pastCompetitions,
+        isVerified: host.isVerified,
+        memberSince: host.createdAt.getFullYear(),
+      };
+    });
   }
 
   async findOnePublic(slug: string) {
@@ -59,12 +82,16 @@ export class HostsService {
             firstName: true,
             lastName: true,
             avatarUrl: true,
+            location: true,
+            address: true,
+            email: true,
+            phone: true,
           },
         },
         raffles: {
           where: {
             status: {
-              in: ['ACTIVE', 'ENDED'],
+              in: ['ACTIVE', 'ENDED', 'COMPLETED'],
             },
           },
           orderBy: {
@@ -72,15 +99,19 @@ export class HostsService {
           },
           include: {
             instantWins: true,
+            winners: {
+              select: {
+                id: true,
+                prizeName: true,
+                winType: true,
+                createdAt: true,
+              },
+            },
           },
         },
         _count: {
           select: {
-            raffles: {
-              where: {
-                status: 'ACTIVE',
-              },
-            },
+            raffles: true,
           },
         },
       },
@@ -90,24 +121,47 @@ export class HostsService {
       throw new NotFoundException('Host not found');
     }
 
+    const businessOrUserName =
+      host.businessName?.trim() ||
+      `${host.user?.firstName || ''} ${host.user?.lastName || ''}`.trim() ||
+      'Verified Host';
+
+    const activeRaffles = host.raffles.filter((r) => r.status === 'ACTIVE');
+    const pastRaffles = host.raffles.filter(
+      (r) => r.status === 'ENDED' || r.status === 'COMPLETED',
+    );
+
+    const location =
+      host.address || host.user?.location || host.user?.address || null;
+    const phone = host.phone || host.user?.phone || null;
+    const email = host.user?.email || null;
+
     return {
       id: host.id,
       slug: host.slug || host.id,
-      name: host.businessName,
-      logo: host.user.avatarUrl,
+      name: businessOrUserName,
+      logo: host.user?.avatarUrl || null,
       bio: host.bio || null,
+      location,
+      phone,
+      email,
       isVerified: host.isVerified,
       drawsHosted: host._count.raffles,
-      rating: 5.0, // Mocked
+      activeDrawsCount: activeRaffles.length,
+      pastDrawsCount: pastRaffles.length,
       memberSince: host.createdAt.getFullYear(),
+      joinedAt: host.createdAt.toISOString(),
       raffles: host.raffles.map((raffle) => {
-        // Format endDate as "Ends in Xd Yh" or a clean date string
-        const end = new Date(raffle.endDate);
-        const formattedEndDate = end.toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        });
+        const ticketPrice = raffle.pricePerTicket
+          ? Number(raffle.pricePerTicket.toString())
+          : 0;
+        const totalTickets = raffle.totalTickets || 0;
+        const soldTickets = raffle.ticketsSold || 0;
+        const mainPrizeVal = raffle.mainPrizeValue
+          ? Number(raffle.mainPrizeValue.toString())
+          : 0;
+        const calculatedWorth =
+          mainPrizeVal > 0 ? mainPrizeVal : totalTickets * ticketPrice;
 
         return {
           id: raffle.id,
@@ -115,16 +169,18 @@ export class HostsService {
           title: raffle.title,
           description: raffle.description,
           image: raffle.mainImage || '/images/default-raffle.png',
-          ticketPrice: raffle.pricePerTicket
-            ? Number(raffle.pricePerTicket.toString())
-            : 0,
-          totalTickets: raffle.totalTickets,
-          soldTickets: raffle.ticketsSold,
-          endDate: `Ends ${formattedEndDate}`,
-          status: raffle.status, // ACTIVE, ENDED, etc.
-          category: 'charity', // Default or add to schema later
-          isInstantWin: raffle.instantWins?.length > 0,
+          ticketPrice,
+          totalTickets,
+          soldTickets,
+          startDate: raffle.startDate ? raffle.startDate.toISOString() : null,
+          endDate: raffle.endDate ? raffle.endDate.toISOString() : null,
+          status: raffle.status, // ACTIVE, ENDED, COMPLETED
+          category: raffle.category || 'Charity',
+          worthPrice: calculatedWorth,
+          prizeName: raffle.prizeName || raffle.title,
+          isInstantWin: (raffle.instantWins?.length || 0) > 0,
           instantWinsCount: raffle.instantWins?.length || 0,
+          winnersCount: raffle.winners?.length || 0,
         };
       }),
     };

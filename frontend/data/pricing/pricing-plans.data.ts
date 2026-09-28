@@ -17,9 +17,6 @@ export const PRICING_PLANS: PricingPlan[] = [
       { id: "featured-slots", label: "Featured listing slots", included: false },
       { id: "priority-payout", label: "Priority payout", included: false },
       { id: "instant-wins", label: "Access to Instant Wins", included: false },
-      { id: "custom-branding", label: "Custom branding", included: false },
-      { id: "analytics", label: "Advanced analytics", included: false },
-      { id: "account-manager", label: "Dedicated account manager", included: false },
     ],
   },
   {
@@ -39,9 +36,6 @@ export const PRICING_PLANS: PricingPlan[] = [
       { id: "featured-slots", label: "Featured listing slots (3/mo)", included: true },
       { id: "priority-payout", label: "Priority payout", included: true },
       { id: "instant-wins", label: "Access to Instant Wins", included: true },
-      { id: "custom-branding", label: "Custom branding", included: false },
-      { id: "analytics", label: "Advanced analytics", included: false },
-      { id: "account-manager", label: "Dedicated account manager", included: false },
     ],
   },
   {
@@ -59,9 +53,6 @@ export const PRICING_PLANS: PricingPlan[] = [
       { id: "featured-slots", label: "Unlimited featured slots", included: true },
       { id: "priority-payout", label: "Priority payout", included: true },
       { id: "instant-wins", label: "Access to Instant Wins", included: true },
-      { id: "custom-branding", label: "Custom branding", included: true },
-      { id: "analytics", label: "Advanced analytics", included: true },
-      { id: "account-manager", label: "Dedicated account manager", included: true },
     ],
   },
 ];

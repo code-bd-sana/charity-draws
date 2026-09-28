@@ -5,6 +5,8 @@ import WebsiteFooter from "../../../components/website/layout/WebsiteFooter";
 import HostProfileHeader from "../../../components/website/host-profile/HostProfileHeader";
 import HostProfileTabs from "../../../components/website/host-profile/HostProfileTabs";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -13,7 +15,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   let name = slug;
   try {
-    const apiUrl = process.env.BACKEND_API_URL || 'http://127.0.0.1:5000/api/v1';
+    const apiUrl =
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:5000/api/v1';
     const res = await fetch(`${apiUrl}/hosts/public/${slug}`);
     if (res.ok) {
       const json = await res.json();
@@ -33,7 +38,10 @@ export default async function HostProfilePage({ params }: PageProps) {
   
   let host = null;
   try {
-    const apiUrl = process.env.BACKEND_API_URL || 'http://127.0.0.1:5000/api/v1';
+    const apiUrl =
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:5000/api/v1';
     const res = await fetch(`${apiUrl}/hosts/public/${slug}`, {
       cache: 'no-store'
     });
@@ -60,8 +68,7 @@ export default async function HostProfilePage({ params }: PageProps) {
     );
   }
 
-  const name = host.name;
-  const initials = name.split(' ').map((w: string) => w[0]).join('').substring(0, 2).toUpperCase();
+  const name = host.name || 'Verified Host';
 
   return (
     <>
@@ -77,15 +84,20 @@ export default async function HostProfilePage({ params }: PageProps) {
           <div className="max-w-[1200px] mx-auto w-full flex flex-col">
             <HostProfileHeader 
               name={name}
-              logo={host.logo || initials}
-              bio={host.bio || "Charity draws host"}
+              logo={host.logo}
+              bio={host.bio}
+              location={host.location}
               isVerified={host.isVerified}
-              drawsHosted={host.drawsHosted}
-              rating={host.rating}
+              drawsHosted={host.drawsHosted || 0}
+              activeDrawsCount={host.activeDrawsCount || 0}
+              pastDrawsCount={host.pastDrawsCount || 0}
               memberSince={host.memberSince}
             />
             
-            <HostProfileTabs raffles={host.raffles} />
+            <HostProfileTabs 
+              host={host}
+              raffles={host.raffles || []} 
+            />
           </div>
         </div>
       </main>

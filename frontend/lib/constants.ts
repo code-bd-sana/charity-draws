@@ -31,7 +31,7 @@ export const FOOTER_SECTIONS = [
   {
     title: "For Hosts",
     links: [
-      { label: "Start Hosting", href: "/#host-info" },
+      { label: "Start Hosting", href: "/host/register" },
       { label: "Pricing & Fees", href: "/pricing" },
       { label: "Verified Hosts", href: "/verified-hosts" },
     ],

@@ -102,9 +102,9 @@ export const raffleDetailsData: RaffleDetail[] = [
     ],
     terms: [
       "Open to UK/EU residents aged 18+.",
-      "Proof of valid defense (UKARA or equivalent) required for shipment.",
-      "Live draw conducted on our Facebook Page.",
-      "No cash alternative is available.",
+      "Proof of age (valid government ID) required for delivery verification.",
+      "Live draw conducted with certified cryptographic RNG.",
+      "Tracked and insured UK courier delivery.",
     ],
     instantWinPrizes: [
       {
@@ -156,7 +156,7 @@ export const raffleDetailsData: RaffleDetail[] = [
     ],
     terms: [
       "Open to UK residents aged 18+.",
-      "UKARA or valid defense required.",
+      "Proof of age (valid government ID) required prior to shipment.",
       "Shipped via tracked courier.",
     ],
     instantWinPrizes: [],
