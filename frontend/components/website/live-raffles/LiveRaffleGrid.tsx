@@ -98,50 +98,51 @@ export default function LiveRaffleGrid() {
   };
 
   return (
-    <section className="py-12 bg-transparent flex-grow">
-      <div className="container-custom">
-        {/* Filter controls bar */}
-        <LiveRafflesFilterBar
-          activeCategory={activeCategory}
-          setActiveCategory={handleCategoryChange}
-          searchQuery={searchQuery}
-          setSearchQuery={handleSearchChange}
-          sortBy={sortBy}
-          setSortBy={handleSortChange}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-        />
+    <section className="py-8 md:py-12 bg-transparent flex-grow">
+      {/* Sticky Filter Bar spanning full width */}
+      <LiveRafflesFilterBar
+        activeCategory={activeCategory}
+        setActiveCategory={handleCategoryChange}
+        searchQuery={searchQuery}
+        setSearchQuery={handleSearchChange}
+        sortBy={sortBy}
+        setSortBy={handleSortChange}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
+      <div className="container-custom mt-8 min-h-[400px]">
         {/* Content Area */}
-        <div className="mt-8 min-h-[400px]">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-[400px] text-primary">Loading live competitions...</div>
-          ) : filteredRaffles.length > 0 ? (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                  : "flex flex-col gap-6"
-              }
-            >
-              {filteredRaffles.map((raffle: any) => (
-                <LiveRaffleCard key={raffle.id} raffle={raffle} viewMode={viewMode} />
-              ))}
-            </div>
-          ) : (
-            <LiveRafflesEmptyState onReset={resetFilters} />
-          )}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[400px] text-primary font-sans">
+            Loading live competitions...
+          </div>
+        ) : filteredRaffles.length > 0 ? (
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                : "flex flex-col gap-6"
+            }
+          >
+            {filteredRaffles.map((raffle: any) => (
+              <LiveRaffleCard key={raffle.id} raffle={raffle} viewMode={viewMode} />
+            ))}
+          </div>
+        ) : (
+          <LiveRafflesEmptyState onReset={resetFilters} />
+        )}
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <LiveRafflesPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
-        </div>
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <LiveRafflesPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </section>
   );
 }
+
