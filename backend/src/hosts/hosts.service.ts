@@ -2,17 +2,27 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class HostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Optional()
+    private readonly notificationsService?: NotificationsService,
+  ) {}
 
   async findAllVerifiedPublic() {
     const hosts = await this.prisma.hostProfile.findMany({
       where: {
         isVerified: true,
+        user: {
+          isBlocked: false,
+          isEmailVerified: true,
+        },
       },
       include: {
         user: {
@@ -22,6 +32,8 @@ export class HostsService {
             avatarUrl: true,
             location: true,
             address: true,
+            isBlocked: true,
+            isEmailVerified: true,
           },
         },
         _count: {
@@ -47,10 +59,10 @@ export class HostsService {
         `${host.user?.firstName || ''} ${host.user?.lastName || ''}`.trim() ||
         'Verified Host';
 
-      const activeCompetitions = host.raffles.filter(
+      const activeCompetitions = (host.raffles || []).filter(
         (r) => r.status === 'ACTIVE',
       ).length;
-      const pastCompetitions = host.raffles.filter(
+      const pastCompetitions = (host.raffles || []).filter(
         (r) => r.status === 'ENDED' || r.status === 'COMPLETED',
       ).length;
 
@@ -62,11 +74,13 @@ export class HostsService {
         description: host.bio || null,
         location: host.address || host.user?.location || host.user?.address || null,
         category: null,
-        competitionCount: host._count.raffles,
+        competitionCount: host._count?.raffles || 0,
         activeCompetitions,
         pastCompetitions,
         isVerified: host.isVerified,
-        memberSince: host.createdAt.getFullYear(),
+        isBlocked: host.user?.isBlocked ?? false,
+        isEmailVerified: host.user?.isEmailVerified ?? false,
+        memberSince: host.createdAt ? host.createdAt.getFullYear() : new Date().getFullYear(),
       };
     });
   }
@@ -349,6 +363,30 @@ export class HostsService {
     });
 
     const resObj = result as any;
+
+    if (this.notificationsService) {
+      // Notify Host
+      this.notificationsService
+        .create({
+          userId,
+          title: 'Withdrawal Request Submitted',
+          message: `Your withdrawal request for £${dto.amount.toFixed(2)} has been submitted and is processing.`,
+          type: 'PAYMENT',
+          link: '/dashboard/host/payouts',
+        })
+        .catch((e) => console.error('Host withdrawal notification error:', e));
+
+      // Notify Admins
+      this.notificationsService
+        .notifyAdmins({
+          title: 'New Withdrawal Request',
+          message: `Host "${host.businessName}" requested a withdrawal of £${dto.amount.toFixed(2)}.`,
+          type: 'PAYMENT',
+          link: '/dashboard/admin/withdrawals',
+        })
+        .catch((e) => console.error('Admin withdrawal notification error:', e));
+    }
+
     return {
       message: 'Withdrawal request submitted successfully',
       withdrawal: {

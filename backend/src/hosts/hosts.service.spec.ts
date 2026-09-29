@@ -29,7 +29,7 @@ describe('HostsService', () => {
   });
 
   describe('findAllVerifiedPublic', () => {
-    it('should return list of verified hosts', async () => {
+    it('should query only verified, unblocked, and email verified hosts', async () => {
       const mockHosts = [
         {
           id: 'host-1',
@@ -39,11 +39,15 @@ describe('HostsService', () => {
           bannerUrl: 'banner.jpg',
           logoUrl: 'logo.jpg',
           isVerified: true,
+          createdAt: new Date('2024-01-01'),
           user: {
             firstName: 'Tactical',
             lastName: 'Host',
             avatarUrl: 'avatar.jpg',
+            isBlocked: false,
+            isEmailVerified: true,
           },
+          raffles: [],
           _count: {
             raffles: 3,
           },
@@ -56,6 +60,19 @@ describe('HostsService', () => {
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe('Tactical Armory');
       expect(result[0].competitionCount).toBe(3);
+      expect(result[0].isBlocked).toBe(false);
+      expect(result[0].isEmailVerified).toBe(true);
+      expect(prismaMock.hostProfile.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            isVerified: true,
+            user: {
+              isBlocked: false,
+              isEmailVerified: true,
+            },
+          },
+        }),
+      );
     });
   });
 

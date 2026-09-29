@@ -4,10 +4,12 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
 import { RafflesService } from '../raffles/raffles.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 import { CheckoutDto } from './dto/checkout.dto';
 
@@ -17,6 +19,8 @@ export class TicketsService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => RafflesService))
     private readonly rafflesService: RafflesService,
+    @Optional()
+    private readonly notificationsService?: NotificationsService,
   ) {}
 
   async checkout(userId: string, checkoutDto: CheckoutDto) {
@@ -308,6 +312,73 @@ export class TicketsService {
         });
       } catch (err) {
         console.error('Failed to update manual raffle status on sold out:', err);
+      }
+    }
+
+    // 9. Dispatch notifications for User, Host, and Admins
+    if (this.notificationsService) {
+      const raffleTitle = result.updatedRaffle.title;
+      const totalCost = Number(result.transaction.amount);
+
+      // Notify User (buyer)
+      this.notificationsService
+        .create({
+          userId,
+          title: 'Ticket Purchase Confirmed 🎟️',
+          message: `You purchased ${quantity} ticket(s) for "${raffleTitle}" (£${totalCost.toFixed(2)}). Good luck!`,
+          type: 'PAYMENT',
+          link: '/dashboard/user/tickets',
+        })
+        .catch((e) => console.error('Notification error:', e));
+
+      // Notify Host
+      if (result.updatedRaffle.hostId) {
+        this.prisma.hostProfile
+          .findUnique({
+            where: { id: result.updatedRaffle.hostId },
+            select: { userId: true },
+          })
+          .then((hostProf) => {
+            if (hostProf?.userId) {
+              this.notificationsService
+                ?.create({
+                  userId: hostProf.userId,
+                  title: 'New Competition Entry! 🚀',
+                  message: `A participant purchased ${quantity} ticket(s) for your competition "${raffleTitle}".`,
+                  type: 'PAYMENT',
+                  link: '/dashboard/host/sales',
+                })
+                .catch((e) => console.error('Host notification error:', e));
+            }
+          })
+          .catch((e) => console.error('Host lookup error:', e));
+      }
+
+      // Notify Admins
+      this.notificationsService
+        .notifyAdmins({
+          title: 'New Ticket Order Completed',
+          message: `Order of £${totalCost.toFixed(2)} placed for "${raffleTitle}" (${quantity} tickets).`,
+          type: 'PAYMENT',
+          link: '/dashboard/admin/orders',
+        })
+        .catch((e) => console.error('Admin notification error:', e));
+
+      // Instant Wins
+      if (result.userInstantWins && result.userInstantWins.length > 0) {
+        for (const win of result.userInstantWins) {
+          this.notificationsService
+            .create({
+              userId,
+              title: '🎉 Instant Win Prize Claimed!',
+              message: `Congratulations! You unlocked instant prize "${win.prizeName}" in "${raffleTitle}"!`,
+              type: 'WIN',
+              link: '/dashboard/user/winners',
+            })
+            .catch((e) =>
+              console.error('Instant win user notification error:', e),
+            );
+        }
       }
     }
 

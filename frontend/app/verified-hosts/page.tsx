@@ -23,7 +23,14 @@ export default async function VerifiedHostsPage() {
     });
     if (res.ok) {
       const json = await res.json();
-      verifiedHosts = json.data || json;
+      const rawHosts = Array.isArray(json.data)
+        ? json.data
+        : Array.isArray(json)
+        ? json
+        : [];
+      verifiedHosts = rawHosts.filter(
+        (h: any) => h.isBlocked !== true && (h.isEmailVerified === undefined || h.isEmailVerified === true)
+      );
     }
   } catch (err) {
     console.error("Failed to fetch verified hosts", err);

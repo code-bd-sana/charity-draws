@@ -112,3 +112,13 @@ export const categoryKeys = {
   public: () => [...categoryKeys.all, 'public'] as const,
   admin: () => [...categoryKeys.all, 'admin'] as const,
 };
+
+export const notificationKeys = {
+  all: ['notifications'] as const,
+  list: (params?: unknown) =>
+    params !== undefined
+      ? ([...notificationKeys.all, 'list', params] as const)
+      : ([...notificationKeys.all, 'list'] as const),
+  unreadCount: () => [...notificationKeys.all, 'unreadCount'] as const,
+};
+

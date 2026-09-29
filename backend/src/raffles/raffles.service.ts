@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -10,10 +11,15 @@ import {
   parseUKDateTimeToUTC,
   getUKEndOfDay,
 } from '../common/utils/uk-date.util';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class RafflesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional()
+    private readonly notificationsService?: NotificationsService,
+  ) {}
 
   async create(hostId: string, data: any) {
     const hostProfile = await this.prisma.hostProfile.findUnique({
@@ -159,6 +165,29 @@ export class RafflesService {
           data: instantWinsData,
         });
       }
+    }
+
+    if (this.notificationsService) {
+      // Notify Host
+      this.notificationsService
+        .create({
+          userId: hostId,
+          title: 'Competition Submitted 📋',
+          message: `Your competition "${raffle.title}" has been submitted and is pending admin approval.`,
+          type: 'INFO',
+          link: '/dashboard/host/competitions',
+        })
+        .catch((e) => console.error('Host notification error:', e));
+
+      // Notify Admins
+      this.notificationsService
+        .notifyAdmins({
+          title: 'New Competition Awaiting Approval',
+          message: `Host "${hostProfile.businessName}" submitted "${raffle.title}" for review.`,
+          type: 'INFO',
+          link: '/dashboard/admin/approvals',
+        })
+        .catch((e) => console.error('Admin notification error:', e));
     }
 
     return raffle;
@@ -595,21 +624,38 @@ export class RafflesService {
   }
 
   async approve(id: string) {
-    const raffle = await this.prisma.raffle.findUnique({ where: { id } });
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      include: { host: true },
+    });
     if (!raffle) throw new NotFoundException('Raffle not found');
 
-    return this.prisma.raffle.update({
+    const updated = await this.prisma.raffle.update({
       where: { id },
       data: { status: 'ACTIVE' },
     });
+
+    if (this.notificationsService && raffle.host?.userId) {
+      this.notificationsService
+        .create({
+          userId: raffle.host.userId,
+          title: 'Competition Approved! 🎉',
+          message: `Your competition "${raffle.title}" has been approved by admin and is now live!`,
+          type: 'LAUNCH',
+          link: '/dashboard/host/competitions',
+        })
+        .catch((e) => console.error('Host approval notification error:', e));
+    }
+
+    return updated;
   }
 
   async drawWinner(raffleId: string, winningTicketNumber?: number) {
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // 1. Get the raffle and check its status
       const raffle = await tx.raffle.findUnique({
         where: { id: raffleId },
-        include: { winners: true, tickets: true },
+        include: { winners: true, tickets: true, host: true },
       });
 
       if (!raffle) {
@@ -667,8 +713,49 @@ export class RafflesService {
         data: { status: 'ENDED' },
       });
 
-      return winner;
+      return { winner, raffle, winningTicket };
     });
+
+    if (this.notificationsService) {
+      const prizeName = result.winner.prizeName;
+      const raffleTitle = result.raffle.title;
+
+      // 1. Notify Winner (User)
+      this.notificationsService
+        .create({
+          userId: result.winner.userId,
+          title: '🏆 You Won The Competition!',
+          message: `Congratulations! You won "${prizeName}" in "${raffleTitle}"! Claim your prize now.`,
+          type: 'WIN',
+          link: '/dashboard/user/winners',
+        })
+        .catch((e) => console.error('Winner notification error:', e));
+
+      // 2. Notify Host
+      if (result.raffle.host?.userId) {
+        this.notificationsService
+          .create({
+            userId: result.raffle.host.userId,
+            title: 'Competition Draw Completed 🎯',
+            message: `A winner has been drawn for your competition "${raffleTitle}": Ticket #${result.winningTicket.ticketNumber}.`,
+            type: 'DRAW',
+            link: '/dashboard/host/winners',
+          })
+          .catch((e) => console.error('Host draw notification error:', e));
+      }
+
+      // 3. Notify Admins
+      this.notificationsService
+        .notifyAdmins({
+          title: 'Competition Draw Completed',
+          message: `Winner drawn for "${raffleTitle}": Ticket #${result.winningTicket.ticketNumber}.`,
+          type: 'DRAW',
+          link: '/dashboard/admin/winners',
+        })
+        .catch((e) => console.error('Admin draw notification error:', e));
+    }
+
+    return result.winner;
   }
 
   async getRaffleSoldTickets(raffleId: string) {
