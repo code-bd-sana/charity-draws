@@ -56,5 +56,67 @@ export const userService = {
     const response = await api.get('/users/my-winners');
     return response.data;
   },
+
+  async getUserDashboard(): Promise<UserDashboardOverview> {
+    const response = await api.get('/users/dashboard');
+    return response.data;
+  },
+
+  async getMyTransactions(): Promise<UserTransaction[]> {
+    const response = await api.get('/users/my-transactions');
+    return response.data;
+  },
 };
+
+export interface UserDashboardOverview {
+  kpi: {
+    totalTickets: number;
+    ticketsThisMonth: number;
+    activeEntriesCount: number;
+    activeTicketsCount: number;
+    totalWins: number;
+    newWinsThisMonth: number;
+    totalSpent: number;
+    spentThisMonth: number;
+    spendChangePercentage: number;
+  };
+  activeEntries: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    image: string | null;
+    hostName: string;
+    drawDate: string;
+    ticketCount: number;
+  }>;
+  recentWins: Array<{
+    id: string;
+    prizeName: string;
+    image: string | null;
+    winType: string;
+    ticketNumber?: number;
+    raffleTitle: string;
+    raffleSlug: string;
+    hostName: string;
+    createdAt: string;
+    deliveryStatus: string;
+  }>;
+  transactions: Array<{
+    id: string;
+    amount: number;
+    date: string;
+  }>;
+}
+
+export interface UserTransaction {
+  id: string;
+  transactionId: string;
+  amount: number;
+  type: string;
+  status: 'completed' | 'refunded' | 'failed' | string;
+  paymentGateway: string;
+  createdAt: string;
+  raffleTitle: string | null;
+  raffleSlug: string | null;
+}
 

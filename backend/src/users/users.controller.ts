@@ -53,6 +53,24 @@ export class UsersController {
     }
   }
 
+  @Get('dashboard')
+  @ApiOperation({ summary: 'Get current user dashboard overview metrics' })
+  @ApiResponse({ status: 200, description: 'User dashboard metrics and activity' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getUserDashboard(@Req() req: Request) {
+    const userId = this.extractUserId(req);
+    return this.usersService.getUserDashboardOverview(userId);
+  }
+
+  @Get('my-transactions')
+  @ApiOperation({ summary: 'Get all transactions for current user' })
+  @ApiResponse({ status: 200, description: 'List of user transactions' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getMyTransactions(@Req() req: Request) {
+    const userId = this.extractUserId(req);
+    return this.usersService.getMyTransactions(userId);
+  }
+
   @Get('my-winners')
   @ApiOperation({ summary: 'Get all winning records for the current user' })
   @ApiResponse({

@@ -105,6 +105,8 @@ export const subscriptionKeys = {
 export const userKeys = {
   all: ['user'] as const,
   current: () => [...userKeys.all, 'current'] as const,
+  dashboard: () => [...userKeys.all, 'dashboard'] as const,
+  transactions: () => [...userKeys.all, 'transactions'] as const,
 };
 
 export const categoryKeys = {

@@ -3,9 +3,8 @@
 import React, { useState } from "react";
 import ProfileSettings from "./ProfileSettings";
 import SecuritySettings from "./SecuritySettings";
-import NotificationSettings from "./NotificationSettings";
 
-type SettingsTab = "profile" | "security" | "notifications" | "billing";
+type SettingsTab = "profile" | "security" | "billing";
 
 export default function SettingsManager() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
@@ -44,20 +43,6 @@ export default function SettingsManager() {
             </svg>
             Security
           </button>
-          
-          <button 
-            onClick={() => setActiveTab("notifications")}
-            className={`flex items-center gap-3 w-full h-11 px-4 rounded-button font-sans text-xs md:text-sm transition-all cursor-pointer ${
-              activeTab === "notifications" 
-                ? "bg-primary text-primary-text font-bold shadow-sm" 
-                : "text-text-secondary hover:bg-accent-bg/50 hover:text-text-primary font-semibold"
-            }`}
-          >
-            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
-            Notifications
-          </button>
 
           {/* Spacer */}
           <div className="w-full px-2 py-2">
@@ -85,7 +70,6 @@ export default function SettingsManager() {
       <div className="flex-1 min-w-0">
         {activeTab === "profile" && <ProfileSettings />}
         {activeTab === "security" && <SecuritySettings />}
-        {activeTab === "notifications" && <NotificationSettings />}
         {activeTab === "billing" && (
           <div className="bg-surface border border-border rounded-card p-8 flex flex-col gap-4 items-center justify-center min-h-[360px] shadow-card">
              <svg className="w-12 h-12 text-primary opacity-60 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
