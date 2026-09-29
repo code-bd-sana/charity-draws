@@ -43,6 +43,7 @@ export type MockPrismaService = {
   winner: MockModel;
   withdrawal: MockModel;
   category: MockModel;
+  notification: MockModel;
   $transaction: jest.Mock;
   $connect: jest.Mock;
   $disconnect: jest.Mock;
@@ -66,6 +67,7 @@ export const createPrismaMock = (): MockPrismaService => {
     winner: createMockModel(),
     withdrawal: createMockModel(),
     category: createMockModel(),
+    notification: createMockModel(),
     $connect: jest.fn().mockResolvedValue(undefined),
     $disconnect: jest.fn().mockResolvedValue(undefined),
   };

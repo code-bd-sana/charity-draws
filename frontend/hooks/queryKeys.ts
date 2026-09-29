@@ -105,6 +105,8 @@ export const subscriptionKeys = {
 export const userKeys = {
   all: ['user'] as const,
   current: () => [...userKeys.all, 'current'] as const,
+  dashboard: () => [...userKeys.all, 'dashboard'] as const,
+  transactions: () => [...userKeys.all, 'transactions'] as const,
 };
 
 export const categoryKeys = {
@@ -112,3 +114,13 @@ export const categoryKeys = {
   public: () => [...categoryKeys.all, 'public'] as const,
   admin: () => [...categoryKeys.all, 'admin'] as const,
 };
+
+export const notificationKeys = {
+  all: ['notifications'] as const,
+  list: (params?: unknown) =>
+    params !== undefined
+      ? ([...notificationKeys.all, 'list', params] as const)
+      : ([...notificationKeys.all, 'list'] as const),
+  unreadCount: () => [...notificationKeys.all, 'unreadCount'] as const,
+};
+

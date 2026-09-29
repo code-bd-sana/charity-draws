@@ -22,10 +22,11 @@ model User {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
 
-  hostProfile  HostProfile?
-  tickets      Ticket[]
-  transactions Transaction[]
-  winners      Winner[]
+  hostProfile   HostProfile?
+  tickets       Ticket[]
+  transactions  Transaction[]
+  winners       Winner[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -213,3 +214,22 @@ model Category {
 
   @@map("categories")
 }
+
+model Notification {
+  id        String   @id @default(uuid()) @db.VarChar(255)
+  userId    String   @map("user_id") @db.VarChar(255)
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  type      String   @default("INFO") @db.VarChar(50) // INFO, WIN, PAYMENT, DRAW, LAUNCH, SYSTEM
+  link      String?  @db.VarChar(255)
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+

@@ -10,6 +10,8 @@ export interface VerifiedHost {
   activeCompetitions?: number;
   pastCompetitions?: number;
   isVerified: boolean;
+  isBlocked?: boolean;
+  isEmailVerified?: boolean;
   memberSince?: number | string;
 }
 

@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 @Injectable()
 export class AdminWithdrawalsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional()
+    private readonly notificationsService?: NotificationsService,
+  ) {}
 
   async findAll() {
     const withdrawals = await this.prisma.withdrawal.findMany({
@@ -70,7 +75,7 @@ export class AdminWithdrawalsService {
       return withdrawal;
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       // If rejected and previously PENDING, refund host's wallet
       if (status === 'REJECTED' && withdrawal.status === 'PENDING') {
         await tx.hostProfile.update({
@@ -83,15 +88,39 @@ export class AdminWithdrawalsService {
         });
       }
 
-      const updated = await tx.withdrawal.update({
+      return tx.withdrawal.update({
         where: { id },
         data: {
           status,
           adminNotes: adminNotes || withdrawal.adminNotes,
         },
       });
-
-      return updated;
     });
+
+    if (this.notificationsService && withdrawal.host?.userId) {
+      const formattedAmount = Number(withdrawal.amount).toFixed(2);
+      const title =
+        status === 'COMPLETED'
+          ? 'Withdrawal Payout Sent 💸'
+          : status === 'APPROVED'
+            ? 'Withdrawal Approved'
+            : 'Withdrawal Request Update';
+      const message =
+        status === 'REJECTED'
+          ? `Your withdrawal request for £${formattedAmount} was rejected.${adminNotes ? ` Reason: ${adminNotes}` : ''}`
+          : `Your withdrawal request for £${formattedAmount} has been marked as ${status.toLowerCase()}.`;
+
+      this.notificationsService
+        .create({
+          userId: withdrawal.host.userId,
+          title,
+          message,
+          type: 'PAYMENT',
+          link: '/dashboard/host/payouts',
+        })
+        .catch((e) => console.error('Withdrawal status notification error:', e));
+    }
+
+    return updated;
   }
 }

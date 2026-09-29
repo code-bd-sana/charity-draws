@@ -102,7 +102,7 @@ export default function HostProfileForm() {
     : user?.firstName?.substring(0, 2).toUpperCase() || "TG";
 
   return (
-    <div className="bg-surface border border-border rounded-card p-6 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12 shadow-card select-none">
+    <div className="bg-surface border border-border rounded-card p-4 sm:p-6 lg:p-10 flex flex-col lg:flex-row gap-8 lg:gap-12 shadow-card select-none w-full min-w-0 overflow-x-hidden">
       
       {/* Left Column: Avatar & Membership */}
       <div className="flex flex-col items-center gap-8 w-full lg:w-[280px] shrink-0">

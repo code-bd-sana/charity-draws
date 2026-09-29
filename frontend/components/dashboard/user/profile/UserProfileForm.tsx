@@ -146,10 +146,10 @@ export default function UserProfileForm() {
   const initials = user?.firstName?.substring(0, 2).toUpperCase() || user?.email?.substring(0, 2).toUpperCase() || "US";
 
   return (
-    <div className="flex flex-col xl:flex-row gap-5 p-8 max-w-[1660px] mx-auto w-full animate-fadeIn items-start select-none">
+    <div className="flex flex-col xl:flex-row gap-5 p-3 sm:p-6 md:p-8 max-w-[1660px] mx-auto w-full animate-fadeIn items-start select-none overflow-x-hidden">
       {/* Left Column: Profile Summary */}
       <div className="w-full xl:w-[380px] shrink-0 flex flex-col gap-5">
-        <div className="bg-surface border border-border rounded-card p-8 flex flex-col items-center shadow-card">
+        <div className="bg-surface border border-border rounded-card p-4 sm:p-6 md:p-8 flex flex-col items-center shadow-card w-full">
           {/* Avatar Area */}
           <div className="relative mb-6">
             <input 
@@ -159,19 +159,19 @@ export default function UserProfileForm() {
               accept="image/*" 
               className="hidden" 
             />
-            <div className="w-[140px] h-[140px] rounded-full border-2 border-primary bg-accent-bg flex items-center justify-center overflow-hidden shadow-sm">
+            <div className="w-[120px] sm:w-[140px] h-[120px] sm:h-[140px] rounded-full border-2 border-primary bg-accent-bg flex items-center justify-center overflow-hidden shadow-sm">
               {user?.avatarUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <span className="font-heading font-bold text-[48px] text-text-brand">{initials}</span>
+                <span className="font-heading font-bold text-[36px] sm:text-[48px] text-text-brand">{initials}</span>
               )}
             </div>
             <button 
               type="button"
               onClick={handleUploadClick}
               disabled={uploadAvatarMutation.isPending}
-              className="absolute bottom-2 right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center border-2 border-white hover:bg-primary-hover transition-colors cursor-pointer shadow-md disabled:opacity-50"
+              className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center border-2 border-white hover:bg-primary-hover transition-colors cursor-pointer shadow-md disabled:opacity-50"
             >
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
@@ -181,7 +181,7 @@ export default function UserProfileForm() {
           </div>
           <p 
             onClick={handleUploadClick}
-            className="font-sans text-[12px] font-semibold text-text-brand mb-8 cursor-pointer hover:underline transition-colors"
+            className="font-sans text-[12px] font-semibold text-text-brand mb-6 sm:mb-8 cursor-pointer hover:underline transition-colors"
           >
             {uploadAvatarMutation.isPending ? "Uploading..." : "Upload Photo"}
           </p>
@@ -189,7 +189,7 @@ export default function UserProfileForm() {
           {/* Verification Banner */}
           {user?.isEmailVerified && (
             <div className="w-full bg-emerald-50 border border-emerald-200 rounded-button py-2.5 px-4 mb-6 flex items-center gap-2 shadow-sm">
-              <svg className="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
               <span className="font-sans font-semibold text-[12px] text-emerald-700">Email Verified</span>
@@ -217,12 +217,12 @@ export default function UserProfileForm() {
       </div>
 
       {/* Right Column: Settings Forms */}
-      <div className="flex-1 flex flex-col gap-5">
-        <form onSubmit={handleProfileSubmit} className="bg-surface border border-border rounded-card p-8 flex flex-col gap-8 shadow-card">
+      <div className="flex-1 flex flex-col gap-5 w-full min-w-0">
+        <form onSubmit={handleProfileSubmit} className="bg-surface border border-border rounded-card p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 shadow-card w-full">
           
           {/* Account Information */}
           <section>
-            <div className="flex justify-between items-center mb-5 pb-3 border-b border-divider">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5 pb-3 border-b border-divider">
               <h3 className="font-heading font-bold text-[16px] text-text-primary">Account Information</h3>
               {profileMessage && (
                 <span className={`text-[13px] font-semibold ${profileMessage.includes('Failed') ? 'text-red-600' : 'text-emerald-700'}`}>
@@ -269,17 +269,17 @@ export default function UserProfileForm() {
             <button 
               type="submit" 
               disabled={isSubmittingProfile}
-              className="bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-[13px] px-6 py-2.5 rounded-button transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-[13px] px-6 py-2.5 rounded-button transition-all disabled:opacity-50 cursor-pointer shadow-sm w-full sm:w-auto text-center"
             >
               {isSubmittingProfile ? "Saving..." : "Save Profile"}
             </button>
           </div>
         </form>
 
-        <form onSubmit={handlePasswordSubmit} className="bg-surface border border-border rounded-card p-8 flex flex-col gap-8 shadow-card">
+        <form onSubmit={handlePasswordSubmit} className="bg-surface border border-border rounded-card p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 shadow-card w-full">
           {/* Change Password */}
           <section>
-            <div className="flex justify-between items-center mb-5 pb-3 border-b border-divider">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5 pb-3 border-b border-divider">
               <h3 className="font-heading font-bold text-[16px] text-text-primary">Change Password</h3>
               {passwordMessage && (
                 <span className={`text-[13px] font-semibold ${passwordMessage.includes('Failed') || passwordMessage.includes('not match') || passwordMessage.includes('least') ? 'text-red-600' : 'text-emerald-700'}`}>
@@ -313,7 +313,7 @@ export default function UserProfileForm() {
             <button 
               type="submit" 
               disabled={isSubmittingPassword}
-              className="bg-accent-bg border border-border-medium text-text-brand hover:bg-primary hover:text-white font-sans font-semibold text-[13px] px-6 py-2.5 rounded-button transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="bg-accent-bg border border-border-medium text-text-brand hover:bg-primary hover:text-white font-sans font-semibold text-[13px] px-6 py-2.5 rounded-button transition-all disabled:opacity-50 cursor-pointer shadow-sm w-full sm:w-auto text-center"
             >
               {isSubmittingPassword ? "Updating..." : "Update Password"}
             </button>

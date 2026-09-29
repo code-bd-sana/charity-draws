@@ -71,4 +71,32 @@ describe('UsersController', () => {
       expect(usersService.changePassword).toHaveBeenCalledWith('user-123', dto);
     });
   });
+
+  describe('getUserDashboard', () => {
+    it('should return user dashboard overview', async () => {
+      const mockReq: any = {
+        cookies: { accessToken: 'valid-token' },
+      };
+      const mockOverview = { kpi: { totalTickets: 5 }, activeEntries: [] };
+      usersService.getUserDashboardOverview = jest.fn().mockResolvedValue(mockOverview);
+
+      const result = await controller.getUserDashboard(mockReq);
+      expect(result).toEqual(mockOverview);
+      expect(usersService.getUserDashboardOverview).toHaveBeenCalledWith('user-123');
+    });
+  });
+
+  describe('getMyTransactions', () => {
+    it('should return user transactions', async () => {
+      const mockReq: any = {
+        cookies: { accessToken: 'valid-token' },
+      };
+      const mockTx = [{ id: 'tx-1', amount: 20 }];
+      usersService.getMyTransactions = jest.fn().mockResolvedValue(mockTx);
+
+      const result = await controller.getMyTransactions(mockReq);
+      expect(result).toEqual(mockTx);
+      expect(usersService.getMyTransactions).toHaveBeenCalledWith('user-123');
+    });
+  });
 });

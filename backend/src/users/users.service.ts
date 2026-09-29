@@ -197,5 +197,233 @@ export class UsersService {
       };
     });
   }
+
+  async getUserDashboardOverview(userId: string) {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    // 1. Fetch tickets for this user with raffle info
+    const tickets = await this.prisma.ticket.findMany({
+      where: { userId },
+      include: {
+        raffle: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            mainImage: true,
+            endDate: true,
+            status: true,
+            pricePerTicket: true,
+            host: {
+              select: {
+                businessName: true,
+              },
+            },
+          },
+        },
+        winners: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // 2. Fetch completed transactions for this user
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        status: 'COMPLETED',
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    // 3. Fetch winners / prizes for this user
+    const winners = await this.prisma.winner.findMany({
+      where: { userId },
+      include: {
+        raffle: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            mainImage: true,
+            status: true,
+            host: { select: { businessName: true } },
+          },
+        },
+        ticket: {
+          select: {
+            ticketNumber: true,
+            createdAt: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Compute KPIs
+    const totalTickets = tickets.length;
+    const ticketsThisMonth = tickets.filter(
+      (t) => new Date(t.createdAt) >= startOfMonth,
+    ).length;
+
+    // Group active tickets by competition
+    const activeEntriesMap = new Map<
+      string,
+      {
+        id: string;
+        title: string;
+        slug: string;
+        image: string | null;
+        hostName: string;
+        drawDate: Date;
+        ticketCount: number;
+      }
+    >();
+
+    for (const t of tickets) {
+      if (t.raffle && t.raffle.status === 'ACTIVE') {
+        const existing = activeEntriesMap.get(t.raffle.id);
+        if (existing) {
+          existing.ticketCount += 1;
+        } else {
+          activeEntriesMap.set(t.raffle.id, {
+            id: t.raffle.id,
+            title: t.raffle.title,
+            slug: t.raffle.slug || t.raffle.id,
+            image: t.raffle.mainImage,
+            hostName: t.raffle.host?.businessName || 'Verified Host',
+            drawDate: t.raffle.endDate,
+            ticketCount: 1,
+          });
+        }
+      }
+    }
+
+    const activeEntriesList = Array.from(activeEntriesMap.values());
+    const activeEntriesCount = activeEntriesList.length;
+    const activeTicketsCount = activeEntriesList.reduce(
+      (sum, e) => sum + e.ticketCount,
+      0,
+    );
+
+    const totalWins = winners.length;
+    const newWinsThisMonth = winners.filter(
+      (w) => new Date(w.createdAt) >= startOfMonth,
+    ).length;
+
+    // Total spent: from transactions, or fallback to tickets price sum
+    let totalSpent = transactions
+      .filter((t) => t.type === 'TICKET_PURCHASE')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    if (totalSpent === 0 && tickets.length > 0) {
+      totalSpent = tickets.reduce(
+        (sum, t) => sum + Number(t.raffle?.pricePerTicket || 0),
+        0,
+      );
+    }
+
+    const spentThisMonth = transactions
+      .filter(
+        (t) =>
+          t.type === 'TICKET_PURCHASE' &&
+          new Date(t.createdAt) >= startOfMonth,
+      )
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const spentLastMonth = transactions
+      .filter(
+        (t) =>
+          t.type === 'TICKET_PURCHASE' &&
+          new Date(t.createdAt) >= startOfLastMonth &&
+          new Date(t.createdAt) <= endOfLastMonth,
+      )
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    let spendChangePercentage = 0;
+    if (spentLastMonth > 0) {
+      spendChangePercentage = Math.round(
+        ((spentThisMonth - spentLastMonth) / spentLastMonth) * 100,
+      );
+    } else if (spentThisMonth > 0) {
+      spendChangePercentage = 100;
+    }
+
+    const ticketTransactions = transactions.filter(
+      (t) => t.type === 'TICKET_PURCHASE',
+    );
+
+    const recentWins = winners.slice(0, 5).map((w) => ({
+      id: w.id,
+      prizeName: w.prizeName || 'Prize',
+      image: w.raffle?.mainImage || null,
+      winType: w.winType,
+      ticketNumber: w.ticket?.ticketNumber,
+      raffleTitle: w.raffle?.title || 'Competition',
+      raffleSlug: w.raffle?.slug || '',
+      hostName: w.raffle?.host?.businessName || 'Host',
+      createdAt: w.createdAt,
+      deliveryStatus: w.deliveryStatus,
+    }));
+
+    return {
+      kpi: {
+        totalTickets,
+        ticketsThisMonth,
+        activeEntriesCount,
+        activeTicketsCount,
+        totalWins,
+        newWinsThisMonth,
+        totalSpent,
+        spentThisMonth,
+        spendChangePercentage,
+      },
+      activeEntries: activeEntriesList.slice(0, 5),
+      recentWins,
+      transactions: ticketTransactions.map((t) => ({
+        id: t.id,
+        amount: Number(t.amount),
+        date: t.createdAt,
+      })),
+    };
+  }
+
+  async getMyTransactions(userId: string) {
+    const transactions = await this.prisma.transaction.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const raffleIds = transactions
+      .filter((t) => t.type === 'TICKET_PURCHASE' && t.relatedEntityId)
+      .map((t) => t.relatedEntityId!);
+
+    const raffles =
+      raffleIds.length > 0
+        ? await this.prisma.raffle.findMany({
+            where: { id: { in: raffleIds } },
+            select: { id: true, title: true, slug: true, mainImage: true },
+          })
+        : [];
+
+    const raffleMap = new Map(raffles.map((r) => [r.id, r]));
+
+    return transactions.map((tx) => {
+      const raffle = tx.relatedEntityId ? raffleMap.get(tx.relatedEntityId) : null;
+      return {
+        id: tx.id,
+        transactionId: `#TRN-${tx.id.slice(0, 8).toUpperCase()}`,
+        amount: Number(tx.amount),
+        type: tx.type,
+        status: tx.status.toLowerCase(),
+        paymentGateway: tx.paymentGateway || 'Card',
+        createdAt: tx.createdAt,
+        raffleTitle: raffle?.title || 'Competition Entry',
+        raffleSlug: raffle?.slug || null,
+      };
+    });
+  }
 }
 

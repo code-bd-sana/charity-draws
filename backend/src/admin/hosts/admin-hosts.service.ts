@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 @Injectable()
 export class AdminHostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Optional()
+    private readonly notificationsService?: NotificationsService,
+  ) {}
 
   async getHosts(page = 1, limit = 10, search = '', status = 'All') {
     const skip = (page - 1) * limit;
@@ -200,10 +205,25 @@ export class AdminHostsService {
       throw new NotFoundException('Host profile not found');
     }
 
-    return this.prisma.hostProfile.update({
+    const updated = await this.prisma.hostProfile.update({
       where: { id },
       data: { isVerified: true },
     });
+
+    if (this.notificationsService && hostProfile.userId) {
+      this.notificationsService
+        .create({
+          userId: hostProfile.userId,
+          title: 'Host Profile Approved! 🎉',
+          message:
+            'Congratulations! Your host application has been reviewed and verified by admin. You can now launch charity competitions!',
+          type: 'SYSTEM',
+          link: '/dashboard/host',
+        })
+        .catch((e) => console.error('Host approval notification error:', e));
+    }
+
+    return updated;
   }
 
   async rejectHost(id: string) {
@@ -214,7 +234,7 @@ export class AdminHostsService {
       throw new NotFoundException('Host profile not found');
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Delete subscriptions if any exist
       await tx.hostSubscription.deleteMany({
         where: { hostId: id },
@@ -229,5 +249,20 @@ export class AdminHostsService {
         data: { role: 'CLIENT' },
       });
     });
+
+    if (this.notificationsService && hostProfile.userId) {
+      this.notificationsService
+        .create({
+          userId: hostProfile.userId,
+          title: 'Host Application Update',
+          message:
+            'Your host application was reviewed and could not be approved at this time. Please contact support for more details.',
+          type: 'SYSTEM',
+          link: '/dashboard/user/support',
+        })
+        .catch((e) => console.error('Host rejection notification error:', e));
+    }
+
+    return result;
   }
 }

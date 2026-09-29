@@ -108,4 +108,70 @@ describe('UsersService', () => {
       expect(result[0].ticketNumber).toBe(42);
     });
   });
+
+  describe('getUserDashboardOverview', () => {
+    it('should calculate and return correct dashboard KPIs and entries', async () => {
+      prismaMock.ticket.findMany.mockResolvedValue([
+        {
+          id: 't-1',
+          createdAt: new Date(),
+          raffle: {
+            id: 'raf-1',
+            title: 'Tactical Draw',
+            slug: 'tactical-draw',
+            mainImage: 'img.jpg',
+            endDate: new Date(),
+            status: 'ACTIVE',
+            pricePerTicket: 5,
+            host: { businessName: 'Host Alpha' },
+          },
+          winners: [],
+        },
+      ]);
+
+      prismaMock.transaction.findMany.mockResolvedValue([
+        {
+          id: 'tx-1',
+          type: 'TICKET_PURCHASE',
+          amount: 15,
+          createdAt: new Date(),
+          status: 'COMPLETED',
+        },
+      ]);
+
+      prismaMock.winner.findMany.mockResolvedValue([]);
+
+      const result = await service.getUserDashboardOverview('user-1');
+      expect(result.kpi.totalTickets).toBe(1);
+      expect(result.kpi.activeEntriesCount).toBe(1);
+      expect(result.kpi.totalSpent).toBe(15);
+      expect(result.activeEntries).toHaveLength(1);
+      expect(result.activeEntries[0].title).toBe('Tactical Draw');
+    });
+  });
+
+  describe('getMyTransactions', () => {
+    it('should return formatted user transactions', async () => {
+      prismaMock.transaction.findMany.mockResolvedValue([
+        {
+          id: '12345678-abcd',
+          type: 'TICKET_PURCHASE',
+          amount: 25,
+          status: 'COMPLETED',
+          paymentGateway: 'STRIPE',
+          relatedEntityId: 'raf-1',
+          createdAt: new Date(),
+        },
+      ]);
+      prismaMock.raffle.findMany.mockResolvedValue([
+        { id: 'raf-1', title: 'Rifle Draw', slug: 'rifle-draw', mainImage: null },
+      ]);
+
+      const result = await service.getMyTransactions('user-1');
+      expect(result).toHaveLength(1);
+      expect(result[0].transactionId).toBe('#TRN-12345678');
+      expect(result[0].amount).toBe(25);
+      expect(result[0].raffleTitle).toBe('Rifle Draw');
+    });
+  });
 });

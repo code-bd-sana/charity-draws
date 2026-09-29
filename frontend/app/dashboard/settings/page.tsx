@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Settings | Dashboard",
-  description: "Manage your profile, security, and notification settings.",
+  description: "Manage your profile and security settings.",
 };
 
 export default function SharedSettingsPage() {
