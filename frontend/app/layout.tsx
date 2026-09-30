@@ -15,9 +15,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Charity Draws | Premium Charity Gear Competitions',
+  title: 'Charity Draws | Official UK Charity Prize Draws & Competitions',
   description:
-    'Win premium charity gear for less. Enter draws from just £1 per ticket. Transparent, fair, and secure prize draws.',
+    'Enter transparent prize competitions to win tax-free cash, luxury vehicles, watches, and tech while supporting registered UK charities.',
 };
 
 export default function RootLayout({
@@ -31,13 +31,31 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <Toaster 
           position="bottom-right"
+          visibleToasts={1}
+          expand={false}
+          duration={3000}
+          richColors
+          closeButton
           toastOptions={{
             style: {
-              background: '#161810',
-              border: '1px solid #2d3c13',
-              color: '#e8edd4',
+              background: '#FFFFFF',
+              border: '1px solid #E6D8F7',
+              color: '#351365',
+              boxShadow: '0 14px 34px -14px rgba(85, 32, 171, 0.20), 0 4px 16px rgba(113, 49, 200, 0.08)',
+              borderRadius: '12px',
+              fontFamily: 'var(--font-inter), sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
             },
-            className: 'font-sans text-[14px]',
+            className: 'font-sans text-[13px] font-medium shadow-card',
+            classNames: {
+              toast: 'bg-surface border-border text-text-primary shadow-card rounded-card',
+              title: 'font-semibold text-text-primary text-[13px]',
+              description: 'text-text-muted text-[12px]',
+              actionButton: 'bg-primary text-white font-semibold text-[12px] rounded-button px-3 py-1.5',
+              cancelButton: 'bg-accent-bg text-text-brand font-semibold text-[12px] rounded-button px-3 py-1.5',
+              closeButton: '!bg-surface !border-border !text-text-muted hover:!text-text-primary',
+            },
           }}
         />
       </body>

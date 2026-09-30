@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useBasket } from "../../features/basket/BasketContext";
 import { formatCurrency } from "../../lib/utils";
+import QuantityStepperInput from "../../components/website/basket/QuantityStepperInput";
 import WebsiteNavbar from "../../components/website/layout/WebsiteNavbar";
 import WebsiteFooter from "../../components/website/layout/WebsiteFooter";
 
@@ -155,25 +156,14 @@ export default function BasketPage() {
                           {/* Quantity Stepper */}
                           <div className="sm:col-span-2 flex items-center sm:justify-center justify-between">
                             <span className="sm:hidden text-text-muted text-[13px]">Quantity:</span>
-                            <div className="flex items-center gap-1.5 bg-bg border border-border rounded-button p-0.5">
-                              <button
-                                onClick={() => updateQuantity(item.raffleId, item.quantity - 1)}
-                                disabled={item.quantity <= min}
-                                className="w-7 h-7 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                              >
-                                -
-                              </button>
-                              <span className="font-heading font-bold text-[13px] text-text-primary px-2 min-w-[28px] text-center">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => updateQuantity(item.raffleId, item.quantity + 1)}
-                                disabled={(max !== null && item.quantity >= max) || item.quantity >= remaining}
-                                className="w-7 h-7 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                              >
-                                +
-                              </button>
-                            </div>
+                            <QuantityStepperInput
+                              quantity={item.quantity}
+                              min={min}
+                              max={max}
+                              remaining={remaining}
+                              onQuantityChange={(newQty) => updateQuantity(item.raffleId, newQty)}
+                              size="md"
+                            />
                           </div>
 
                           {/* Line Total */}
