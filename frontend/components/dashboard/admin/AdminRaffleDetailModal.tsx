@@ -8,12 +8,12 @@ interface AdminRaffleDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   raffle: any;
-  onApprove: (id: string) => void | Promise<void>;
-  onReject: (id: string, title: string) => void;
-  isApproving: boolean;
+  onApprove?: (id: string) => void | Promise<void>;
+  onReject?: (id: string, title: string) => void;
+  isApproving?: boolean;
 }
 
-type ModalTab = "overview" | "pricing" | "schedule" | "instantWins" | "host";
+type ModalTab = "overview" | "pricing" | "schedule" | "instantWins" | "winners" | "host";
 
 export default function AdminRaffleDetailModal({
   isOpen,
@@ -21,7 +21,7 @@ export default function AdminRaffleDetailModal({
   raffle,
   onApprove,
   onReject,
-  isApproving,
+  isApproving = false,
 }: AdminRaffleDetailModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>("overview");
   const [isImageZoomed, setIsImageZoomed] = useState(false);
@@ -38,7 +38,9 @@ export default function AdminRaffleDetailModal({
 
   const ticketPrice = Number(raffle.pricePerTicket || 0);
   const totalTickets = Number(raffle.totalTickets || 0);
+  const ticketsSold = Number(raffle.ticketsSold || 0);
   const grossRevenue = ticketPrice * totalTickets;
+  const currentRevenue = ticketPrice * ticketsSold;
   const platformFee = grossRevenue * (commissionRate / 100);
   const netPayout = grossRevenue - platformFee;
 
@@ -47,6 +49,10 @@ export default function AdminRaffleDetailModal({
     (sum: number, iw: any) => sum + Number(iw.rrpValue || 0),
     0
   );
+
+  const winners = raffle.winners || [];
+  const mainDrawWinner = winners.find((w: any) => w.winType === "MAIN_DRAW") || (winners.length > 0 && winners[0].winType !== "INSTANT_WIN" ? winners[0] : null);
+  const instantWinWinners = winners.filter((w: any) => w.winType === "INSTANT_WIN");
 
   const timing = getRaffleTimingStatus(raffle.startDate, raffle.endDate);
 
@@ -57,6 +63,49 @@ export default function AdminRaffleDetailModal({
     if (user?.firstName) return user.firstName[0].toUpperCase();
     if (host?.businessName) return host.businessName.slice(0, 2).toUpperCase();
     return "H";
+  };
+
+  const getHeaderStatusBadge = (status: string) => {
+    switch (status) {
+      case "ACTIVE":
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Live / Active
+          </span>
+        );
+      case "PENDING_APPROVAL":
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            Pending Approval
+          </span>
+        );
+      case "ENDED":
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge border border-border-medium bg-accent-bg text-text-brand text-[11px] font-bold uppercase tracking-wider">
+            Ended
+          </span>
+        );
+      case "CANCELLED":
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold uppercase tracking-wider">
+            Rejected / Cancelled
+          </span>
+        );
+      case "DRAFT":
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold uppercase tracking-wider">
+            Draft
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2.5 py-0.5 rounded-badge bg-accent-bg text-text-brand border border-border text-[11px] font-bold uppercase tracking-wider">
+            {status || "Unknown"}
+          </span>
+        );
+    }
   };
 
   return (
@@ -74,9 +123,7 @@ export default function AdminRaffleDetailModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-accent-bg/30 shrink-0">
           <div className="flex flex-col gap-1 min-w-0 pr-4">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-badge bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold uppercase tracking-wider">
-                Pending Approval
-              </span>
+              {getHeaderStatusBadge(raffle.status)}
               {raffle.category && (
                 <span className="px-2.5 py-0.5 rounded-badge bg-elevated text-text-brand border border-border-medium text-[11px] font-semibold">
                   {raffle.category}
@@ -85,6 +132,18 @@ export default function AdminRaffleDetailModal({
               <span className="text-[12px] text-text-muted font-medium">
                 ID: <span className="font-mono text-[11px] text-text-primary">{raffle.id}</span>
               </span>
+              {raffle.slug && (
+                <a
+                  href={`/live-raffles/${raffle.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2 py-0.5 rounded-badge bg-surface hover:bg-elevated text-text-brand border border-border text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                  title="Open live public competition page"
+                >
+                  <span>Public View</span>
+                  <span>↗</span>
+                </a>
+              )}
             </div>
             <h2 className="font-heading font-bold text-[18px] sm:text-[20px] text-text-primary truncate">
               {raffle.title}
@@ -172,6 +231,33 @@ export default function AdminRaffleDetailModal({
             >
               {instantWins.length}
             </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("winners")}
+            className={cn(
+              "px-3.5 py-2 rounded-button text-[13px] font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap",
+              activeTab === "winners"
+                ? "bg-primary text-white shadow-sm"
+                : "text-text-secondary hover:text-text-primary hover:bg-accent-bg/50"
+            )}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .982-3.172M12 3a4.5 4.5 0 0 0-4.5 4.5c0 1.298.552 2.47 1.439 3.29m6.122 0A4.478 4.478 0 0 0 16.5 7.5 4.5 4.5 0 0 0 12 3z" />
+            </svg>
+            Winners & Results
+            {winners.length > 0 && (
+              <span
+                className={cn(
+                  "px-1.5 py-0.2 rounded-full text-[11px] font-bold",
+                  activeTab === "winners"
+                    ? "bg-white text-primary"
+                    : "bg-emerald-100 text-emerald-800"
+                )}
+              >
+                {winners.length}
+              </span>
+            )}
           </button>
 
           <button
@@ -627,7 +713,155 @@ export default function AdminRaffleDetailModal({
             </div>
           )}
 
-          {/* TAB 5: HOST PROFILE (CREATOR) */}
+          {/* TAB 5: WINNERS & DRAW RESULTS */}
+          {activeTab === "winners" && (
+            <div className="flex flex-col gap-6">
+              
+              {/* Grand Prize / Main Draw Winner */}
+              <div className="bg-surface rounded-card border border-border p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🏆</span>
+                    <div>
+                      <h4 className="font-heading font-bold text-[15px] text-text-primary">
+                        Main Grand Prize Winner
+                      </h4>
+                      <p className="text-[12px] text-text-muted">
+                        Selected through certified cryptographic RNG draw
+                      </p>
+                    </div>
+                  </div>
+                  {mainDrawWinner ? (
+                    <span className="px-3 py-1 rounded-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold uppercase">
+                      Winner Confirmed
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-badge bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold uppercase">
+                      Awaiting Draw
+                    </span>
+                  )}
+                </div>
+
+                {mainDrawWinner ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[13px]">
+                    <div className="p-4 bg-bg border border-border rounded-button flex flex-col gap-2">
+                      <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Winner Identity</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm border border-primary/20">
+                          {mainDrawWinner.user?.firstName ? mainDrawWinner.user.firstName[0].toUpperCase() : "W"}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-text-primary text-[14px]">
+                            {mainDrawWinner.user?.firstName} {mainDrawWinner.user?.lastName || ""}
+                          </span>
+                          <span className="text-text-muted text-[12px]">{mainDrawWinner.user?.email || "N/A"}</span>
+                          {mainDrawWinner.user?.phone && (
+                            <span className="text-text-muted text-[11px]">{mainDrawWinner.user.phone}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-bg border border-border rounded-button flex flex-col gap-2">
+                      <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Winning Draw Details</span>
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-text-muted">Winning Ticket:</span>
+                          <span className="font-mono font-bold text-text-brand text-[13px]">
+                            #{mainDrawWinner.ticketNumber || (mainDrawWinner as any).ticket?.ticketNumber || (mainDrawWinner as any).ticketId?.slice(0, 8) || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-text-muted">Prize Won:</span>
+                          <span className="font-bold text-text-primary">{mainDrawWinner.prizeName || raffle.prizeName || raffle.title}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-text-muted">Drawn Date:</span>
+                          <span className="text-text-secondary">{formatUKDateTime(mainDrawWinner.createdAt)}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-text-muted">Delivery Status:</span>
+                          <span className="font-semibold text-text-primary capitalize">{mainDrawWinner.deliveryStatus?.toLowerCase() || "Pending"}</span>
+                        </div>
+                        {mainDrawWinner.trackingNumber && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-text-muted">Tracking Code:</span>
+                            <span className="font-mono text-text-brand">{mainDrawWinner.trackingNumber}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-8 px-4 text-center flex flex-col items-center justify-center gap-2 bg-bg/50 rounded-button border border-border">
+                    <span className="text-2xl">⏳</span>
+                    <p className="font-heading font-semibold text-text-primary text-[14px]">
+                      No winner has been selected yet
+                    </p>
+                    <p className="text-[12px] text-text-muted max-w-md">
+                      The grand prize draw takes place automatically when all tickets sell out or when the scheduled end date is reached.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Instant Win Claims Overview */}
+              {instantWins.length > 0 && (
+                <div className="bg-surface rounded-card border border-border p-5 flex flex-col gap-4">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">⚡</span>
+                      <div>
+                        <h4 className="font-heading font-bold text-[15px] text-text-primary">
+                          Instant Win Claims ({instantWins.filter((iw: any) => iw.isClaimed).length} of {instantWins.length} Claimed)
+                        </h4>
+                        <p className="text-[12px] text-text-muted">
+                          Prizes won instantly at time of ticket purchase
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-[13px]">
+                      <thead>
+                        <tr className="border-b border-border bg-accent-bg/40 text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                          <th className="py-2.5 px-3">Ticket #</th>
+                          <th className="py-2.5 px-3">Prize</th>
+                          <th className="py-2.5 px-3 text-right">RRP</th>
+                          <th className="py-2.5 px-3 text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {instantWins.map((iw: any) => (
+                          <tr key={iw.id} className="hover:bg-accent-bg/20">
+                            <td className="py-2.5 px-3 font-mono font-bold text-text-brand">#{iw.ticketNumber}</td>
+                            <td className="py-2.5 px-3 font-medium text-text-primary">{iw.prizeName}</td>
+                            <td className="py-2.5 px-3 text-right font-bold text-text-primary">
+                              {iw.rrpValue ? formatCurrency(Number(iw.rrpValue)) : "—"}
+                            </td>
+                            <td className="py-2.5 px-3 text-center">
+                              {iw.isClaimed ? (
+                                <span className="px-2 py-0.5 rounded-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold uppercase">
+                                  Claimed
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded-badge bg-accent-bg text-text-muted border border-border text-[10px] font-medium">
+                                  Unclaimed
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 6: HOST PROFILE (CREATOR) */}
           {activeTab === "host" && (
             <div className="flex flex-col gap-6">
               
@@ -657,7 +891,7 @@ export default function AdminRaffleDetailModal({
                       {host?.isVerified ? (
                         <span className="px-2 py-0.5 rounded-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold uppercase flex items-center gap-1">
                           <svg className="w-3 h-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                           </svg>
                           Verified Host
                         </span>
@@ -854,48 +1088,67 @@ export default function AdminRaffleDetailModal({
         {/* Modal Footer (Action Buttons) */}
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-border bg-surface shrink-0 gap-3">
           <div className="flex items-center gap-2 text-[12px] text-text-muted">
-            <span>Reviewing:</span>
-            <span className="font-semibold text-text-primary truncate max-w-[220px]">
+            <span>Competition:</span>
+            <span className="font-semibold text-text-primary truncate max-w-[260px]">
               {raffle.title}
+            </span>
+            <span className="text-text-muted text-[11px]">
+              · Created {raffle.createdAt ? formatUKDate(raffle.createdAt) : "N/A"}
             </span>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
+            {raffle.slug && (
+              <a
+                href={`/live-raffles/${raffle.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-[40px] px-4 rounded-button bg-accent-bg border border-border hover:bg-elevated text-text-brand cursor-pointer font-sans font-semibold text-[13px] transition-colors flex items-center gap-1.5"
+              >
+                <span>View on Website</span>
+                <span>↗</span>
+              </a>
+            )}
+
             <button
               onClick={onClose}
               disabled={isApproving}
-              className="flex-1 sm:flex-none h-[40px] px-4 rounded-button bg-bg border border-border hover:bg-elevated text-text-secondary cursor-pointer font-sans font-semibold text-[13px] transition-colors disabled:opacity-50"
+              className="flex-1 sm:flex-none h-[40px] px-5 rounded-button bg-bg border border-border hover:bg-elevated text-text-secondary cursor-pointer font-sans font-semibold text-[13px] transition-colors disabled:opacity-50"
             >
               Close
             </button>
 
-            <button
-              onClick={() => onReject(raffle.id, raffle.title)}
-              disabled={isApproving}
-              className="flex-1 sm:flex-none h-[40px] px-5 rounded-button bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 cursor-pointer font-sans font-semibold text-[13px] transition-colors disabled:opacity-50 shadow-sm"
-            >
-              Reject
-            </button>
+            {raffle.status === "PENDING_APPROVAL" && onReject && (
+              <button
+                onClick={() => onReject(raffle.id, raffle.title)}
+                disabled={isApproving}
+                className="flex-1 sm:flex-none h-[40px] px-5 rounded-button bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 cursor-pointer font-sans font-semibold text-[13px] transition-colors disabled:opacity-50 shadow-sm"
+              >
+                Reject
+              </button>
+            )}
 
-            <button
-              onClick={() => onApprove(raffle.id)}
-              disabled={isApproving}
-              className="flex-1 sm:flex-none h-[40px] px-6 rounded-button bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-[13px] transition-all cursor-pointer disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
-            >
-              {isApproving ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Approving...</span>
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                  <span>Approve & Publish</span>
-                </>
-              )}
-            </button>
+            {raffle.status === "PENDING_APPROVAL" && onApprove && (
+              <button
+                onClick={() => onApprove(raffle.id)}
+                disabled={isApproving}
+                className="flex-1 sm:flex-none h-[40px] px-6 rounded-button bg-primary hover:bg-primary-hover text-white font-sans font-semibold text-[13px] transition-all cursor-pointer disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
+              >
+                {isApproving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Approving...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <span>Approve & Publish</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 

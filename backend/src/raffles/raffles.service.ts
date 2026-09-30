@@ -1052,6 +1052,44 @@ export class RafflesService {
         instantWins: {
           orderBy: { ticketNumber: 'asc' },
         },
+        winners: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                phone: true,
+                avatarUrl: true,
+                location: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+        tickets: {
+          take: 20,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                phone: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            tickets: true,
+            instantWins: true,
+            winners: true,
+          },
+        },
         host: {
           include: {
             user: {
@@ -1066,6 +1104,7 @@ export class RafflesService {
                 address: true,
                 role: true,
                 isBlocked: true,
+                isEmailVerified: true,
                 createdAt: true,
               },
             },
@@ -1078,6 +1117,7 @@ export class RafflesService {
             _count: {
               select: {
                 raffles: true,
+                withdrawals: true,
               },
             },
           },
@@ -1129,7 +1169,46 @@ export class RafflesService {
     const [raffles, total] = await Promise.all([
       this.prisma.raffle.findMany({
         where: whereClause,
-        include: { host: { include: { user: true } } },
+        include: {
+          host: {
+            include: {
+              user: true,
+              subscriptions: {
+                where: { status: 'ACTIVE' },
+                include: { plan: true },
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+              },
+              _count: {
+                select: {
+                  raffles: true,
+                },
+              },
+            },
+          },
+          winners: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  phone: true,
+                  avatarUrl: true,
+                },
+              },
+            },
+          },
+          instantWins: true,
+          _count: {
+            select: {
+              tickets: true,
+              instantWins: true,
+              winners: true,
+            },
+          },
+        },
         orderBy: { createdAt: 'desc' },
         skip,
         take: Number(limit),

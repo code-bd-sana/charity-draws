@@ -9,6 +9,7 @@ import { formatUKDate, formatUKDateTime, getRaffleTimingStatus } from "../../../
 import ManualWinnerSelectModal from "../shared/ManualWinnerSelectModal";
 import ConfirmDeleteRaffleModal, { RaffleDeleteTarget } from "../shared/ConfirmDeleteRaffleModal";
 import ViewSoldTicketsModal from "../shared/ViewSoldTicketsModal";
+import AdminRaffleDetailModal from "./AdminRaffleDetailModal";
 import { Pagination } from "../../ui/Pagination";
 import EmptyState from "../../ui/EmptyState";
 
@@ -20,8 +21,25 @@ export default function AdminCompetitionsTable() {
   const [selectedCompForWinner, setSelectedCompForWinner] = useState<any | null>(null);
   const [selectedCompForDelete, setSelectedCompForDelete] = useState<RaffleDeleteTarget | null>(null);
   const [selectedCompForTickets, setSelectedCompForTickets] = useState<any | null>(null);
+  const [selectedRaffleForDetail, setSelectedRaffleForDetail] = useState<any | null>(null);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [exportingRaffleId, setExportingRaffleId] = useState<string | null>(null);
+
+  const handleOpenRaffleDetail = async (comp: any) => {
+    setSelectedRaffleForDetail(comp);
+    try {
+      setIsLoadingDetail(true);
+      const fullRaffle = await raffleService.getAdminRaffleById(comp.id);
+      if (fullRaffle) {
+        setSelectedRaffleForDetail(fullRaffle);
+      }
+    } catch (err) {
+      console.error("Failed to load full raffle details for admin:", err);
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  };
 
   // Debounce search
   useEffect(() => {
@@ -270,8 +288,20 @@ export default function AdminCompetitionsTable() {
                 <tr key={comp.id} className={`${i !== raffles.length - 1 ? 'border-b border-divider' : ''} hover:bg-accent-bg/30 transition-colors`}>
                   <td className="py-4 px-6">
                     <div className="flex flex-col gap-1">
-                      <span className="font-sans font-semibold text-[13px] text-text-primary truncate block max-w-[280px]">{comp.title}</span>
-                      <span className="font-sans text-[11px] text-text-muted truncate block max-w-[280px] font-medium">{hostName} ({hostEmail})</span>
+                      <button
+                        onClick={() => handleOpenRaffleDetail(comp)}
+                        className="text-left font-sans font-semibold text-[13px] text-text-primary hover:text-text-brand transition-colors truncate block max-w-[280px] cursor-pointer group"
+                        title="Click to view full competition & host details"
+                      >
+                        <span className="group-hover:underline">{comp.title}</span>
+                      </button>
+                      <button
+                        onClick={() => handleOpenRaffleDetail(comp)}
+                        className="text-left font-sans text-[11px] text-text-muted hover:text-text-primary transition-colors truncate block max-w-[280px] font-medium cursor-pointer"
+                        title="Click to view host details"
+                      >
+                        {hostName} ({hostEmail})
+                      </button>
                     </div>
                   </td>
                   <td className="py-4 px-6">
@@ -313,7 +343,19 @@ export default function AdminCompetitionsTable() {
                     </span>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="flex items-center justify-end gap-3">
+                    <div className="flex items-center justify-end gap-2.5">
+                      {/* View Details Action */}
+                      <button
+                        onClick={() => handleOpenRaffleDetail(comp)}
+                        className="text-text-muted hover:text-text-brand transition-colors cursor-pointer p-1.5 rounded-button hover:bg-accent-bg flex items-center justify-center"
+                        title="View Full Competition, Host, Economics & Results"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                      </button>
+
                       {(() => {
                         const hasWinner = Boolean(
                           comp.winners?.some((w: any) => w.winType === 'MAIN_DRAW')
@@ -442,6 +484,14 @@ export default function AdminCompetitionsTable() {
           isOpen={Boolean(selectedCompForTickets)}
           onClose={() => setSelectedCompForTickets(null)}
           raffle={selectedCompForTickets}
+        />
+      )}
+
+      {selectedRaffleForDetail && (
+        <AdminRaffleDetailModal
+          isOpen={Boolean(selectedRaffleForDetail)}
+          onClose={() => setSelectedRaffleForDetail(null)}
+          raffle={selectedRaffleForDetail}
         />
       )}
     </div>

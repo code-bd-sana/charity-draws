@@ -208,6 +208,11 @@ export const raffleService = {
     return response.data;
   },
 
+  async getAdminRaffleById(id: string): Promise<Raffle> {
+    const response = await api.get(`/raffles/admin/${id}`);
+    return response.data;
+  },
+
   async adminDeleteRaffle(id: string): Promise<void> {
     const response = await api.delete(`/raffles/admin/${id}`);
     return response.data;
