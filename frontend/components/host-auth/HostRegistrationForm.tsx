@@ -1010,9 +1010,9 @@ export default function HostRegistrationForm({
                 </div>
                 <label htmlFor="acceptedTerms" className="font-sans text-xs text-text-primary font-medium leading-normal select-none cursor-pointer">
                   By going live, you confirm that all information is accurate and agree to our{" "}
-                  <button type="button" onClick={() => toast.info("Host Guidelines document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Host Guidelines</button>
+                  <Link href="/host-rules" target="_blank" className="text-text-brand hover:underline font-semibold">Host Rules & Guidelines</Link>
                   {" "}and{" "}
-                  <button type="button" onClick={() => toast.info("Platform Rules document is not available in mock.")} className="text-text-brand hover:underline font-semibold">Platform Rules</button>.
+                  <Link href="/terms" target="_blank" className="text-text-brand hover:underline font-semibold">Platform Terms</Link>.
                 </label>
               </div>
 
