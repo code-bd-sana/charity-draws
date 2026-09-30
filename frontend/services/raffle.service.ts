@@ -152,7 +152,9 @@ export const raffleService = {
     const { pricePerTicket, ...rest } = data;
     const payload: any = { ...rest };
     if (pricePerTicket !== undefined) {
-      payload.ticketPrice = typeof pricePerTicket === 'string' ? Number(pricePerTicket) : pricePerTicket;
+      const num = typeof pricePerTicket === 'string' ? Number(pricePerTicket) : pricePerTicket;
+      payload.ticketPrice = num;
+      payload.pricePerTicket = num;
     }
     const response = await api.patch(`/raffles/host/${id}`, payload);
     return response.data;

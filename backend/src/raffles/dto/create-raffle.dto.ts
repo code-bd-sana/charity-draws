@@ -70,10 +70,34 @@ export class CreateRaffleDto {
   @IsOptional()
   mainPrizeValue?: number;
 
-  @ApiProperty({ example: 5.99, description: 'Price per ticket in GBP/USD' })
+  @ApiPropertyOptional({
+    example: 'Luxury Supercar',
+    description: 'Main prize name',
+  })
+  @IsString()
+  @IsOptional()
+  prizeName?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://example.com/cover.jpg',
+    description: 'Main competition image URL',
+  })
+  @IsString()
+  @IsOptional()
+  mainImage?: string;
+
+  @ApiPropertyOptional({ example: 5.99, description: 'Price per ticket in GBP/USD' })
   @IsNumber()
-  @IsNotEmpty()
-  ticketPrice: number;
+  @IsOptional()
+  ticketPrice?: number;
+
+  @ApiPropertyOptional({
+    example: 5.99,
+    description: 'Price per ticket (alias for ticketPrice)',
+  })
+  @IsNumber()
+  @IsOptional()
+  pricePerTicket?: number;
 
   @ApiProperty({
     example: 500,

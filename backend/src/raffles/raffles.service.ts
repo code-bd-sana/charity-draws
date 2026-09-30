@@ -330,8 +330,21 @@ export class RafflesService {
       this.prisma.raffle.count({ where: whereClause }),
     ]);
 
+    const formattedRaffles = raffles.map((raffle) => {
+      const businessName =
+        raffle.host?.businessName?.trim() ||
+        `${raffle.host?.user?.firstName || ''} ${raffle.host?.user?.lastName || ''}`.trim() ||
+        'Verified Host';
+
+      return {
+        ...raffle,
+        businessName,
+        hostName: businessName,
+      };
+    });
+
     return {
-      data: raffles,
+      data: formattedRaffles,
       meta: {
         total,
         page: Number(page),
@@ -479,7 +492,17 @@ export class RafflesService {
       },
     });
     if (!raffle) throw new NotFoundException('Raffle not found');
-    return raffle;
+
+    const businessName =
+      raffle.host?.businessName?.trim() ||
+      `${raffle.host?.user?.firstName || ''} ${raffle.host?.user?.lastName || ''}`.trim() ||
+      'Verified Host';
+
+    return {
+      ...raffle,
+      businessName,
+      hostName: businessName,
+    };
   }
 
   async findHostRaffles(hostId: string, query: any = {}) {
@@ -574,7 +597,46 @@ export class RafflesService {
       throw new BadRequestException(`Maximum tickets (${maxTickets}) cannot exceed total tickets (${totalTickets})`);
     }
 
-    const updatePayload: any = { ...data };
+    // Build sanitized update payload matching Prisma Raffle schema
+    const updatePayload: any = {};
+
+    if (data.title !== undefined) updatePayload.title = data.title;
+    if (data.description !== undefined) updatePayload.description = data.description;
+    if (data.category !== undefined) updatePayload.category = data.category || null;
+    if (data.prizeName !== undefined) updatePayload.prizeName = data.prizeName || null;
+    if (data.mainImage !== undefined) updatePayload.mainImage = data.mainImage || null;
+
+    if (data.mainPrizeValue !== undefined) {
+      updatePayload.mainPrizeValue =
+        data.mainPrizeValue !== null && data.mainPrizeValue !== ''
+          ? Number(data.mainPrizeValue)
+          : null;
+    }
+
+    if (data.pricePerTicket !== undefined || data.ticketPrice !== undefined) {
+      const price = data.pricePerTicket !== undefined ? data.pricePerTicket : data.ticketPrice;
+      updatePayload.pricePerTicket = Number(price);
+    }
+
+    if (data.totalTickets !== undefined) {
+      updatePayload.totalTickets = Number(data.totalTickets);
+    }
+
+    if (data.minTicketsPerUser !== undefined) {
+      updatePayload.minTicketsPerUser = Number(data.minTicketsPerUser) || 1;
+    }
+
+    if (data.maxTicketsPerUser !== undefined) {
+      updatePayload.maxTicketsPerUser =
+        data.maxTicketsPerUser !== null && data.maxTicketsPerUser !== ''
+          ? Number(data.maxTicketsPerUser)
+          : null;
+    }
+
+    if (data.isAutoDraw !== undefined) updatePayload.isAutoDraw = Boolean(data.isAutoDraw);
+    if (data.autoDrawDate !== undefined) updatePayload.autoDrawDate = Boolean(data.autoDrawDate);
+    if (data.autoDrawSoldOut !== undefined) updatePayload.autoDrawSoldOut = Boolean(data.autoDrawSoldOut);
+    if (data.status !== undefined) updatePayload.status = data.status;
 
     if (data.startDate !== undefined) {
       updatePayload.startDate = parseUKDateTimeToUTC(data.startDate);

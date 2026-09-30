@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -204,7 +203,7 @@ export default function HostRegistrationForm({
           phone: formData.phone || formData.businessPhone,
           bio: formData.bio,
         });
-        
+
         toast.success("Host registration successful! Check your email to verify.");
         setTimeout(() => {
           router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);

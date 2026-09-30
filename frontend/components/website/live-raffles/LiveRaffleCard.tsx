@@ -39,14 +39,21 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
 
   const category = r.category || "rifles";
 
-  const hostName =
-    r.hostName ||
+  // Strictly prioritize host's businessName instead of individual host personal name
+  const rawBusinessName =
     host?.businessName ||
+    r.businessName ||
+    r.hostBusinessName ||
+    r.host?.businessName ||
+    (typeof host === "string" ? host : null) ||
+    r.hostName ||
     (host?.user?.firstName
-      ? `${host.user.firstName} ${host.user.lastName || ''}`.trim()
-      : host?.name || host?.user?.name || (typeof host === 'string' ? host : ""));
-  const displayHostName = hostName
-    ? (hostName.toLowerCase().startsWith("by ") ? hostName : `By ${hostName}`)
+      ? `${host.user.firstName} ${host.user.lastName || ""}`.trim()
+      : host?.name || host?.user?.name || "");
+
+  const businessName = typeof rawBusinessName === "string" ? rawBusinessName.trim() : "";
+  const displayHostName = businessName
+    ? (businessName.toLowerCase().startsWith("by ") ? businessName : `By ${businessName}`)
     : "";
 
   const rawStartDate = r.startDate;
@@ -203,12 +210,23 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
           {/* Badges on Top of Image */}
           <div className="absolute inset-x-3 top-3 flex items-start justify-between pointer-events-none z-10">
             {displayHostName ? (
-              <div
-                className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
-                title={displayHostName}
-              >
-                {displayHostName}
-              </div>
+              host?.slug || host?.id ? (
+                <Link
+                  href={`/hosts/${host.slug || host.id}`}
+                  className="pointer-events-auto bg-surface/90 hover:bg-surface backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand hover:text-primary transition-colors shadow-sm truncate max-w-[160px]"
+                  title={displayHostName}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {displayHostName}
+                </Link>
+              ) : (
+                <div
+                  className="pointer-events-auto bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
+                  title={displayHostName}
+                >
+                  {displayHostName}
+                </div>
+              )
             ) : <div />}
 
             <div className="bg-accent-bg/90 backdrop-blur-md border border-border px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm">
@@ -319,12 +337,23 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
         {/* Floating Badges */}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between pointer-events-none z-10">
           {displayHostName ? (
-            <div
-              className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
-              title={displayHostName}
-            >
-              {displayHostName}
-            </div>
+            host?.slug || host?.id ? (
+              <Link
+                href={`/hosts/${host.slug || host.id}`}
+                className="pointer-events-auto bg-surface/90 hover:bg-surface backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand hover:text-primary transition-colors shadow-sm truncate max-w-[160px]"
+                title={displayHostName}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {displayHostName}
+              </Link>
+            ) : (
+              <div
+                className="pointer-events-auto bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
+                title={displayHostName}
+              >
+                {displayHostName}
+              </div>
+            )
           ) : <div />}
 
           <div className="bg-accent-bg/90 backdrop-blur-md border border-border px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm">
