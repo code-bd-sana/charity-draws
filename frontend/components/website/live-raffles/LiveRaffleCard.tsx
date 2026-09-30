@@ -39,8 +39,15 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
 
   const category = r.category || "rifles";
 
-  const hostName = host?.businessName || (host?.user?.firstName ? `${host.user.firstName} ${host.user.lastName || ''}`.trim() : "");
-  const hostLocation = host?.user?.location || host?.address || "";
+  const hostName =
+    r.hostName ||
+    host?.businessName ||
+    (host?.user?.firstName
+      ? `${host.user.firstName} ${host.user.lastName || ''}`.trim()
+      : host?.name || host?.user?.name || (typeof host === 'string' ? host : ""));
+  const displayHostName = hostName
+    ? (hostName.toLowerCase().startsWith("by ") ? hostName : `By ${hostName}`)
+    : "";
 
   const rawStartDate = r.startDate;
   const rawEndDate = r.endDate;
@@ -195,9 +202,12 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
 
           {/* Badges on Top of Image */}
           <div className="absolute inset-x-3 top-3 flex items-start justify-between pointer-events-none z-10">
-            {(hostName || hostLocation) ? (
-              <div className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]">
-                {hostLocation ? `📍 ${hostLocation}` : `By ${hostName}`}
+            {displayHostName ? (
+              <div
+                className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
+                title={displayHostName}
+              >
+                {displayHostName}
               </div>
             ) : <div />}
 
@@ -308,9 +318,12 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
 
         {/* Floating Badges */}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between pointer-events-none z-10">
-          {(hostName || hostLocation) ? (
-            <div className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]">
-              {hostLocation ? `📍 ${hostLocation}` : `By ${hostName}`}
+          {displayHostName ? (
+            <div
+              className="bg-surface/90 backdrop-blur-md border border-border-medium px-2.5 py-1 rounded-badge text-[10px] font-semibold text-text-brand shadow-sm truncate max-w-[160px]"
+              title={displayHostName}
+            >
+              {displayHostName}
             </div>
           ) : <div />}
 

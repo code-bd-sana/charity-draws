@@ -19,6 +19,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 650,
     badgeText: "ALMOST GONE",
     slug: "novritsch-ssg10-a3-sniper",
+    hostName: "TacticalGear UK",
   },
   {
     id: "raffle-2",
@@ -34,6 +35,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 500,
     badgeText: "HOT",
     slug: "500-cash-prize-draw",
+    hostName: "CharityZone",
   },
   {
     id: "raffle-3",
@@ -49,6 +51,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 220,
     badgeText: "NEW",
     slug: "condor-multicam-vest-rig-bundle",
+    hostName: "TacticalGear UK",
   },
   {
     id: "raffle-4",
@@ -63,6 +66,7 @@ export const liveRafflesData: Draw[] = [
     category: "rifles",
     worthPrice: 430,
     slug: "vfc-avalon-saber-cqb",
+    hostName: "Charity Tactical Armory",
   },
   {
     id: "raffle-5",
@@ -77,6 +81,7 @@ export const liveRafflesData: Draw[] = [
     category: "apparel",
     worthPrice: 180,
     slug: "crye-precision-combat-pants",
+    hostName: "TacticalGear UK",
   },
   {
     id: "raffle-6",
@@ -92,6 +97,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 150,
     badgeText: "ALMOST GONE",
     slug: "tokyo-marui-hi-capa-51-gbb",
+    hostName: "Charity Tactical Armory",
   },
   {
     id: "raffle-7",
@@ -106,6 +112,7 @@ export const liveRafflesData: Draw[] = [
     category: "pistols",
     worthPrice: 170,
     slug: "umarex-licensed-glock-17-gen5",
+    hostName: "Charity Tactical Armory",
   },
   {
     id: "raffle-8",
@@ -121,6 +128,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 1500,
     badgeText: "EXCLUSIVE",
     slug: "systema-ptw-m4-professional-aeg",
+    hostName: "TacticalGear UK",
   },
   {
     id: "raffle-9",
@@ -136,6 +144,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 950,
     badgeText: "ALMOST GONE",
     slug: "vfc-hk416-gbbr-bundle",
+    hostName: "Charity Tactical Armory",
   },
   {
     id: "raffle-10",
@@ -150,6 +159,7 @@ export const liveRafflesData: Draw[] = [
     category: "accessories",
     worthPrice: 140,
     slug: "oakley-si-ballistic-m-frame-30",
+    hostName: "TacticalGear UK",
   },
   {
     id: "raffle-11",
@@ -164,6 +174,7 @@ export const liveRafflesData: Draw[] = [
     category: "rifles",
     worthPrice: 420,
     slug: "lct-ak-74m-ebb-rifle",
+    hostName: "Charity Tactical Armory",
   },
   {
     id: "raffle-12",
@@ -179,6 +190,7 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 1000,
     badgeText: "HOT",
     slug: "1000-store-credit-cash-draw",
+    hostName: "CharityZone",
   },
   {
     id: "raffle-13",
@@ -194,5 +206,6 @@ export const liveRafflesData: Draw[] = [
     worthPrice: 3500,
     badgeText: "EXCLUSIVE",
     slug: "tag-heuer-carrera-watch",
+    hostName: "LuxuryWins",
   },
 ];
