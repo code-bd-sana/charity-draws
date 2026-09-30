@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useBasket } from "../../../features/basket/BasketContext";
 import { formatCurrency, cn } from "../../../lib/utils";
+import QuantityStepperInput from "./QuantityStepperInput";
 
 export default function BasketDrawer() {
   const {
@@ -168,27 +169,14 @@ export default function BasketDrawer() {
 
                       {/* Quantity Stepper & Subtotal */}
                       <div className="flex items-center justify-between pt-2 mt-0.5 border-t border-divider gap-2">
-                        <div className="flex items-center gap-1 bg-bg border border-border rounded-button p-0.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(item.raffleId, item.quantity - 1)}
-                            disabled={item.quantity <= min}
-                            className="w-6 h-6 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors text-sm"
-                            aria-label="Decrease quantity"
-                          >
-                            -
-                          </button>
-                          <span className="font-heading font-bold text-[12px] text-text-primary px-1.5 min-w-[20px] text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.raffleId, item.quantity + 1)}
-                            disabled={(max !== null && item.quantity >= max) || item.quantity >= remaining}
-                            className="w-6 h-6 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors text-sm"
-                            aria-label="Increase quantity"
-                          >
-                            +
-                          </button>
-                        </div>
+                        <QuantityStepperInput
+                          quantity={item.quantity}
+                          min={min}
+                          max={max}
+                          remaining={remaining}
+                          onQuantityChange={(newQty) => updateQuantity(item.raffleId, newQty)}
+                          size="sm"
+                        />
 
                         <span className="font-heading font-bold text-[13px] sm:text-[14px] text-text-brand shrink-0">
                           {formatCurrency(itemTotal)}

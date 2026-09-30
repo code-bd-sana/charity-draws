@@ -108,26 +108,114 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const remainingTickets = Math.max(totalTickets - soldTickets, 0);
   const totalPrice = quantity * ticketPrice;
 
+  const [inputQuantity, setInputQuantity] = useState(String(quantity));
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [ticketValidationError, setTicketValidationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isInputFocused) {
+      setInputQuantity(String(quantity));
+      setTicketValidationError(null);
+    }
+  }, [quantity, isInputFocused]);
+
   // Adjust quick picks based on minTickets and maxTickets
   const rawQuickPicks = [1, 5, 10, 20];
   const quickPicks = rawQuickPicks.map(val => Math.max(val, minTickets)).filter((val, idx, arr) => arr.indexOf(val) === idx && (!maxTickets || val <= maxTickets));
 
+  const upperLimit = maxTickets ? Math.min(maxTickets, remainingTickets) : remainingTickets;
+
+  const checkValidationError = (val: number | null, raw: string): string | null => {
+    if (raw.trim() === "" || val === null || isNaN(val) || val <= 0) {
+      return "Please enter a valid ticket quantity.";
+    }
+    if (val < minTickets) {
+      return `Minimum limit is ${minTickets} ticket${minTickets > 1 ? "s" : ""} per entry.`;
+    }
+    if (maxTickets !== null && val > maxTickets) {
+      return `Maximum limit is ${maxTickets} ticket${maxTickets > 1 ? "s" : ""} per participant.`;
+    }
+    if (val > remainingTickets) {
+      return `Only ${remainingTickets} ticket${remainingTickets > 1 ? "s" : ""} remaining for this draw.`;
+    }
+    return null;
+  };
+
   const handleQuickPick = (val: number) => {
     let target = Math.max(val, minTickets);
     if (maxTickets && target > maxTickets) target = maxTickets;
+    if (target > remainingTickets) target = remainingTickets;
     setQuantity(target);
+    setInputQuantity(String(target));
+    setTicketValidationError(null);
   };
 
   const handleDecrement = () => {
-    setQuantity(prev => (prev > minTickets ? prev - 1 : minTickets));
+    if (quantity > minTickets) {
+      const next = quantity - 1;
+      setQuantity(next);
+      setInputQuantity(String(next));
+      setTicketValidationError(null);
+    } else {
+      setTicketValidationError(`Minimum limit is ${minTickets} ticket${minTickets > 1 ? "s" : ""} per entry.`);
+    }
   };
 
   const handleIncrement = () => {
-    setQuantity(prev => {
-      if (maxTickets && prev >= maxTickets) return prev;
-      if (prev >= remainingTickets) return prev;
-      return prev + 1;
-    });
+    if (maxTickets && quantity >= maxTickets) {
+      setTicketValidationError(`Maximum limit is ${maxTickets} ticket${maxTickets > 1 ? "s" : ""} per participant.`);
+      return;
+    }
+    if (quantity >= remainingTickets) {
+      setTicketValidationError(`Only ${remainingTickets} ticket${remainingTickets > 1 ? "s" : ""} remaining for this draw.`);
+      return;
+    }
+    const next = quantity + 1;
+    setQuantity(next);
+    setInputQuantity(String(next));
+    setTicketValidationError(null);
+  };
+
+  const handleQuantityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, "");
+    setInputQuantity(raw);
+
+    if (raw === "") {
+      setTicketValidationError("Please enter a valid ticket quantity.");
+      return;
+    }
+
+    const parsed = parseInt(raw, 10);
+    const err = checkValidationError(parsed, raw);
+    setTicketValidationError(err);
+
+    if (!isNaN(parsed) && parsed > 0) {
+      setQuantity(parsed);
+    }
+  };
+
+  const handleQuantityInputBlur = () => {
+    setIsInputFocused(false);
+    const parsed = parseInt(inputQuantity, 10);
+    if (isNaN(parsed) || parsed < minTickets) {
+      setInputQuantity(String(minTickets));
+      setQuantity(minTickets);
+      setTicketValidationError(null);
+    } else if (maxTickets !== null && parsed > maxTickets) {
+      setInputQuantity(String(maxTickets));
+      setQuantity(maxTickets);
+      setTicketValidationError(`Maximum limit is ${maxTickets} ticket${maxTickets > 1 ? "s" : ""} per participant.`);
+      setTimeout(() => setTicketValidationError(null), 3500);
+    } else if (parsed > remainingTickets) {
+      setInputQuantity(String(remainingTickets));
+      setQuantity(remainingTickets);
+      setTicketValidationError(`Only ${remainingTickets} ticket${remainingTickets > 1 ? "s" : ""} remaining for this draw.`);
+      setTimeout(() => setTicketValidationError(null), 3500);
+    } else {
+      setInputQuantity(String(parsed));
+      setQuantity(parsed);
+      setTicketValidationError(null);
+    }
   };
 
   const validateConstraints = (): boolean => {
@@ -141,21 +229,13 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
       return false;
     }
 
-    if (quantity < minTickets) {
-      setStatusMessage({ type: 'error', text: `Minimum ${minTickets} ticket(s) required to enter.` });
+    const err = checkValidationError(quantity, inputQuantity);
+    if (err) {
+      setTicketValidationError(err);
       return false;
     }
 
-    if (maxTickets && quantity > maxTickets) {
-      setStatusMessage({ type: 'error', text: `Maximum limit is ${maxTickets} ticket(s) per participant.` });
-      return false;
-    }
-    
-    if (quantity > remainingTickets) {
-      setStatusMessage({ type: 'error', text: `Only ${remainingTickets} tickets left.` });
-      return false;
-    }
-
+    setTicketValidationError(null);
     setStatusMessage(null);
     return true;
   };
@@ -343,7 +423,9 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
           </div>
         )}
 
-        <div className="flex items-center h-11 bg-[#FBF8FF] border border-[#E9D5FF] rounded-xl overflow-hidden mt-1">
+        <div className={`flex items-center h-11 ${
+          ticketValidationError ? "bg-red-50/20 border-red-400 ring-2 ring-red-100" : "bg-[#FBF8FF] border-[#E9D5FF]"
+        } border rounded-xl overflow-hidden mt-1 transition-all`}>
           <button 
             onClick={handleDecrement}
             disabled={quantity <= minTickets}
@@ -353,9 +435,27 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
           >
             -
           </button>
-          <div className="flex-1 h-full flex items-center justify-center font-sans font-bold text-sm text-[#2E0B57] border-x border-[#E9D5FF]">
-            {quantity}
-          </div>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={inputQuantity}
+            onChange={handleQuantityInputChange}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={handleQuantityInputBlur}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+            className={`flex-1 h-full text-center bg-transparent font-sans font-bold text-sm ${
+              ticketValidationError ? "text-red-700" : "text-[#2E0B57]"
+            } border-x ${
+              ticketValidationError ? "border-red-300" : "border-[#E9D5FF]"
+            } focus:outline-none focus:bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none no-spinner px-2 transition-colors`}
+            aria-label="Ticket quantity"
+            title="Directly enter ticket quantity"
+          />
           <button 
             onClick={handleIncrement}
             disabled={(maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets}
@@ -368,6 +468,16 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
             +
           </button>
         </div>
+
+        {/* Validation Error Message in red directly underneath the stepper */}
+        {ticketValidationError && (
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-1.5 animate-fadeIn">
+            <svg className="w-4 h-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clipRule="evenodd" />
+            </svg>
+            <span>{ticketValidationError}</span>
+          </div>
+        )}
       </div>
 
       {/* Total & Enter CTA */}

@@ -91,9 +91,17 @@ export const useCreateRaffle = () => {
 };
 
 export const useUploadRaffleImage = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, file }: { id: string; file: File }) =>
       raffleService.uploadRaffleImage(id, file),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: raffleKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: raffleKeys.details() });
+      queryClient.invalidateQueries({ queryKey: raffleKeys.host() });
+      queryClient.invalidateQueries({ queryKey: raffleKeys.public() });
+      queryClient.invalidateQueries({ queryKey: raffleKeys.adminAll() });
+    },
   });
 };
 

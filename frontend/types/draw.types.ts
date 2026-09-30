@@ -21,4 +21,6 @@ export interface Draw {
   instantWinsCount?: number; // For Instant Win draws (e.g. 3)
   isInstantWin?: boolean; // Flag to separate standard draws from instant win draws
   badgeText?: string; // Optional label badge on the card (e.g., "ALMOST GONE", "NEW")
+  hostName?: string; // Business name or host name for the competition
+  host?: any; // Full host relation object if returned from API
 }
