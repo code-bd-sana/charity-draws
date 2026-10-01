@@ -85,11 +85,22 @@ export const adminKeys = {
       ? ([...adminKeys.all, 'orders', params] as const)
       : ([...adminKeys.all, 'orders'] as const),
   ordersStats: () => [...adminKeys.all, 'orders-stats'] as const,
-  overviewStats: () => [...adminKeys.all, 'overview-stats'] as const,
+  overviewStats: (period?: string) =>
+    period !== undefined
+      ? ([...adminKeys.all, 'overview-stats', period] as const)
+      : ([...adminKeys.all, 'overview-stats'] as const),
+  revenueChart: (period?: string) =>
+    period !== undefined
+      ? ([...adminKeys.all, 'revenue-chart', period] as const)
+      : ([...adminKeys.all, 'revenue-chart'] as const),
   logs: (params?: unknown) =>
     params !== undefined
       ? ([...adminKeys.all, 'logs', params] as const)
       : ([...adminKeys.all, 'logs'] as const),
+  reports: (period?: string) =>
+    period !== undefined
+      ? ([...adminKeys.all, 'reports', period] as const)
+      : ([...adminKeys.all, 'reports'] as const),
   withdrawals: () => [...adminKeys.all, 'withdrawals'] as const,
 };
 

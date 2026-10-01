@@ -1,36 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { useAdminOverviewStats } from "../../../hooks/useAdminHooks";
-
-const REVENUE_DATA = [
-  { name: 'Jan', value: 30000 },
-  { name: 'Feb', value: 45000 },
-  { name: 'Mar', value: 42000 },
-  { name: 'Apr', value: 65000 },
-  { name: 'May', value: 60000 },
-  { name: 'Jun', value: 75000 },
-  { name: 'Jul', value: 85000 },
-  { name: 'Aug', value: 82000 },
-  { name: 'Sep', value: 95000 },
-  { name: 'Oct', value: 90000 },
-  { name: 'Nov', value: 105000 },
-  { name: 'Dec', value: 98000 },
-];
-
-const GROWTH_DATA = [
-  { name: 'Jan', Users: 120, Hosts: 40 },
-  { name: 'Feb', Users: 150, Hosts: 50 },
-  { name: 'Mar', Users: 180, Hosts: 60 },
-  { name: 'Apr', Users: 240, Hosts: 75 },
-  { name: 'May', Users: 280, Hosts: 90 },
-  { name: 'Jun', Users: 350, Hosts: 120 },
-];
+import { useAdminOverviewStats, useAdminRevenueChart } from "../../../hooks/useAdminHooks";
 
 export default function AdminDashboardPage() {
+  const [period, setPeriod] = useState<'7D' | '1M' | '6M' | '1Y'>('1Y');
   const { data: overview, isLoading } = useAdminOverviewStats();
+  const { data: chartData, isFetching: isChartFetching } = useAdminRevenueChart(period, {
+    initialData: period === '1Y' && overview?.revenueChart ? overview.revenueChart : undefined,
+  });
+
+  const revenueChart = chartData || overview?.revenueChart || [];
 
   return (
     <div className="flex flex-col gap-6 w-full animate-fadeIn select-none">
@@ -127,11 +109,12 @@ export default function AdminDashboardPage() {
             
             {/* Chart Filters */}
             <div className="flex items-center gap-1 bg-accent-bg/50 border border-border rounded-button p-1">
-              {['7D', '1M', '6M', '1Y'].map((filter, i) => (
+              {(['7D', '1M', '6M', '1Y'] as const).map((filter) => (
                 <button 
                   key={filter} 
-                  className={`px-3 py-1 rounded-[6px] font-sans font-semibold text-[11px] transition-all ${
-                    i === 3 
+                  onClick={() => setPeriod(filter)}
+                  className={`px-3 py-1 rounded-[6px] font-sans font-semibold text-[11px] transition-all cursor-pointer ${
+                    period === filter 
                       ? 'bg-primary text-primary-text font-bold shadow-sm' 
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface'
                   }`}
@@ -139,12 +122,15 @@ export default function AdminDashboardPage() {
                   {filter}
                 </button>
               ))}
+              {isChartFetching && (
+                <div className="w-3.5 h-3.5 mx-1 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
+              )}
             </div>
           </div>
           
           <div className="w-full h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REVENUE_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+              <AreaChart data={revenueChart} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#7131C8" stopOpacity={0.3}/>
@@ -162,9 +148,10 @@ export default function AdminDashboardPage() {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: '#80649D', fontSize: 10, fontFamily: 'sans-serif' }}
-                  tickFormatter={(val) => `£${val / 1000}k`}
+                  tickFormatter={(val) => val >= 1000 ? `£${(val / 1000).toFixed(val % 1000 === 0 ? 0 : 1)}k` : `£${val}`}
                 />
                 <RechartsTooltip 
+                  formatter={(val: any) => [`£${Number(val || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Revenue']}
                   contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E6D8F7', borderRadius: '12px', boxShadow: '0 14px 34px -14px rgba(85, 32, 171, 0.18)' }}
                   itemStyle={{ color: '#351365', fontWeight: 'bold' }}
                 />
@@ -188,10 +175,10 @@ export default function AdminDashboardPage() {
           <div className="flex flex-col gap-4 flex-1">
             {isLoading ? (
               <div className="py-8 text-center text-text-muted font-sans text-sm animate-pulse">Loading review items...</div>
-            ) : overview?.awaitingReview.list.length === 0 ? (
+            ) : !overview?.awaitingReview.list || overview.awaitingReview.list.length === 0 ? (
               <div className="py-8 text-center text-text-muted font-sans text-sm">No items pending review.</div>
             ) : (
-              overview?.awaitingReview.list.map((item) => (
+              overview.awaitingReview.list.map((item) => (
                 <div key={item.id} className="flex items-center justify-between pb-4 border-b border-divider last:border-b-0">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0">
@@ -235,7 +222,7 @@ export default function AdminDashboardPage() {
           
           <div className="w-full h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={GROWTH_DATA} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <BarChart data={overview?.growthChart || []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
@@ -244,6 +231,7 @@ export default function AdminDashboardPage() {
                   dy={10}
                 />
                 <YAxis 
+                  allowDecimals={false}
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: '#80649D', fontSize: 10, fontFamily: 'sans-serif' }}
@@ -270,28 +258,31 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="flex flex-col gap-4">
-            {[
-              { rank: 1, name: "Tactical Gear UK", revenue: "£12,400", initials: "TG" },
-              { rank: 2, name: "Charity World", revenue: "£10,800", initials: "AW" },
-              { rank: 3, name: "Combat Zone Ltd", revenue: "£9,200", initials: "CZ" },
-              { rank: 4, name: "Elite Shooters", revenue: "£7,800", initials: "ES" },
-              { rank: 5, name: "Strike Force Co", revenue: "£5,400", initials: "SF" },
-            ].map((host) => (
-              <div key={host.rank} className="flex items-center justify-between pb-2 border-b border-divider/60 last:border-b-0">
-                <div className="flex items-center gap-4">
-                  <span className="font-sans font-bold text-[12px] text-text-muted w-4 text-right">
-                    {host.rank}
-                  </span>
-                  <div className="w-7 h-7 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0">
-                    <span className="font-sans font-bold text-[10px] text-text-brand">{host.initials}</span>
+            {isLoading ? (
+              <div className="py-8 text-center text-text-muted font-sans text-sm animate-pulse">Loading top hosts...</div>
+            ) : !overview?.topHosts || overview.topHosts.length === 0 ? (
+              <div className="py-8 text-center text-text-muted font-sans text-sm">No host sales recorded yet.</div>
+            ) : (
+              overview.topHosts.map((host) => (
+                <div key={host.id || host.rank} className="flex items-center justify-between pb-2 border-b border-divider/60 last:border-b-0">
+                  <div className="flex items-center gap-4">
+                    <span className="font-sans font-bold text-[12px] text-text-muted w-4 text-right">
+                      {host.rank}
+                    </span>
+                    <div className="w-7 h-7 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0">
+                      <span className="font-sans font-bold text-[10px] text-text-brand">{host.initials}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-sans font-semibold text-[13px] text-text-primary">{host.name}</span>
+                      <span className="font-sans text-[10px] text-text-muted">{host.rafflesCount} raffle{host.rafflesCount === 1 ? '' : 's'}</span>
+                    </div>
                   </div>
-                  <span className="font-sans font-semibold text-[13px] text-text-primary">{host.name}</span>
+                  <span className="font-heading font-bold text-[13px] text-text-brand">
+                    {host.revenue}
+                  </span>
                 </div>
-                <span className="font-heading font-bold text-[13px] text-text-brand">
-                  {host.revenue}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -304,10 +295,10 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pb-2">
           {isLoading ? (
             <div className="py-4 text-center text-text-muted font-sans text-sm animate-pulse">Loading recent activity...</div>
-          ) : overview?.recentActivity.length === 0 ? (
+          ) : !overview?.recentActivity || overview.recentActivity.length === 0 ? (
             <div className="py-4 text-center text-text-muted font-sans text-sm">No recent activity.</div>
           ) : (
-            overview?.recentActivity.map((activity, i) => (
+            overview.recentActivity.map((activity, i) => (
               <div key={i} className="flex items-start gap-3 shrink-0 min-w-[280px]">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
                   activity.highlight ? 'bg-amber-50 border-amber-200 text-amber-600' :
@@ -337,3 +328,4 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
