@@ -19,15 +19,16 @@ export interface HostRegistrationFormValues {
   // Step 2: Host Profile
   hostType: "individual" | "business";
   profilePhoto: string | null; // Data URL or filename placeholder
+  businessName: string;
   firstName: string;
   lastName: string;
   phone: string;
+  address?: string;
   city: string;
   country: string;
   bio: string;
 
   // Step 3: Business Information
-  businessName: string;
   contactFullName: string;
   businessRole: string;
   businessEmail: string;
