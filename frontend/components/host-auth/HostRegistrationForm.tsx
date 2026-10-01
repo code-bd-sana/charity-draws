@@ -41,6 +41,7 @@ export default function HostRegistrationForm({
     firstName: "",
     lastName: "",
     phone: "",
+    address: "",
     city: "",
     country: "United Kingdom",
     bio: "",
@@ -196,8 +197,9 @@ export default function HostRegistrationForm({
           firstName: formData.firstName,
           lastName: formData.lastName,
           location: formData.city ? `${formData.city}, ${formData.country}` : formData.country,
+          address: formData.address || (formData.city ? `${formData.city}, ${formData.country}` : formData.country),
           role: 'HOST',
-          businessName: formData.businessName || `${formData.firstName} ${formData.lastName}`.trim(), // Fallback for individual
+          businessName: formData.businessName.trim(),
           avatarUrl: hostLogo,
           logoUrl: hostLogo,
           phone: formData.phone || formData.businessPhone,
@@ -534,11 +536,39 @@ export default function HostRegistrationForm({
                 </div>
               </div>
 
+              {/* Business / Charity Brand Name */}
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="businessName" className="font-sans font-medium text-xs md:text-sm text-text-primary">
+                  Business / Charity Brand Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="businessName"
+                  name="businessName"
+                  autoComplete="organization"
+                  placeholder="e.g. Apex Charity Competitions, Hope Trust UK"
+                  value={formData.businessName}
+                  onChange={handleInputChange}
+                  className={cn(
+                    "w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20",
+                    errors.businessName && "border-red-500/80 focus:border-red-500 focus:ring-red-500/30"
+                  )}
+                />
+                {errors.businessName && (
+                  <span className="font-sans text-[11px] text-red-500 mt-0.5 self-start select-none">
+                    {errors.businessName}
+                  </span>
+                )}
+                <span className="font-sans text-[11px] text-text-muted font-medium">
+                  Public brand name shown on your prize draws and verified host badges (e.g. "By {formData.businessName || 'Your Brand Name'}").
+                </span>
+              </div>
+
               {/* First Name & Last Name (Grid) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="firstName" className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                    First Name
+                    Contact First Name
                   </label>
                   <input
                     type="text"
@@ -561,7 +591,7 @@ export default function HostRegistrationForm({
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="lastName" className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                    Last Name
+                    Contact Last Name
                   </label>
                   <input
                     type="text"
@@ -608,8 +638,25 @@ export default function HostRegistrationForm({
                   </span>
                 )}
                 <span className="font-sans text-[11px] text-text-muted font-medium">
-                  Used for booking notifications and host support only.
+                  Used for account notifications and host support only.
                 </span>
+              </div>
+
+              {/* Street Address */}
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="address" className="font-sans font-medium text-xs md:text-sm text-text-primary">
+                  Business / Street Address
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  autoComplete="street-address"
+                  placeholder="e.g. 14 High Street, Suite 2B"
+                  value={formData.address || ""}
+                  onChange={handleInputChange}
+                  className="w-full bg-bg border border-border rounded-button px-4 py-2.5 font-sans text-xs md:text-sm text-text-primary placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
               </div>
 
               {/* City & Country (Grid) */}
@@ -736,7 +783,7 @@ export default function HostRegistrationForm({
                   id="businessName"
                   name="businessName"
                   autoComplete="organization"
-                  placeholder="e.g. Tactical Gear UK"
+                  placeholder="e.g. Hope Charity Draws UK"
                   value={formData.businessName}
                   onChange={handleInputChange}
                   className={cn(

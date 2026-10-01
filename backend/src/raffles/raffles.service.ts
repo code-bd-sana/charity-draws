@@ -333,8 +333,7 @@ export class RafflesService {
     const formattedRaffles = raffles.map((raffle) => {
       const businessName =
         raffle.host?.businessName?.trim() ||
-        `${raffle.host?.user?.firstName || ''} ${raffle.host?.user?.lastName || ''}`.trim() ||
-        'Verified Host';
+        'Verified Charity Business';
 
       return {
         ...raffle,
@@ -495,8 +494,7 @@ export class RafflesService {
 
     const businessName =
       raffle.host?.businessName?.trim() ||
-      `${raffle.host?.user?.firstName || ''} ${raffle.host?.user?.lastName || ''}`.trim() ||
-      'Verified Host';
+      'Verified Charity Business';
 
     return {
       ...raffle,

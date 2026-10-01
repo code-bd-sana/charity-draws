@@ -39,19 +39,23 @@ export default function LiveRaffleCard({ raffle, viewMode = "grid" }: LiveRaffle
 
   const category = r.category || "rifles";
 
-  // Strictly prioritize host's businessName instead of individual host personal name
-  const rawBusinessName =
-    host?.businessName ||
-    r.businessName ||
-    r.hostBusinessName ||
-    r.host?.businessName ||
-    (typeof host === "string" ? host : null) ||
-    r.hostName ||
-    (host?.user?.firstName
-      ? `${host.user.firstName} ${host.user.lastName || ""}`.trim()
-      : host?.name || host?.user?.name || "");
+  // Strictly show host's company or business name, never host's personal name
+  const hostUserFullName = host?.user
+    ? `${host.user.firstName || ""} ${host.user.lastName || ""}`.trim()
+    : "";
 
-  const businessName = typeof rawBusinessName === "string" ? rawBusinessName.trim() : "";
+  const candidateBusinessName =
+    (typeof host?.businessName === "string" && host.businessName.trim()) ||
+    (typeof r.hostBusinessName === "string" && r.hostBusinessName.trim()) ||
+    (typeof r.businessName === "string" && r.businessName.trim() && r.businessName.trim() !== hostUserFullName
+      ? r.businessName.trim()
+      : "") ||
+    (typeof r.hostName === "string" && r.hostName.trim() && r.hostName.trim() !== hostUserFullName
+      ? r.hostName.trim()
+      : "") ||
+    "";
+
+  const businessName = candidateBusinessName || "Verified Charity Partner";
   const displayHostName = businessName
     ? (businessName.toLowerCase().startsWith("by ") ? businessName : `By ${businessName}`)
     : "";

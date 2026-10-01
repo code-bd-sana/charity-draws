@@ -96,7 +96,8 @@ export function validateRegisterStep1(values: Pick<HostRegistrationFormValues, "
 /**
  * Validates Host Registration Step 2 (Host Profile).
  */
-export function validateRegisterStep2(values: Pick<HostRegistrationFormValues, "firstName" | "lastName" | "phone" | "city" | "country">): {
+export function validateRegisterStep2(values: Pick<HostRegistrationFormValues, "businessName" | "firstName" | "lastName" | "phone" | "city" | "country">): {
+  businessName?: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -104,12 +105,17 @@ export function validateRegisterStep2(values: Pick<HostRegistrationFormValues, "
   country?: string;
 } {
   const errors: {
+    businessName?: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
     city?: string;
     country?: string;
   } = {};
+
+  if (!values.businessName?.trim()) {
+    errors.businessName = "Business / Brand name is required";
+  }
 
   if (!values.firstName.trim()) {
     errors.firstName = "First name is required";

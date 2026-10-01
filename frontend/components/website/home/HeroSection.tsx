@@ -1,48 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { heroData } from '../../../data/homepage/hero.data';
 import PrimaryButton from '../shared/PrimaryButton';
 import SecondaryButton from '../shared/SecondaryButton';
-import DrawCard from '../shared/DrawCard';
 import { raffleService } from '../../../services/raffle.service';
-import type { Draw } from '../../../types/draw.types';
 
 /**
- * Brand Hero section with title statements, stats counters, and featured draw card.
+ * Brand Hero section with title statements, stats counters, and static relevant platform showcase.
  */
 export default function HeroSection() {
-  const [dynamicFeaturedDraw, setDynamicFeaturedDraw] = useState<Draw | null>(null);
   const [dynamicStats, setDynamicStats] = useState<{ id: number; value: string; label: string }[] | null>(null);
 
   useEffect(() => {
-    async function fetchFeaturedRaffle() {
-      try {
-        const res = await raffleService.getPublicRaffles({
-          limit: 1,
-          sort: 'Most Popular',
-        });
-        if (res.data && res.data.length > 0) {
-          const r = res.data[0];
-          setDynamicFeaturedDraw({
-            id: r.id,
-            title: r.title,
-            description: r.description,
-            image: r.mainImage || '',
-            ticketPrice: Number(r.pricePerTicket),
-            totalTickets: r.totalTickets,
-            soldTickets: r.ticketsSold,
-            endDate: new Date(r.endDate).toLocaleDateString(),
-            status: (r.status === 'ACTIVE' ? 'live' : 'ended') as "live" | "ended",
-            category: 'general', // Fallback as category isn't in Raffle by default here
-            slug: r.slug,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch featured raffle:', error);
-      }
-    }
-    
     async function fetchStats() {
       try {
         const stats = await raffleService.getPublicStats();
@@ -54,7 +25,6 @@ export default function HeroSection() {
       }
     }
 
-    fetchFeaturedRaffle();
     fetchStats();
   }, []);
 
@@ -62,7 +32,6 @@ export default function HeroSection() {
     badgeText,
     paragraphText,
     stats: fallbackStats,
-    featuredDraw, // fallback
   } = heroData;
 
   const statsToShow = dynamicStats || fallbackStats;
@@ -125,16 +94,111 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Featured Card */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end w-full min-h-[400px]">
-            {dynamicFeaturedDraw ? (
-              <DrawCard draw={dynamicFeaturedDraw} variant="featured" />
-            ) : (
-              <div className="w-full max-w-[750px] h-full flex flex-col items-center justify-center bg-surface border border-border border-dashed rounded-card text-center p-8">
-                <h3 className="font-heading font-bold text-xl text-text-primary mb-2">More Competitions Coming Soon</h3>
-                <p className="font-sans text-sm text-text-muted">We're preparing the next big drop. Check back soon!</p>
+          {/* Right Column: Minimalist 3-Step "How to Win" Card */}
+          <div className="lg:col-span-6 flex justify-center lg:justify-end w-full">
+            <div className="w-full max-w-[540px] bg-surface border border-border rounded-card p-6 sm:p-8 shadow-card relative overflow-hidden">
+              {/* Subtle Ambient Background Accents */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent-bg/40 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-divider relative z-10">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-text-brand uppercase tracking-wider mb-1">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    Simple & Transparent
+                  </div>
+                  <h3 className="font-heading font-bold text-xl sm:text-2xl text-text-primary">
+                    How To Win In 3 Steps
+                  </h3>
+                </div>
               </div>
-            )}
+
+              {/* 3 Step Flow */}
+              <div className="relative flex flex-col gap-6 z-10">
+                {/* Connecting Vertical Line */}
+                <div className="absolute left-[23px] top-[28px] bottom-[28px] w-[2px] bg-gradient-to-b from-primary via-primary/40 to-primary/20 pointer-events-none" />
+
+                {/* Step 1 */}
+                <div className="relative flex items-start gap-4 group">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-bg border-2 border-primary/30 flex items-center justify-center font-heading font-bold text-base text-primary shrink-0 group-hover:scale-105 group-hover:border-primary transition-all shadow-sm">
+                    01
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-heading font-bold text-base text-text-primary group-hover:text-primary transition-colors">
+                        Pick Your Tickets
+                      </h4>
+                      <span className="text-[10px] font-semibold text-text-brand bg-accent-bg px-2 py-0.5 rounded-badge">
+                        Instant Wins
+                      </span>
+                    </div>
+                    <p className="font-sans text-xs sm:text-sm text-text-muted mt-1 leading-relaxed">
+                      Choose your prize competition and select your lucky numbers. Multiple entries increase your chances.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="relative flex items-start gap-4 group">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-bg border-2 border-primary/30 flex items-center justify-center font-heading font-bold text-base text-primary shrink-0 group-hover:scale-105 group-hover:border-primary transition-all shadow-sm">
+                    02
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-heading font-bold text-base text-text-primary group-hover:text-primary transition-colors">
+                        Support UK Charities
+                      </h4>
+                      <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-badge">
+                        Good Cause
+                      </span>
+                    </div>
+                    <p className="font-sans text-xs sm:text-sm text-text-muted mt-1 leading-relaxed">
+                      A guaranteed portion of every ticket goes directly to verified registered charity partners across the UK.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative flex items-start gap-4 group">
+                  <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-heading font-bold text-base shrink-0 group-hover:scale-105 transition-all shadow-glow">
+                    03
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-heading font-bold text-base text-text-primary group-hover:text-primary transition-colors">
+                        Win & Celebrate
+                      </h4>
+                      <span className="text-[10px] font-semibold text-primary bg-accent-bg px-2 py-0.5 rounded-badge">
+                        Live Draw
+                      </span>
+                    </div>
+                    <p className="font-sans text-xs sm:text-sm text-text-muted mt-1 leading-relaxed">
+                      Tune into our live streamed draw. Guaranteed winners with next-day payouts and direct prize delivery.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Footer Action */}
+              <div className="mt-8 pt-5 border-t border-divider flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+                <div className="flex items-center gap-2 text-xs text-text-muted">
+                  <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>100% Guaranteed Draws • No Rollovers</span>
+                </div>
+                <Link
+                  href="/live-raffles"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-text-brand hover:text-primary-hover hover:underline"
+                >
+                  <span>Browse Live Draws</span>
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
