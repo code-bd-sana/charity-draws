@@ -12,6 +12,8 @@ import { AdminDashboardService } from './dashboard/admin-dashboard.service';
 
 import { AdminWithdrawalsController } from './withdrawals/admin-withdrawals.controller';
 import { AdminWithdrawalsService } from './withdrawals/admin-withdrawals.service';
+import { AdminReportsController } from './reports/admin-reports.controller';
+import { AdminReportsService } from './reports/admin-reports.service';
 
 @Module({
   controllers: [
@@ -21,6 +23,7 @@ import { AdminWithdrawalsService } from './withdrawals/admin-withdrawals.service
     AdminWinnersController,
     AdminDashboardController,
     AdminWithdrawalsController,
+    AdminReportsController,
   ],
   providers: [
     AdminUsersService,
@@ -29,6 +32,7 @@ import { AdminWithdrawalsService } from './withdrawals/admin-withdrawals.service
     AdminWinnersService,
     AdminDashboardService,
     AdminWithdrawalsService,
+    AdminReportsService,
   ],
 })
 export class AdminModule {}

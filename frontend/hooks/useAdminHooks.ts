@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminService, AdminDashboardOverview } from '../services/admin.service';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { adminService, AdminDashboardOverview, AdminReportsAnalytics } from '../services/admin.service';
 import { adminKeys, hostKeys } from './queryKeys';
 
 export const useAdminUsers = (params: { page?: number; limit?: number; search?: string; role?: string }) => {
@@ -40,6 +40,7 @@ export const useProcessRefundMutation = () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.orders() });
       queryClient.invalidateQueries({ queryKey: adminKeys.ordersStats() });
       queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.revenueChart() });
       queryClient.invalidateQueries({ queryKey: hostKeys.overview() });
       queryClient.invalidateQueries({ queryKey: hostKeys.sales() });
     },
@@ -70,10 +71,31 @@ export const useToggleUserBlockMutation = () => {
   });
 };
 
-export const useAdminOverviewStats = (options?: any) => {
+export interface UseAdminOverviewStatsOptions {
+  period?: string;
+  enabled?: boolean;
+  [key: string]: any;
+}
+
+export const useAdminOverviewStats = (options?: UseAdminOverviewStatsOptions) => {
+  const { period, ...queryOptions } = options || {};
   return useQuery<AdminDashboardOverview>({
-    queryKey: adminKeys.overviewStats(),
-    queryFn: () => adminService.getOverviewStats(),
+    queryKey: adminKeys.overviewStats(period),
+    queryFn: () => adminService.getOverviewStats(period),
+    staleTime: 60 * 1000,
+    ...queryOptions,
+  });
+};
+
+export const useAdminRevenueChart = (
+  period: '7D' | '1M' | '6M' | '1Y' = '1Y',
+  options?: Record<string, any>
+) => {
+  return useQuery<{ name: string; value: number }[]>({
+    queryKey: adminKeys.revenueChart(period),
+    queryFn: () => adminService.getRevenueChart(period),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
     ...options,
   });
 };
@@ -106,5 +128,18 @@ export const useUpdateWithdrawalStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: hostKeys.wallet() });
       queryClient.invalidateQueries({ queryKey: hostKeys.overview() });
     },
+  });
+};
+
+export const useAdminReportsAnalytics = (
+  period: string = '3M',
+  options?: Record<string, any>
+) => {
+  return useQuery<AdminReportsAnalytics>({
+    queryKey: adminKeys.reports(period),
+    queryFn: () => adminService.getReportsAnalytics(period),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+    ...options,
   });
 };

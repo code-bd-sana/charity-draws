@@ -46,6 +46,22 @@ describe('Admin Operations (e2e)', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.stats).toBeDefined();
     });
+
+    it('should allow ADMIN role to access dashboard revenue-chart', async () => {
+      const adminSession = createTestAuthSession({
+        id: 'admin-user',
+        email: 'admin@charitydraws.com',
+        role: 'ADMIN',
+      });
+
+      const res = await request(app.getHttpServer())
+        .get('/api/v1/admin/dashboard/revenue-chart?period=7D')
+        .set('Cookie', adminSession.cookie)
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
+    });
   });
 
   describe('GET /api/v1/admin/hosts', () => {
@@ -73,4 +89,45 @@ describe('Admin Operations (e2e)', () => {
       expect(res.body.data.hosts).toBeDefined();
     });
   });
+
+  describe('GET /api/v1/admin/reports/analytics', () => {
+    it('should return 200 with full analytics payload when requested by ADMIN', async () => {
+      const adminSession = createTestAuthSession({
+        id: 'admin-user',
+        email: 'admin@charitydraws.com',
+        role: 'ADMIN',
+      });
+
+      const res = await request(app.getHttpServer())
+        .get('/api/v1/admin/reports/analytics?period=3M')
+        .set('Cookie', adminSession.cookie)
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.summary).toBeDefined();
+      expect(res.body.data.revenueTrend).toBeDefined();
+      expect(res.body.data.salesByCategory).toBeDefined();
+      expect(res.body.data.popularCompetitions).toBeDefined();
+      expect(res.body.data.userGrowth).toBeDefined();
+      expect(res.body.data.hostPerformance).toBeDefined();
+      expect(res.body.data.geographicDistribution).toBeDefined();
+    });
+
+    it('should allow exporting CSV report', async () => {
+      const adminSession = createTestAuthSession({
+        id: 'admin-user',
+        email: 'admin@charitydraws.com',
+        role: 'ADMIN',
+      });
+
+      const res = await request(app.getHttpServer())
+        .get('/api/v1/admin/reports/export?period=7D')
+        .set('Cookie', adminSession.cookie)
+        .expect(200);
+
+      expect(res.headers['content-type']).toContain('text/csv');
+      expect(res.text).toContain('CHARITY DRAWS - ANALYTICS & PERFORMANCE REPORT');
+    });
+  });
 });
+

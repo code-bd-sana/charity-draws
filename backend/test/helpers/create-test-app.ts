@@ -25,6 +25,8 @@ export async function createTestApp(): Promise<TestAppContext> {
   prismaMock.transaction.aggregate.mockResolvedValue({ _sum: { amount: 500 } });
   prismaMock.withdrawal.findMany.mockResolvedValue([]);
   prismaMock.transaction.findMany.mockResolvedValue([]);
+  prismaMock.category.findMany.mockResolvedValue([]);
+  prismaMock.ticket.count.mockResolvedValue(0);
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],

@@ -135,6 +135,23 @@ export interface AdminDashboardOverview {
     liveRaffles: number;
     totalRevenue: number;
   };
+  revenueChart: {
+    name: string;
+    value: number;
+  }[];
+  growthChart: {
+    name: string;
+    Users: number;
+    Hosts: number;
+  }[];
+  topHosts: {
+    rank: number;
+    id: string;
+    name: string;
+    revenue: string;
+    initials: string;
+    rafflesCount: number;
+  }[];
   awaitingReview: {
     count: number;
     list: {
@@ -152,6 +169,49 @@ export interface AdminDashboardOverview {
   }[];
 }
 
+export interface AdminReportsAnalytics {
+  period: string;
+  summary: {
+    totalRevenue: number;
+    ticketsSold: number;
+    newUsers: number;
+    activeCompetitions: number;
+  };
+  revenueTrend: {
+    name: string;
+    value: number;
+  }[];
+  salesByCategory: {
+    name: string;
+    value: number;
+    amount: number;
+    color: string;
+  }[];
+  popularCompetitions: {
+    name: string;
+    value: number;
+    totalTickets: number;
+    revenue: number;
+    hostName: string;
+  }[];
+  userGrowth: {
+    name: string;
+    users: number;
+  }[];
+  hostPerformance: {
+    name: string;
+    percent: number;
+    revenue: number;
+    rafflesCount: number;
+    ticketsSold?: number;
+    totalTickets?: number;
+  }[];
+  geographicDistribution: {
+    name: string;
+    value: number;
+    count: number;
+  }[];
+}
 
 export const adminService = {
   async getUsers(params: { page?: number; limit?: number; search?: string; role?: string }): Promise<GetUsersResponse> {
@@ -194,8 +254,13 @@ export const adminService = {
     return data;
   },
 
-  async getOverviewStats(): Promise<AdminDashboardOverview> {
-    const { data } = await api.get('/admin/dashboard/stats');
+  async getOverviewStats(period?: string): Promise<AdminDashboardOverview> {
+    const { data } = await api.get('/admin/dashboard/stats', { params: { period } });
+    return data;
+  },
+
+  async getRevenueChart(period?: string): Promise<{ name: string; value: number }[]> {
+    const { data } = await api.get('/admin/dashboard/revenue-chart', { params: { period } });
     return data;
   },
 
@@ -227,5 +292,26 @@ export const adminService = {
   async updateWithdrawalStatus(id: string, status: 'APPROVED' | 'COMPLETED' | 'REJECTED', adminNotes?: string): Promise<any> {
     const { data } = await api.patch(`/admin/withdrawals/${id}/status`, { status, adminNotes });
     return data;
+  },
+
+  async getReportsAnalytics(period: string = '3M'): Promise<AdminReportsAnalytics> {
+    const { data } = await api.get('/admin/reports/analytics', { params: { period } });
+    return data;
+  },
+
+  async downloadReportsCsv(period: string = '3M'): Promise<void> {
+    const response = await api.get('/admin/reports/export', {
+      params: { period },
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `charity-draws-report-${period.toLowerCase()}-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
   },
 };

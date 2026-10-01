@@ -18,8 +18,17 @@ export class AdminDashboardController {
   @ApiResponse({ status: 200, description: 'Overview statistics and live activity logs' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
-  async getOverviewStats() {
-    return this.adminDashboardService.getOverviewStats();
+  async getOverviewStats(@Query('period') period?: string) {
+    return this.adminDashboardService.getOverviewStats(period);
+  }
+
+  @Get('revenue-chart')
+  @ApiOperation({ summary: 'Get revenue chart statistics for a specified period (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Revenue chart data points' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  async getRevenueChart(@Query('period') period?: string) {
+    return this.adminDashboardService.getRevenueChart(period);
   }
 
   @Get('logs')

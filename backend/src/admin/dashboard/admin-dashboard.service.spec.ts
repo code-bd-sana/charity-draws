@@ -54,4 +54,22 @@ describe('AdminDashboardService', () => {
       expect(res.stats.totalRevenue).toBe(25000.0);
     });
   });
+
+  describe('getRevenueChart', () => {
+    it('should return chart data for 7D, 1M, 6M, and 1Y periods', async () => {
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+
+      const data7D = await service.getRevenueChart('7D');
+      expect(data7D).toHaveLength(7);
+
+      const data1M = await service.getRevenueChart('1M');
+      expect(data1M).toHaveLength(4);
+
+      const data6M = await service.getRevenueChart('6M');
+      expect(data6M).toHaveLength(6);
+
+      const data1Y = await service.getRevenueChart('1Y');
+      expect(data1Y).toHaveLength(12);
+    });
+  });
 });
