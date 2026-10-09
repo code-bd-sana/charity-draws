@@ -10,14 +10,22 @@ export default function WinnersHero() {
   const [stats, setStats] = useState({
     prizesAwarded: "£0",
     totalWinners: 0,
-    verifiedDraws: "0",
+    mainDrawWinners: 0,
+    instantWinners: 0,
   });
 
   useEffect(() => {
     async function loadStats() {
       try {
         const data = await raffleService.getPublicWinnerStats();
-        if (data) setStats(data);
+        if (data) {
+          setStats({
+            prizesAwarded: data.prizesAwarded,
+            totalWinners: data.totalWinners,
+            mainDrawWinners: data.mainDrawWinners,
+            instantWinners: data.instantWinners,
+          });
+        }
       } catch (error) {
         console.error("Failed to load winner stats", error);
       }
@@ -45,12 +53,12 @@ export default function WinnersHero() {
           Browse every verified winner drawing. Every draw is transparent, audited, and delivered with fast host payouts.
         </p>
 
-        {/* Transparency Stat Box */}
-        <div className="mt-10 w-full max-w-4xl bg-surface border border-border rounded-card p-6 md:p-8 flex flex-col md:flex-row justify-around items-center gap-8 md:gap-4 shadow-card hover:border-border-medium transition-all">
+        {/* Transparency Stat Box - Exactly 4 boxes in a single row on desktop, 2x2 grid on mobile */}
+        <div className="mt-10 w-full max-w-5xl bg-surface border border-border rounded-card p-6 md:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 divide-y divide-border/60 sm:divide-y-0 lg:divide-x lg:divide-divider shadow-card hover:border-border-medium transition-all">
           
           {/* Stat 1: Prizes Awarded */}
-          <div className="flex flex-col items-center text-center flex-1">
-            <span className="font-heading font-bold text-3xl md:text-4xl text-text-brand">
+          <div className="flex flex-col items-center text-center p-2">
+            <span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-text-brand">
               {stats.prizesAwarded}
             </span>
             <span className="font-sans text-xs text-text-muted mt-2 font-semibold uppercase tracking-wider">
@@ -58,12 +66,9 @@ export default function WinnersHero() {
             </span>
           </div>
 
-          {/* Divider */}
-          <div className="hidden md:block h-12 w-px bg-divider" />
-
           {/* Stat 2: Total Winners */}
-          <div className="flex flex-col items-center text-center flex-1">
-            <span className="font-heading font-bold text-3xl md:text-4xl text-text-brand">
+          <div className="flex flex-col items-center text-center p-2">
+            <span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-text-brand">
               {stats.totalWinners.toLocaleString()}
             </span>
             <span className="font-sans text-xs text-text-muted mt-2 font-semibold uppercase tracking-wider">
@@ -71,16 +76,23 @@ export default function WinnersHero() {
             </span>
           </div>
 
-          {/* Divider */}
-          <div className="hidden md:block h-12 w-px bg-divider" />
-
-          {/* Stat 3: Verified Draws */}
-          <div className="flex flex-col items-center text-center flex-1">
-            <span className="font-heading font-bold text-3xl md:text-4xl text-text-brand">
-              {stats.verifiedDraws}
+          {/* Stat 3: Main Draw Winners */}
+          <div className="flex flex-col items-center text-center p-2 pt-6 sm:pt-2">
+            <span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-text-brand">
+              {stats.mainDrawWinners.toLocaleString()}
             </span>
             <span className="font-sans text-xs text-text-muted mt-2 font-semibold uppercase tracking-wider">
-              Verified Draws
+              Main Draw Winners
+            </span>
+          </div>
+
+          {/* Stat 4: Instant Winners */}
+          <div className="flex flex-col items-center text-center p-2 pt-6 sm:pt-2">
+            <span className="font-heading font-bold text-2xl sm:text-3xl md:text-4xl text-text-brand">
+              {stats.instantWinners.toLocaleString()}
+            </span>
+            <span className="font-sans text-xs text-text-muted mt-2 font-semibold uppercase tracking-wider">
+              Instant Winners
             </span>
           </div>
 
