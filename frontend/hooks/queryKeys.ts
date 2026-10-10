@@ -135,3 +135,13 @@ export const notificationKeys = {
   unreadCount: () => [...notificationKeys.all, 'unreadCount'] as const,
 };
 
+export const reviewKeys = {
+  all: ['reviews'] as const,
+  host: (hostId: string, params?: unknown) =>
+    params !== undefined
+      ? ([...reviewKeys.all, 'host', hostId, params] as const)
+      : ([...reviewKeys.all, 'host', hostId] as const),
+  my: () => [...reviewKeys.all, 'my'] as const,
+  hostDashboard: () => [...reviewKeys.all, 'host-dashboard'] as const,
+};
+

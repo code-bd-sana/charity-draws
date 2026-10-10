@@ -13,6 +13,8 @@ export interface VerifiedHost {
   isBlocked?: boolean;
   isEmailVerified?: boolean;
   memberSince?: number | string;
+  totalReviews?: number;
+  averageRating?: number | null;
 }
 
 export interface HostDetail {
@@ -30,6 +32,8 @@ export interface HostDetail {
   pastDrawsCount: number;
   memberSince: number | string;
   joinedAt?: string;
+  totalReviews?: number;
+  averageRating?: number | null;
   raffles: any[];
 }
 
