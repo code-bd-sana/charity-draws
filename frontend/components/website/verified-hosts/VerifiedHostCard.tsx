@@ -40,11 +40,24 @@ export default function VerifiedHostCard({ host }: VerifiedHostCardProps) {
                 <span>{initials}</span>
               )}
             </div>
-            {host.isVerified && (
-              <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-badge text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-sm">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {host.totalReviews && host.totalReviews > 0 && host.averageRating !== null && host.averageRating !== undefined ? (
+                <span className="bg-amber-500/10 border border-amber-500/20 text-amber-500 px-2 py-0.5 rounded-badge text-[11px] font-bold flex items-center gap-1 shadow-sm">
+                  <span>★</span>
+                  <span>{host.averageRating.toFixed(1)} ({host.totalReviews})</span>
+                </span>
+              ) : (
+                <span className="bg-accent-bg border border-border-medium text-text-muted px-2 py-0.5 rounded-badge text-[11px] font-semibold flex items-center gap-1 shadow-sm">
+                  <span className="text-amber-500/70">★</span>
+                  <span>New Host</span>
+                </span>
+              )}
+              {host.isVerified && (
+                <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-badge text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-sm">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
+                </span>
+              )}
+            </div>
           </div>
           
           <div className="flex flex-col gap-1.5">

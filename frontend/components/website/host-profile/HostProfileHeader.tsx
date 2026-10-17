@@ -12,6 +12,8 @@ interface HostProfileHeaderProps {
   pastDrawsCount?: number;
   memberSince: number | string;
   location?: string | null;
+  totalReviews?: number;
+  averageRating?: number | null;
 }
 
 export default function HostProfileHeader({
@@ -24,6 +26,8 @@ export default function HostProfileHeader({
   pastDrawsCount = 0,
   memberSince,
   location,
+  totalReviews = 0,
+  averageRating = null,
 }: HostProfileHeaderProps) {
   const isImageLogo = Boolean(
     logo &&
@@ -75,6 +79,17 @@ export default function HostProfileHeader({
             {bio || "Verified host running transparent charity competitions on Charity Draws."}
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-1">
+            {totalReviews > 0 && averageRating !== null && averageRating !== undefined ? (
+              <span className="font-sans text-[12px] text-amber-500 font-semibold tracking-wide flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full shadow-sm">
+                <span>★</span>
+                <span>{averageRating.toFixed(1)} Host Rating ({totalReviews} {totalReviews === 1 ? 'Review' : 'Reviews'})</span>
+              </span>
+            ) : (
+              <span className="font-sans text-[12px] text-text-muted font-medium tracking-wide flex items-center gap-1.5 bg-accent-bg border border-border-medium px-2.5 py-0.5 rounded-full shadow-sm">
+                <span className="text-amber-500/70">★</span>
+                <span>No reviews yet</span>
+              </span>
+            )}
             <span className="font-sans text-[12px] text-text-brand font-semibold tracking-wide flex items-center gap-1.5">
               <span className="w-2 h-2 bg-primary rounded-full" />
               {drawsHosted} {drawsHosted === 1 ? 'Competition' : 'Competitions'}

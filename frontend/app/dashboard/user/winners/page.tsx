@@ -6,11 +6,14 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { useMyWinnersQuery } from "@/hooks/useUserHooks";
 import { UserWinner } from "@/services/user.service";
+import ReviewModal from "@/components/reviews/ReviewModal";
 
 export default function UserWinnersPage() {
   const { data: winners, isLoading, isError } = useMyWinnersQuery();
   const [filter, setFilter] = useState<"ALL" | "INSTANT_WIN" | "MAIN_DRAW">("ALL");
   const [search, setSearch] = useState("");
+  const [selectedWinnerForReview, setSelectedWinnerForReview] = useState<UserWinner | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const allWinners = winners || [];
 
@@ -337,12 +340,57 @@ export default function UserWinnersPage() {
                         : "Claim Processing"}
                     </div>
                   </div>
+
+                  {/* Verified Review Action Section */}
+                  <div className="pt-2 border-t border-divider flex items-center justify-between">
+                    {win.review ? (
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-badge bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[11px] font-sans font-bold shadow-sm">
+                          <span>Reviewed</span>
+                          <span>★{win.review.rating}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedWinnerForReview(win);
+                            setIsReviewModalOpen(true);
+                          }}
+                          className="text-[11px] font-sans font-semibold text-text-brand hover:underline cursor-pointer flex items-center gap-1"
+                        >
+                          Edit Review
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedWinnerForReview(win);
+                          setIsReviewModalOpen(true);
+                        }}
+                        className="w-full py-2 px-3 rounded-button bg-primary/10 hover:bg-primary border border-primary/30 hover:border-primary text-text-brand hover:text-white font-sans font-semibold text-[12px] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                      >
+                        <span className="text-amber-400">★</span>
+                        <span>Leave Review</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Leave / Edit Review Modal */}
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setSelectedWinnerForReview(null);
+        }}
+        winner={selectedWinnerForReview}
+        existingReview={selectedWinnerForReview?.review}
+      />
     </div>
   );
 }

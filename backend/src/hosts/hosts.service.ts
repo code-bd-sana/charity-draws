@@ -41,6 +41,14 @@ export class HostsService {
             raffles: true,
           },
         },
+        reviews: {
+          where: {
+            status: 'APPROVED',
+          },
+          select: {
+            rating: true,
+          },
+        },
         raffles: {
           select: {
             id: true,
@@ -66,6 +74,17 @@ export class HostsService {
         (r) => r.status === 'ENDED' || r.status === 'COMPLETED',
       ).length;
 
+      const totalReviews = host.reviews?.length || 0;
+      const averageRating =
+        totalReviews > 0
+          ? Number(
+              (
+                host.reviews.reduce((acc, r) => acc + r.rating, 0) /
+                totalReviews
+              ).toFixed(1),
+            )
+          : null;
+
       return {
         id: host.id,
         slug: host.slug || host.id,
@@ -81,6 +100,8 @@ export class HostsService {
         isBlocked: host.user?.isBlocked ?? false,
         isEmailVerified: host.user?.isEmailVerified ?? false,
         memberSince: host.createdAt ? host.createdAt.getFullYear() : new Date().getFullYear(),
+        totalReviews,
+        averageRating,
       };
     });
   }
@@ -123,6 +144,14 @@ export class HostsService {
             },
           },
         },
+        reviews: {
+          where: {
+            status: 'APPROVED',
+          },
+          select: {
+            rating: true,
+          },
+        },
         _count: {
           select: {
             raffles: true,
@@ -150,6 +179,17 @@ export class HostsService {
     const phone = host.phone || host.user?.phone || null;
     const email = host.user?.email || null;
 
+    const totalReviews = host.reviews?.length || 0;
+    const averageRating =
+      totalReviews > 0
+        ? Number(
+            (
+              host.reviews.reduce((acc, r) => acc + r.rating, 0) /
+              totalReviews
+            ).toFixed(1),
+          )
+        : null;
+
     return {
       id: host.id,
       slug: host.slug || host.id,
@@ -165,6 +205,8 @@ export class HostsService {
       pastDrawsCount: pastRaffles.length,
       memberSince: host.createdAt.getFullYear(),
       joinedAt: host.createdAt.toISOString(),
+      totalReviews,
+      averageRating,
       raffles: host.raffles.map((raffle) => {
         const ticketPrice = raffle.pricePerTicket
           ? Number(raffle.pricePerTicket.toString())

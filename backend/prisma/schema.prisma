@@ -27,6 +27,7 @@ model User {
   transactions  Transaction[]
   winners       Winner[]
   notifications Notification[]
+  reviews       Review[]
 
   @@map("users")
 }
@@ -47,6 +48,7 @@ model HostProfile {
   subscriptions HostSubscription[]
   raffles       Raffle[]
   withdrawals   Withdrawal[]
+  reviews       Review[]
 
   @@map("host_profiles")
 }
@@ -112,6 +114,7 @@ model Raffle {
   instantWins InstantWin[]
   tickets     Ticket[]
   winners     Winner[]
+  reviews     Review[]
 
   @@map("raffles")
 }
@@ -140,12 +143,32 @@ model Transaction {
   paymentGateway       String?  @map("payment_gateway") @db.VarChar(50) // STRIPE, PAYPAL
   gatewayTransactionId String?  @map("gateway_transaction_id") @db.VarChar(255)
   relatedEntityId      String?  @map("related_entity_id") @db.VarChar(255) // Polymorphic ID
+  adminNotes           String?  @map("admin_notes") @db.Text
   createdAt            DateTime @default(now()) @map("created_at")
 
   user    User     @relation(fields: [userId], references: [id])
   tickets Ticket[]
 
   @@map("transactions")
+}
+
+model AuditLog {
+  id              String   @id @default(uuid()) @db.VarChar(255)
+  adminId         String   @map("admin_id") @db.VarChar(255)
+  action          String   @db.VarChar(100)
+  targetRaffleId  String?  @map("target_raffle_id") @db.VarChar(255)
+  recipientUserId String?  @map("recipient_user_id") @db.VarChar(255)
+  ticketNumbers   Json?    @map("ticket_numbers")
+  totalAmount     Decimal? @map("total_amount") @db.Decimal(10, 2)
+  adminNotes      String?  @map("admin_notes") @db.Text
+  details         Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([adminId])
+  @@index([action])
+  @@index([targetRaffleId])
+  @@index([recipientUserId])
+  @@map("audit_logs")
 }
 
 model Ticket {
@@ -180,6 +203,7 @@ model Winner {
   user   User   @relation(fields: [userId], references: [id])
   raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  review Review?
 
   @@map("winners")
 }
@@ -231,5 +255,30 @@ model Notification {
   @@index([userId])
   @@index([userId, isRead])
   @@map("notifications")
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.VarChar(255)
+  hostId    String   @map("host_id") @db.VarChar(255)
+  raffleId  String   @map("raffle_id") @db.VarChar(255)
+  winnerId  String   @unique @map("winner_id") @db.VarChar(255)
+  userId    String   @map("user_id") @db.VarChar(255)
+  rating    Int      @db.SmallInt
+  comment   String?  @db.Text
+  status    String   @default("APPROVED") @db.VarChar(50) // APPROVED, FLAGGED, HIDDEN
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  host   HostProfile @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  raffle Raffle      @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  winner Winner      @relation(fields: [winnerId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([hostId])
+  @@index([userId])
+  @@index([raffleId])
+  @@index([hostId, status])
+  @@index([hostId, rating])
+  @@map("reviews")
 }
 

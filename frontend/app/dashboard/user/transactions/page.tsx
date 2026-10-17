@@ -154,8 +154,14 @@ export default function UserTransactionsPage() {
                   </div>
 
                   {/* Payment Method */}
-                  <div className="col-span-2 text-center font-medium text-[13px] text-text-muted">
-                    {transaction.paymentGateway || "Card"}
+                  <div className="col-span-2 text-center font-medium text-[13px] text-text-muted flex justify-center">
+                    {transaction.paymentGateway === "ADMIN_MANUAL" ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-badge bg-primary/10 border border-primary/30 text-text-brand font-bold text-[11px] shadow-sm">
+                        🛡️ Admin Assigned
+                      </span>
+                    ) : (
+                      transaction.paymentGateway || "Card"
+                    )}
                   </div>
 
                   {/* Status */}

@@ -314,4 +314,185 @@ export const adminService = {
     link.remove();
     window.URL.revokeObjectURL(url);
   },
+
+  async getAssignmentCompetitions(params?: { search?: string; hostId?: string }): Promise<AssignmentCompetitionSummary[]> {
+    const { data } = await api.get('/admin/ticket-assignment/competitions', { params });
+    return data;
+  },
+
+  async getAssignmentCompetitionDetails(id: string): Promise<AssignmentCompetitionDetails> {
+    const { data } = await api.get(`/admin/ticket-assignment/competitions/${id}`);
+    return data;
+  },
+
+  async searchAssignmentUsers(q?: string): Promise<AssignmentSearchUser[]> {
+    const { data } = await api.get('/admin/ticket-assignment/users/search', { params: { q } });
+    return data;
+  },
+
+  async assignTickets(payload: AssignTicketsPayload): Promise<AssignTicketsResponse> {
+    const { data } = await api.post('/admin/ticket-assignment/assign', payload);
+    return data;
+  },
+
+  async getAssignmentHistory(params?: { page?: number; limit?: number; search?: string }): Promise<AssignmentHistoryResponse> {
+    const { data } = await api.get('/admin/ticket-assignment/history', { params });
+    return data;
+  },
 };
+
+export interface AssignmentCompetitionSummary {
+  id: string;
+  title: string;
+  slug: string | null;
+  category: string | null;
+  mainImage: string | null;
+  pricePerTicket: number;
+  totalTickets: number;
+  ticketsSold: number;
+  remainingTickets: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  isAutoDraw: boolean;
+  autoDrawSoldOut: boolean;
+  host: {
+    id: string;
+    businessName: string;
+    slug: string | null;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      avatarUrl?: string | null;
+    } | null;
+  };
+  instantWinCounts: {
+    total: number;
+    claimed: number;
+    unclaimed: number;
+  };
+}
+
+export interface AssignmentInstantWin {
+  id: string;
+  ticketNumber: number;
+  prizeName: string;
+  rrpValue: number | null;
+  image: string | null;
+  isClaimed: boolean;
+}
+
+export interface AssignmentSoldTicket {
+  id: string;
+  ticketNumber: number;
+  purchaseDate: string;
+  buyer: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string | null;
+  };
+  paymentGateway: string;
+}
+
+export interface AssignmentCompetitionDetails extends AssignmentCompetitionSummary {
+  description: string | null;
+  prizeName: string | null;
+  mainPrizeValue: number | null;
+  instantWins: AssignmentInstantWin[];
+  soldTickets: AssignmentSoldTicket[];
+}
+
+export interface AssignmentSearchUser {
+  id: string;
+  name: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email: string;
+  role: string;
+  avatarUrl?: string | null;
+}
+
+export interface AssignTicketsPayload {
+  raffleId: string;
+  userId: string;
+  ticketNumbers?: number[];
+  quantity?: number;
+  adminNotes?: string;
+}
+
+export interface AssignTicketsResponse {
+  success: boolean;
+  message: string;
+  transaction: {
+    id: string;
+    gatewayTransactionId: string;
+    paymentGateway: string;
+    amount: number;
+    createdAt: string;
+    adminNotes: string | null;
+  };
+  assignedTickets: Array<{ id: string; ticketNumber: number }>;
+  ticketNumbers: number[];
+  totalAmount: number;
+  hostCreditAmount: number;
+  instantWins: Array<{
+    winnerId: string;
+    ticketId: string;
+    ticketNumber: number;
+    prizeName: string;
+    rrpValue: number | null;
+    image: string | null;
+  }>;
+  recipient: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string | null;
+  };
+  competition: {
+    id: string;
+    title: string;
+    slug: string | null;
+    ticketsSold: number;
+    totalTickets: number;
+    status: string;
+  };
+}
+
+export interface AssignmentHistoryItem {
+  id: string;
+  orderId: string;
+  date: string;
+  totalValue: number;
+  status: string;
+  paymentGateway: string;
+  adminNotes: string | null;
+  adminId: string | null;
+  recipient: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+  };
+  competition: {
+    id: string;
+    title: string;
+    slug: string | null;
+    mainImage: string | null;
+    status: string;
+  };
+  assignedNumbers: number[];
+  ticketCount: number;
+  instantWins: string[];
+}
+
+export interface AssignmentHistoryResponse {
+  history: AssignmentHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+

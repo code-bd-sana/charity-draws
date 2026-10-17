@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import DrawCard from "../shared/DrawCard";
+import HostReviewList from "../host-reviews/HostReviewList";
 
 interface HostProfileTabsProps {
   host?: {
@@ -18,12 +19,14 @@ interface HostProfileTabsProps {
     pastDrawsCount?: number;
     memberSince?: number | string;
     joinedAt?: string;
+    totalReviews?: number;
+    averageRating?: number | null;
   };
   raffles?: any[];
 }
 
 export default function HostProfileTabs({ host, raffles = [] }: HostProfileTabsProps) {
-  const [activeTab, setActiveTab] = useState<"active" | "past" | "about">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "past" | "reviews" | "about">("active");
 
   const liveDraws = raffles.filter(
     (r) => r.status === 'ACTIVE' || r.status === 'live',
@@ -91,6 +94,26 @@ export default function HostProfileTabs({ host, raffles = [] }: HostProfileTabsP
         </button>
 
         <button
+          onClick={() => setActiveTab("reviews")}
+          className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+            activeTab === "reviews"
+              ? "border-primary text-text-brand font-bold"
+              : "border-transparent text-text-muted hover:text-text-primary"
+          }`}
+        >
+          <span>Reviews</span>
+          <span
+            className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+              activeTab === "reviews"
+                ? "bg-primary text-primary-text"
+                : "bg-surface-elevated text-text-muted"
+            }`}
+          >
+            {host?.totalReviews || 0}
+          </span>
+        </button>
+
+        <button
           onClick={() => setActiveTab("about")}
           className={`pb-4 text-[14px] font-semibold transition-colors border-b-[2px] -mb-[1px] whitespace-nowrap cursor-pointer ${
             activeTab === "about"
@@ -142,6 +165,13 @@ export default function HostProfileTabs({ host, raffles = [] }: HostProfileTabsP
             <p className="font-sans text-[13px] text-text-muted max-w-[320px] leading-relaxed">
               This host has not concluded any draws yet. Completed competitions and winner details will be listed here.
             </p>
+          </div>
+        )}
+
+        {/* Verified Winner Reviews */}
+        {activeTab === "reviews" && (
+          <div className="animate-in fade-in duration-300">
+            <HostReviewList hostId={host?.id || host?.slug || ''} />
           </div>
         )}
 

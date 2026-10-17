@@ -154,4 +154,29 @@ describe('RafflesService', () => {
       );
     });
   });
+
+  describe('getPublicWinnerStats', () => {
+    it('should return calculated winner statistics correctly', async () => {
+      prismaMock.winner.count.mockImplementation((args?: any) => {
+        if (args?.where?.winType === 'MAIN_DRAW') return Promise.resolve(3);
+        if (args?.where?.winType === 'INSTANT_WIN') return Promise.resolve(6);
+        return Promise.resolve(9);
+      });
+
+      prismaMock.raffle.count.mockResolvedValue(5);
+      prismaMock.raffle.findMany.mockResolvedValue([
+        { totalTickets: 100, pricePerTicket: 10, mainPrizeValue: null },
+        { totalTickets: 50, pricePerTicket: 20, mainPrizeValue: 1500 },
+      ]);
+
+      const stats = await service.getPublicWinnerStats();
+
+      expect(stats.mainDrawWinners).toBe(3);
+      expect(stats.instantWinners).toBe(6);
+      expect(stats.totalWinners).toBe(9);
+      expect(stats.verifiedDraws).toBe('5');
+      expect(stats.prizesAwarded).toBe('£2,500');
+    });
+  });
 });
+

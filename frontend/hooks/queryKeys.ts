@@ -102,6 +102,23 @@ export const adminKeys = {
       ? ([...adminKeys.all, 'reports', period] as const)
       : ([...adminKeys.all, 'reports'] as const),
   withdrawals: () => [...adminKeys.all, 'withdrawals'] as const,
+  ticketAssignment: {
+    all: () => [...adminKeys.all, 'ticket-assignment'] as const,
+    competitions: (params?: unknown) =>
+      params !== undefined
+        ? ([...adminKeys.all, 'ticket-assignment', 'competitions', params] as const)
+        : ([...adminKeys.all, 'ticket-assignment', 'competitions'] as const),
+    competitionDetails: (id: string) =>
+      [...adminKeys.all, 'ticket-assignment', 'competition-details', id] as const,
+    userSearch: (q?: string) =>
+      q !== undefined
+        ? ([...adminKeys.all, 'ticket-assignment', 'users', q] as const)
+        : ([...adminKeys.all, 'ticket-assignment', 'users'] as const),
+    history: (params?: unknown) =>
+      params !== undefined
+        ? ([...adminKeys.all, 'ticket-assignment', 'history', params] as const)
+        : ([...adminKeys.all, 'ticket-assignment', 'history'] as const),
+  },
 };
 
 export const subscriptionKeys = {
@@ -133,5 +150,15 @@ export const notificationKeys = {
       ? ([...notificationKeys.all, 'list', params] as const)
       : ([...notificationKeys.all, 'list'] as const),
   unreadCount: () => [...notificationKeys.all, 'unreadCount'] as const,
+};
+
+export const reviewKeys = {
+  all: ['reviews'] as const,
+  host: (hostId: string, params?: unknown) =>
+    params !== undefined
+      ? ([...reviewKeys.all, 'host', hostId, params] as const)
+      : ([...reviewKeys.all, 'host', hostId] as const),
+  my: () => [...reviewKeys.all, 'my'] as const,
+  hostDashboard: () => [...reviewKeys.all, 'host-dashboard'] as const,
 };
 

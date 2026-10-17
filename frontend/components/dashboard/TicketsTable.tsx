@@ -12,6 +12,7 @@ export interface Ticket {
   purchaseDate: string;
   pricePaid: string;
   status: "live" | "drawn-won" | "drawn-lost" | "instant-win";
+  isAdminAssigned?: boolean;
   raw?: any;
 }
 
@@ -100,7 +101,13 @@ export default function TicketsTable({ tickets }: TicketsTableProps) {
 
                   {/* Price Paid */}
                   <div className="col-span-1 font-semibold text-[13px] text-text-primary">
-                    {ticket.pricePaid}
+                    {ticket.isAdminAssigned ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-primary/10 border border-primary/30 text-text-brand font-bold text-[10px] whitespace-nowrap shadow-sm">
+                        🛡️ Admin Assigned
+                      </span>
+                    ) : (
+                      ticket.pricePaid
+                    )}
                   </div>
 
                   {/* Status */}

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { adminService, AdminDashboardOverview, AdminReportsAnalytics } from '../services/admin.service';
-import { adminKeys, hostKeys } from './queryKeys';
+import { adminKeys, hostKeys, winnerKeys } from './queryKeys';
 
 export const useAdminUsers = (params: { page?: number; limit?: number; search?: string; role?: string }) => {
   return useQuery({
@@ -141,5 +141,62 @@ export const useAdminReportsAnalytics = (
     staleTime: 60 * 1000,
     placeholderData: keepPreviousData,
     ...options,
+  });
+};
+
+export const useAdminAssignmentCompetitions = (params?: { search?: string; hostId?: string }) => {
+  return useQuery({
+    queryKey: adminKeys.ticketAssignment.competitions(params),
+    queryFn: () => adminService.getAssignmentCompetitions(params),
+    staleTime: 30 * 1000,
+  });
+};
+
+export const useAdminAssignmentCompetitionDetails = (id: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: adminKeys.ticketAssignment.competitionDetails(id),
+    queryFn: () => adminService.getAssignmentCompetitionDetails(id),
+    enabled: Boolean(id) && enabled,
+    staleTime: 10 * 1000,
+  });
+};
+
+export const useAdminAssignmentUserSearch = (q: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: adminKeys.ticketAssignment.userSearch(q),
+    queryFn: () => adminService.searchAssignmentUsers(q),
+    enabled,
+    staleTime: 15 * 1000,
+  });
+};
+
+export const useAdminAssignTicketsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: adminService.assignTickets,
+    onSuccess: (data) => {
+      // Invalidate relevant query caches
+      queryClient.invalidateQueries({ queryKey: adminKeys.ticketAssignment.all() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.orders() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.ordersStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.revenueChart() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.usersStats() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.all });
+      queryClient.invalidateQueries({ queryKey: hostKeys.wallet() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.sales() });
+      queryClient.invalidateQueries({ queryKey: hostKeys.overview() });
+      queryClient.invalidateQueries({ queryKey: winnerKeys.admin() });
+    },
+  });
+};
+
+export const useAdminAssignmentHistory = (params?: { page?: number; limit?: number; search?: string }) => {
+  return useQuery({
+    queryKey: adminKeys.ticketAssignment.history(params),
+    queryFn: () => adminService.getAssignmentHistory(params),
+    staleTime: 15 * 1000,
+    placeholderData: keepPreviousData,
   });
 };

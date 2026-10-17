@@ -92,6 +92,8 @@ export default async function HostProfilePage({ params }: PageProps) {
               activeDrawsCount={host.activeDrawsCount || 0}
               pastDrawsCount={host.pastDrawsCount || 0}
               memberSince={host.memberSince}
+              totalReviews={host.totalReviews || 0}
+              averageRating={host.averageRating ?? null}
             />
             
             <HostProfileTabs 
