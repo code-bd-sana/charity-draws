@@ -143,12 +143,32 @@ model Transaction {
   paymentGateway       String?  @map("payment_gateway") @db.VarChar(50) // STRIPE, PAYPAL
   gatewayTransactionId String?  @map("gateway_transaction_id") @db.VarChar(255)
   relatedEntityId      String?  @map("related_entity_id") @db.VarChar(255) // Polymorphic ID
+  adminNotes           String?  @map("admin_notes") @db.Text
   createdAt            DateTime @default(now()) @map("created_at")
 
   user    User     @relation(fields: [userId], references: [id])
   tickets Ticket[]
 
   @@map("transactions")
+}
+
+model AuditLog {
+  id              String   @id @default(uuid()) @db.VarChar(255)
+  adminId         String   @map("admin_id") @db.VarChar(255)
+  action          String   @db.VarChar(100)
+  targetRaffleId  String?  @map("target_raffle_id") @db.VarChar(255)
+  recipientUserId String?  @map("recipient_user_id") @db.VarChar(255)
+  ticketNumbers   Json?    @map("ticket_numbers")
+  totalAmount     Decimal? @map("total_amount") @db.Decimal(10, 2)
+  adminNotes      String?  @map("admin_notes") @db.Text
+  details         Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([adminId])
+  @@index([action])
+  @@index([targetRaffleId])
+  @@index([recipientUserId])
+  @@map("audit_logs")
 }
 
 model Ticket {
