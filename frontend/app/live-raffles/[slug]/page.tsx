@@ -10,7 +10,7 @@ import RaffleDetailsEmptyState from "../../../components/website/raffle-details/
 import FreePostalEntryButton from "../../../components/website/legal/FreePostalEntryButton";
 import { raffleDetailsData } from "../../../data/raffles/raffle-details.data";
 import { liveRafflesData } from "../../../data/live-raffles.data";
-import { RaffleDetail } from "../../../types/raffle-details.types";
+import { RaffleDetail, RaffleStatus } from "../../../types/raffle-details.types";
 import { cn } from "../../../lib/utils";
 import { formatUKDateTime } from "../../../lib/uk-date";
 
@@ -30,18 +30,35 @@ async function getRaffle(slug: string): Promise<RaffleDetail | undefined> {
 
     const worth = Number(draw.pricePerTicket) * draw.totalTickets;
 
+    const rawStatus = (draw.status || "ACTIVE").toUpperCase();
+    let status: RaffleStatus = "live";
+    if (rawStatus === "ENDED") {
+      status = "ended";
+    } else if (rawStatus === "PENDING_APPROVAL") {
+      status = "pending";
+    } else if (rawStatus === "DRAFT") {
+      status = "draft";
+    } else if (rawStatus === "CANCELLED") {
+      status = "cancelled";
+    } else if (draw.ticketsSold >= draw.totalTickets && draw.totalTickets > 0) {
+      status = "sold_out";
+    } else {
+      status = "live";
+    }
+
     return {
       id: draw.id,
       title: draw.title,
       slug: draw.slug || draw.id,
-      category: "Rifles", // static for now
-      status: draw.status === "ACTIVE" ? "live" : "ending_soon",
+      category: draw.category || "Competitions",
+      status,
+      rawStatus: draw.status,
       images: [draw.mainImage || "https://placehold.co/800x600/1a230a/8cb34a?text=No+Image"],
       ticketPrice: Number(draw.pricePerTicket),
       worthPrice: worth,
       totalPoolValue: worth,
-      minimumTickets: 1,
-      maximumTicketsPerOrder: 50,
+      minimumTickets: draw.minTickets || draw.minTicketsPerUser || 1,
+      maximumTicketsPerOrder: draw.maxTickets || draw.maxTicketsPerUser || 50,
       totalTickets: draw.totalTickets,
       soldTickets: draw.ticketsSold || 0,
       remainingTickets: Math.max(draw.totalTickets - (draw.ticketsSold || 0), 0),
@@ -115,10 +132,29 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
   }
 
   const soldPercent = raffle.totalTickets > 0 ? (raffle.soldTickets / raffle.totalTickets) : 0;
-  const badgeText = soldPercent > 0.9 ? "ALMOST GONE" : "HOT";
+  const badgeText =
+    raffle.status === "pending"
+      ? "PENDING APPROVAL"
+      : raffle.status === "draft"
+      ? "DRAFT PREVIEW"
+      : raffle.status === "ended"
+      ? "ENDED"
+      : raffle.status === "cancelled"
+      ? "CANCELLED"
+      : soldPercent > 0.9
+      ? "ALMOST GONE"
+      : "HOT";
 
   const getBadgeStyle = (text: string) => {
     switch (text.toUpperCase()) {
+      case "PENDING APPROVAL":
+        return "bg-amber-100 border-amber-300 text-amber-800 font-semibold";
+      case "DRAFT PREVIEW":
+        return "bg-blue-100 border-blue-300 text-blue-800 font-semibold";
+      case "ENDED":
+        return "bg-gray-100 border-gray-300 text-gray-700 font-semibold";
+      case "CANCELLED":
+        return "bg-red-100 border-red-300 text-red-700 font-semibold";
       case "ALMOST GONE":
         return "bg-amber-100 border-amber-300 text-amber-800 font-semibold";
       case "HOT":
@@ -154,6 +190,26 @@ export default async function LiveRaffleDetailPage({ params }: PageProps) {
       <WebsiteNavbar />
 
       <main className="min-h-screen flex flex-col bg-bg pt-20 md:pt-[68px]">
+        {/* Preview / Status Notification Banner */}
+        {raffle.status === "pending" && (
+          <div className="bg-amber-50 border-b border-amber-200 text-amber-900 py-3 px-4 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2">
+            <span>⚠️</span>
+            <span>This competition is pending admin approval and is in preview mode. Ticket purchasing is disabled until approved.</span>
+          </div>
+        )}
+        {raffle.status === "draft" && (
+          <div className="bg-blue-50 border-b border-blue-200 text-blue-900 py-3 px-4 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2">
+            <span>ℹ️</span>
+            <span>This competition is a draft preview and has not been submitted for approval yet.</span>
+          </div>
+        )}
+        {raffle.status === "ended" && (
+          <div className="bg-gray-100 border-b border-gray-300 text-gray-800 py-3 px-4 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2">
+            <span>🏁</span>
+            <span>This competition has ended. Ticket entries are closed.</span>
+          </div>
+        )}
+
         {/* Back Link Sub-header */}
         <div className="bg-[#FAF5FF] border-b border-[#E9D5FF] h-12 flex items-center shrink-0">
           <div className="container-custom flex items-center">
