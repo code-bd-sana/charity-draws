@@ -61,9 +61,18 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     // We proxy /api/v1 to the backend to avoid cross-origin cookie & CORS issues.
-    // If BACKEND_API_URL is set, we use it; otherwise fallback to localhost:5000/api/v1.
-    const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:5000/api/v1';
-    
+    const isProd = process.env.NODE_ENV === 'production';
+    const rawBackendUrl =
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      (isProd ? 'https://api.charitydraws.co.uk/api/v1' : 'http://localhost:5000/api/v1');
+
+    // In production, if backendUrl points to localhost/127.0.0.1, fallback to official production API
+    const backendUrl =
+      isProd && (rawBackendUrl.includes('localhost') || rawBackendUrl.includes('127.0.0.1'))
+        ? 'https://api.charitydraws.co.uk/api/v1'
+        : rawBackendUrl;
+
     // Ensure we don't end up with double slashes if backendUrl has a trailing slash
     const normalizedBackendUrl = backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl;
     const uploadsBaseUrl = normalizedBackendUrl.replace(/\/api\/v1\/?$/, '');

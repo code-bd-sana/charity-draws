@@ -483,9 +483,16 @@ export class RafflesService {
   }
 
   async findOnePublic(slug: string) {
+    const cleanSlug = decodeURIComponent(slug).trim();
     const raffle = await this.prisma.raffle.findFirst({
       where: {
-        OR: [{ slug }, { id: slug }],
+        OR: [
+          { slug: cleanSlug },
+          { id: cleanSlug },
+          { slug: { equals: cleanSlug, mode: 'insensitive' } },
+          { slug },
+          { id: slug },
+        ],
       },
       include: {
         host: { include: { user: true } },

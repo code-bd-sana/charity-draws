@@ -15,15 +15,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   let name = slug;
   try {
-    const apiUrl =
-      process.env.BACKEND_API_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      'http://localhost:5000/api/v1';
-    const res = await fetch(`${apiUrl}/hosts/public/${slug}`);
-    if (res.ok) {
-      const json = await res.json();
-      const host = json.data || json;
-      name = host.name;
+    const isProd = process.env.NODE_ENV === 'production';
+    const candidateUrls = [
+      process.env.BACKEND_API_URL,
+      process.env.NEXT_PUBLIC_API_URL,
+      isProd ? 'https://api.charitydraws.co.uk/api/v1' : 'http://localhost:5000/api/v1',
+      'https://api.charitydraws.co.uk/api/v1',
+      'http://127.0.0.1:5000/api/v1',
+    ].filter(Boolean) as string[];
+
+    for (const apiUrl of Array.from(new Set(candidateUrls.map(u => u.replace(/\/+$/, ''))))) {
+      try {
+        const res = await fetch(`${apiUrl}/hosts/public/${encodeURIComponent(slug)}`);
+        if (res.ok) {
+          const json = await res.json();
+          const host = json.data || json;
+          name = host.name;
+          break;
+        }
+      } catch (err) {}
     }
   } catch (e) {}
 
@@ -38,16 +48,26 @@ export default async function HostProfilePage({ params }: PageProps) {
   
   let host = null;
   try {
-    const apiUrl =
-      process.env.BACKEND_API_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      'http://localhost:5000/api/v1';
-    const res = await fetch(`${apiUrl}/hosts/public/${slug}`, {
-      cache: 'no-store'
-    });
-    if (res.ok) {
-      const json = await res.json();
-      host = json.data || json;
+    const isProd = process.env.NODE_ENV === 'production';
+    const candidateUrls = [
+      process.env.BACKEND_API_URL,
+      process.env.NEXT_PUBLIC_API_URL,
+      isProd ? 'https://api.charitydraws.co.uk/api/v1' : 'http://localhost:5000/api/v1',
+      'https://api.charitydraws.co.uk/api/v1',
+      'http://127.0.0.1:5000/api/v1',
+    ].filter(Boolean) as string[];
+
+    for (const apiUrl of Array.from(new Set(candidateUrls.map(u => u.replace(/\/+$/, ''))))) {
+      try {
+        const res = await fetch(`${apiUrl}/hosts/public/${encodeURIComponent(slug)}`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const json = await res.json();
+          host = json.data || json;
+          break;
+        }
+      } catch (err) {}
     }
   } catch (e) {
     console.error("Failed to fetch host", e);

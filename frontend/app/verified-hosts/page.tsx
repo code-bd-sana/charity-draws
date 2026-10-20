@@ -14,23 +14,33 @@ export const metadata: Metadata = {
 export default async function VerifiedHostsPage() {
   let verifiedHosts = [];
   try {
-    const apiUrl =
-      process.env.BACKEND_API_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      'http://localhost:5000/api/v1';
-    const res = await fetch(`${apiUrl}/hosts/verified`, {
-      cache: 'no-store'
-    });
-    if (res.ok) {
-      const json = await res.json();
-      const rawHosts = Array.isArray(json.data)
-        ? json.data
-        : Array.isArray(json)
-        ? json
-        : [];
-      verifiedHosts = rawHosts.filter(
-        (h: any) => h.isBlocked !== true && (h.isEmailVerified === undefined || h.isEmailVerified === true)
-      );
+    const isProd = process.env.NODE_ENV === 'production';
+    const candidateUrls = [
+      process.env.BACKEND_API_URL,
+      process.env.NEXT_PUBLIC_API_URL,
+      isProd ? 'https://api.charitydraws.co.uk/api/v1' : 'http://localhost:5000/api/v1',
+      'https://api.charitydraws.co.uk/api/v1',
+      'http://127.0.0.1:5000/api/v1',
+    ].filter(Boolean) as string[];
+
+    for (const apiUrl of Array.from(new Set(candidateUrls.map(u => u.replace(/\/+$/, ''))))) {
+      try {
+        const res = await fetch(`${apiUrl}/hosts/verified`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const rawHosts = Array.isArray(json.data)
+            ? json.data
+            : Array.isArray(json)
+            ? json
+            : [];
+          verifiedHosts = rawHosts.filter(
+            (h: any) => h.isBlocked !== true && (h.isEmailVerified === undefined || h.isEmailVerified === true)
+          );
+          break;
+        }
+      } catch (err) {}
     }
   } catch (err) {
     console.error("Failed to fetch verified hosts", err);
