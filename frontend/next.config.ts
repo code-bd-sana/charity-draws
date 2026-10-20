@@ -5,6 +5,34 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "api.charitydraws.co.uk",
+      },
+      {
+        protocol: "https",
+        hostname: "charitydraws.co.uk",
+      },
+      {
+        protocol: "https",
+        hostname: "**.charitydraws.co.uk",
+      },
+      {
+        protocol: "https",
+        hostname: "api.airsoftdraws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "airsoftdraws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.airsoftdraws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
       },
       {
@@ -20,6 +48,14 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "127.0.0.1",
         port: "5000",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
       },
     ],
   },
