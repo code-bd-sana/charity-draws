@@ -12,7 +12,7 @@ export const useLoginMutation = () => {
     onSuccess: (data: AuthResponse) => {
       if (data?.user) {
         queryClient.setQueryData(userKeys.all, data.user);
-        
+
         // Redirect to dashboard (dispatcher at /dashboard handles role-based routing)
         router.push('/dashboard');
       }
@@ -70,3 +70,5 @@ export const useLogout = () => {
     }
   };
 };
+
+// test
