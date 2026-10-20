@@ -19,86 +19,130 @@ interface PageProps {
 }
 
 async function getRaffle(slug: string): Promise<RaffleDetail | undefined> {
-  try {
-    const apiUrl = process.env.BACKEND_API_URL || 'http://127.0.0.1:5000/api/v1';
-    const res = await fetch(`${apiUrl}/raffles/public/${slug}`, {
-      cache: 'no-store' // or next: { revalidate: 60 }
-    });
-    if (!res.ok) return undefined;
-    const json = await res.json();
-    const draw = json.data || json; // Handle wrapped response
+  const decodedSlug = decodeURIComponent(slug).trim();
+  const slugsToTry = Array.from(new Set([decodedSlug, slug])).filter(Boolean);
 
-    const worth = Number(draw.pricePerTicket) * draw.totalTickets;
+  const customBackend = process.env.BACKEND_API_URL?.trim();
+  const publicApi = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const publicBackend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
-    const rawStatus = (draw.status || "ACTIVE").toUpperCase();
-    let status: RaffleStatus = "live";
-    if (rawStatus === "ENDED") {
-      status = "ended";
-    } else if (rawStatus === "PENDING_APPROVAL") {
-      status = "pending";
-    } else if (rawStatus === "DRAFT") {
-      status = "draft";
-    } else if (rawStatus === "CANCELLED") {
-      status = "cancelled";
-    } else if (draw.ticketsSold >= draw.totalTickets && draw.totalTickets > 0) {
-      status = "sold_out";
-    } else {
-      status = "live";
-    }
+  const isProd = process.env.NODE_ENV === "production";
+  const prodApiUrl = "https://api.charitydraws.co.uk/api/v1";
+  const localApiUrl = "http://127.0.0.1:5000/api/v1";
 
-    return {
-      id: draw.id,
-      title: draw.title,
-      slug: draw.slug || draw.id,
-      category: draw.category || "Competitions",
-      status,
-      rawStatus: draw.status,
-      images: [draw.mainImage || "https://placehold.co/800x600/1a230a/8cb34a?text=No+Image"],
-      ticketPrice: Number(draw.pricePerTicket),
-      worthPrice: worth,
-      totalPoolValue: worth,
-      minimumTickets: draw.minTickets || draw.minTicketsPerUser || 1,
-      maximumTicketsPerOrder: draw.maxTickets || draw.maxTicketsPerUser || 50,
-      totalTickets: draw.totalTickets,
-      soldTickets: draw.ticketsSold || 0,
-      remainingTickets: Math.max(draw.totalTickets - (draw.ticketsSold || 0), 0),
-      startDate: draw.startDate,
-      endDate: draw.endDate,
-      drawEndDate: formatUKDateTime(draw.endDate),
-      description: draw.description || `Enter this premium draw for a chance to win the ${draw.title}! Premium gear, fast shipping, and live draw.`,
-      highlights: [
-        `Main Prize: ${draw.title}`,
-        `Ticket Price: £${Number(draw.pricePerTicket).toFixed(2)}`,
-        draw.mainPrizeValue ? `Main Prize Value: £${Number(draw.mainPrizeValue).toLocaleString()}` : `Estimated Valuation: £${worth.toLocaleString()}`,
-        `Total Tickets: ${draw.totalTickets.toLocaleString()}`,
-        `Fast Track Delivery: Fully tracked and insured shipping included.`,
-      ],
-      terms: [
-        "This competition is open to UK residents aged 18 and over.",
-        "One entry per ticket purchased.",
-        "The promoter reserves the right to substitute any prize of equal or greater value.",
-        "All winners will be contacted by email within 48 hours of the draw.",
-        "Prizes are non-transferable and no cash alternative is offered.",
-        "By entering you agree to be bound by these terms and conditions.",
-        "Free postal entry: send your name and address on a postcard to: Charity Draws, PO Box 99, Manchester, M1 1AA."
-      ],
-      instantWinPrizes: draw.instantWins?.map((iw: any) => ({
-        id: iw.id,
-        title: iw.prizeName,
-        image: iw.image,
-        ticketNumber: iw.ticketNumber,
-        isClaimed: iw.isClaimed
-      })) || [],
-      isFeatured: false,
-      hostName: draw.host?.businessName?.trim() || "Verified Charity Partner",
-      hostLogo: (draw.host?.businessName?.trim()?.[0] || "C").toUpperCase(),
-      hostDrawsCount: 1,
-      hostVerified: true,
-      isAutoDraw: draw.isAutoDraw,
-    };
-  } catch (e) {
-    return undefined;
+  const candidateUrls: string[] = [];
+  if (customBackend) candidateUrls.push(customBackend);
+  if (publicApi) candidateUrls.push(publicApi);
+  if (publicBackend) candidateUrls.push(publicBackend);
+
+  if (isProd) {
+    candidateUrls.push(prodApiUrl);
+    candidateUrls.push(localApiUrl);
+  } else {
+    candidateUrls.push(localApiUrl);
+    candidateUrls.push(prodApiUrl);
   }
+
+  // Deduplicate and remove trailing slashes
+  const uniqueApiUrls = Array.from(
+    new Set(candidateUrls.map((u) => u.replace(/\/+$/, "")))
+  );
+
+  for (const apiUrl of uniqueApiUrls) {
+    for (const s of slugsToTry) {
+      try {
+        const res = await fetch(`${apiUrl}/raffles/public/${encodeURIComponent(s)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) continue;
+
+        const json = await res.json();
+        const draw = json.data || json;
+        if (!draw || (!draw.id && !draw.title)) continue;
+
+        const price = Number(draw.pricePerTicket) || 0;
+        const totalTickets = Number(draw.totalTickets) || 0;
+        const worth = price * totalTickets;
+
+        const rawStatus = (draw.status || "ACTIVE").toUpperCase();
+        let status: RaffleStatus = "live";
+        if (rawStatus === "ENDED") {
+          status = "ended";
+        } else if (rawStatus === "PENDING_APPROVAL") {
+          status = "pending";
+        } else if (rawStatus === "DRAFT") {
+          status = "draft";
+        } else if (rawStatus === "CANCELLED") {
+          status = "cancelled";
+        } else if (draw.ticketsSold >= totalTickets && totalTickets > 0) {
+          status = "sold_out";
+        } else {
+          status = "live";
+        }
+
+        const hostName =
+          draw.host?.businessName?.trim() ||
+          draw.businessName?.trim() ||
+          draw.hostName?.trim() ||
+          "Verified Charity Partner";
+
+        return {
+          id: draw.id,
+          title: draw.title,
+          slug: draw.slug || draw.id,
+          category: draw.category || "Competitions",
+          status,
+          rawStatus: draw.status,
+          images: [draw.mainImage || "https://placehold.co/800x600/1a230a/8cb34a?text=No+Image"],
+          ticketPrice: price,
+          worthPrice: worth,
+          totalPoolValue: worth,
+          minimumTickets: draw.minTickets || draw.minTicketsPerUser || 1,
+          maximumTicketsPerOrder: draw.maxTickets || draw.maxTicketsPerUser || 50,
+          totalTickets,
+          soldTickets: Number(draw.ticketsSold) || 0,
+          remainingTickets: Math.max(totalTickets - (Number(draw.ticketsSold) || 0), 0),
+          startDate: draw.startDate,
+          endDate: draw.endDate,
+          drawEndDate: formatUKDateTime(draw.endDate),
+          description: draw.description || `Enter this premium draw for a chance to win the ${draw.title}! Premium gear, fast shipping, and live draw.`,
+          highlights: [
+            `Main Prize: ${draw.title}`,
+            `Ticket Price: £${price.toFixed(2)}`,
+            draw.mainPrizeValue ? `Main Prize Value: £${Number(draw.mainPrizeValue).toLocaleString()}` : `Estimated Valuation: £${worth.toLocaleString()}`,
+            `Total Tickets: ${totalTickets.toLocaleString()}`,
+            `Fast Track Delivery: Fully tracked and insured shipping included.`,
+          ],
+          terms: [
+            "This competition is open to UK residents aged 18 and over.",
+            "One entry per ticket purchased.",
+            "The promoter reserves the right to substitute any prize of equal or greater value.",
+            "All winners will be contacted by email within 48 hours of the draw.",
+            "Prizes are non-transferable and no cash alternative is offered.",
+            "By entering you agree to be bound by these terms and conditions.",
+            "Free postal entry: send your name and address on a postcard to: Charity Draws, PO Box 99, Manchester, M1 1AA."
+          ],
+          instantWinPrizes: draw.instantWins?.map((iw: any) => ({
+            id: iw.id,
+            title: iw.prizeName,
+            image: iw.image,
+            ticketNumber: iw.ticketNumber,
+            isClaimed: iw.isClaimed
+          })) || [],
+          isFeatured: false,
+          hostName,
+          hostLogo: (hostName[0] || "C").toUpperCase(),
+          hostDrawsCount: 1,
+          hostVerified: true,
+          isAutoDraw: draw.isAutoDraw,
+        };
+      } catch (e) {
+        // Continue to try next candidate endpoint
+      }
+    }
+  }
+
+  return undefined;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
