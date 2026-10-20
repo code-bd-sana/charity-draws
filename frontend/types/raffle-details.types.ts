@@ -1,4 +1,4 @@
-export type RaffleStatus = "live" | "ending_soon" | "sold_out" | "ended";
+export type RaffleStatus = "live" | "ending_soon" | "sold_out" | "ended" | "pending" | "draft" | "cancelled";
 
 export type RaffleTabId = "details" | "how-to-enter" | "terms";
 
@@ -16,6 +16,7 @@ export interface RaffleDetail {
   slug: string;
   category: string;
   status: RaffleStatus;
+  rawStatus?: string;
   images: string[];
   ticketPrice: number;
   worthPrice?: number;

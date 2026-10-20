@@ -484,7 +484,9 @@ export class RafflesService {
 
   async findOnePublic(slug: string) {
     const raffle = await this.prisma.raffle.findFirst({
-      where: { slug, status: 'ACTIVE' },
+      where: {
+        OR: [{ slug }, { id: slug }],
+      },
       include: {
         host: { include: { user: true } },
         instantWins: true,

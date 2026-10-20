@@ -108,6 +108,15 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   const remainingTickets = Math.max(totalTickets - soldTickets, 0);
   const totalPrice = quantity * ticketPrice;
 
+  const isPurchaseDisabled =
+    timingStatus === 'UPCOMING' ||
+    timingStatus === 'ENDED' ||
+    raffle.status === 'ended' ||
+    raffle.status === 'pending' ||
+    raffle.status === 'draft' ||
+    raffle.status === 'cancelled' ||
+    remainingTickets === 0;
+
   const [inputQuantity, setInputQuantity] = useState(String(quantity));
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [ticketValidationError, setTicketValidationError] = useState<string | null>(null);
@@ -219,12 +228,27 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   };
 
   const validateConstraints = (): boolean => {
+    if (raffle.status === 'pending') {
+      setStatusMessage({ type: 'error', text: 'This competition is currently pending admin approval.' });
+      return false;
+    }
+
+    if (raffle.status === 'draft') {
+      setStatusMessage({ type: 'error', text: 'This competition is currently a draft preview.' });
+      return false;
+    }
+
+    if (raffle.status === 'cancelled') {
+      setStatusMessage({ type: 'error', text: 'This competition has been cancelled.' });
+      return false;
+    }
+
     if (timingStatus === 'UPCOMING') {
       setStatusMessage({ type: 'error', text: 'This competition has not started yet.' });
       return false;
     }
 
-    if (timingStatus === 'ENDED') {
+    if (timingStatus === 'ENDED' || raffle.status === 'ended') {
       setStatusMessage({ type: 'error', text: 'This competition has already ended.' });
       return false;
     }
@@ -281,12 +305,17 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
   };
 
   const handlePurchase = () => {
+    if (raffle.status === 'pending' || raffle.status === 'draft' || raffle.status === 'cancelled') {
+      setStatusMessage({ type: 'error', text: 'This competition is not open for ticket purchases.' });
+      return;
+    }
+
     if (timingStatus === 'UPCOMING') {
       setStatusMessage({ type: 'error', text: 'This competition has not started yet.' });
       return;
     }
 
-    if (timingStatus === 'ENDED') {
+    if (timingStatus === 'ENDED' || raffle.status === 'ended') {
       setStatusMessage({ type: 'error', text: 'This competition has already ended.' });
       return;
     }
@@ -411,7 +440,10 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
               <button
                 key={num}
                 onClick={() => handleQuickPick(num)}
-                className={`h-10 rounded-xl font-sans font-bold text-xs transition-all cursor-pointer ${
+                disabled={isPurchaseDisabled}
+                className={`h-10 rounded-xl font-sans font-bold text-xs transition-all ${
+                  isPurchaseDisabled ? "opacity-40 cursor-not-allowed bg-muted border border-border" : "cursor-pointer"
+                } ${
                   quantity === num 
                     ? "bg-[#7131C8] border border-[#7131C8] text-white shadow-sm" 
                     : "bg-[#FBF8FF] border border-[#E9D5FF] text-[#524B63] hover:border-[#7131C8] hover:text-[#7131C8]"
@@ -428,9 +460,9 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
         } border rounded-xl overflow-hidden mt-1 transition-all`}>
           <button 
             onClick={handleDecrement}
-            disabled={quantity <= minTickets}
-            className={`w-11 h-full flex items-center justify-center bg-[#F3E8FF] text-[#7131C8] font-bold transition-colors cursor-pointer ${
-              quantity <= minTickets ? "opacity-35 cursor-not-allowed" : "hover:bg-[#E9D5FF]"
+            disabled={isPurchaseDisabled || quantity <= minTickets}
+            className={`w-11 h-full flex items-center justify-center bg-[#F3E8FF] text-[#7131C8] font-bold transition-colors ${
+              isPurchaseDisabled || quantity <= minTickets ? "opacity-35 cursor-not-allowed" : "hover:bg-[#E9D5FF] cursor-pointer"
             }`}
           >
             -
@@ -441,6 +473,7 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
             pattern="[0-9]*"
             value={inputQuantity}
             onChange={handleQuantityInputChange}
+            disabled={isPurchaseDisabled}
             onFocus={() => setIsInputFocused(true)}
             onBlur={handleQuantityInputBlur}
             onKeyDown={(e) => {
@@ -452,17 +485,17 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
               ticketValidationError ? "text-red-700" : "text-[#2E0B57]"
             } border-x ${
               ticketValidationError ? "border-red-300" : "border-[#E9D5FF]"
-            } focus:outline-none focus:bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none no-spinner px-2 transition-colors`}
+            } ${isPurchaseDisabled ? "opacity-50 cursor-not-allowed" : ""} focus:outline-none focus:bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none no-spinner px-2 transition-colors`}
             aria-label="Ticket quantity"
             title="Directly enter ticket quantity"
           />
           <button 
             onClick={handleIncrement}
-            disabled={(maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets}
-            className={`w-11 h-full flex items-center justify-center bg-[#F3E8FF] text-[#7131C8] font-bold transition-colors cursor-pointer ${
-              (maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets
+            disabled={isPurchaseDisabled || (maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets}
+            className={`w-11 h-full flex items-center justify-center bg-[#F3E8FF] text-[#7131C8] font-bold transition-colors ${
+              isPurchaseDisabled || (maxTickets !== null && quantity >= maxTickets) || quantity >= remainingTickets
                 ? "opacity-35 cursor-not-allowed"
-                : "hover:bg-[#E9D5FF]"
+                : "hover:bg-[#E9D5FF] cursor-pointer"
             }`}
           >
             +
@@ -487,14 +520,35 @@ export default function RaffleEntryCard({ raffle }: RaffleEntryCardProps) {
           <span className="font-heading font-extrabold text-xl text-[#7131C8]">£{totalPrice.toFixed(2)}</span>
         </div>
 
-        {timingStatus === 'UPCOMING' ? (
+        {raffle.status === 'pending' ? (
+          <button 
+            disabled={true}
+            className="w-full h-12 rounded-xl font-heading font-semibold text-sm bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed flex items-center justify-center shadow-sm"
+          >
+            Pending Admin Approval
+          </button>
+        ) : raffle.status === 'draft' ? (
+          <button 
+            disabled={true}
+            className="w-full h-12 rounded-xl font-heading font-semibold text-sm bg-blue-50 text-blue-700 border border-blue-200 cursor-not-allowed flex items-center justify-center shadow-sm"
+          >
+            Draft Preview Only
+          </button>
+        ) : raffle.status === 'cancelled' ? (
+          <button 
+            disabled={true}
+            className="w-full h-12 rounded-xl font-heading font-semibold text-sm bg-red-50 text-red-700 border border-red-200 cursor-not-allowed flex items-center justify-center shadow-sm"
+          >
+            Competition Cancelled
+          </button>
+        ) : timingStatus === 'UPCOMING' ? (
           <button 
             disabled={true}
             className="w-full h-12 rounded-xl font-heading font-semibold text-sm bg-[#F3E8FF] text-[#7131C8] border border-[#D8B4FE] cursor-not-allowed flex items-center justify-center shadow-sm"
           >
             Draw Starts {startDate ? formatUKDate(startDate) : "Soon"}
           </button>
-        ) : timingStatus === 'ENDED' ? (
+        ) : timingStatus === 'ENDED' || raffle.status === 'ended' ? (
           <button 
             disabled={true}
             className="w-full h-12 rounded-xl font-heading font-semibold text-sm bg-[#F3F4F6] text-[#9CA3AF] border border-[#E5E7EB] cursor-not-allowed flex items-center justify-center shadow-sm"
