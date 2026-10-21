@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { raffleService } from "../../../services/raffle.service";
+import { useDraggableModal } from "../../../hooks/useDraggableModal";
 
 export interface SoldTicket {
   id: string;
@@ -47,6 +48,15 @@ export default function ManualWinnerSelectModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [winnerResult, setWinnerResult] = useState<any | null>(null);
+
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isOpen, { resetKey: raffle?.id });
 
   useEffect(() => {
     if (isOpen && raffle.id) {
@@ -111,36 +121,80 @@ export default function ManualWinnerSelectModal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] select-none">
       {/* Dark Overlay Backdrop */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Card */}
-      <div className="relative w-[95vw] sm:max-w-[540px] md:max-w-[620px] bg-[#111210] border border-[#2D3C13] rounded-[20px] p-5 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.8)] flex flex-col gap-5 z-10 max-h-[85vh] overflow-y-auto custom-scrollbar select-none">
-        {/* Header Row */}
-        <div className="flex items-start justify-between border-b border-[#2D3C13] pb-4 shrink-0">
-          <div className="flex flex-col gap-1 pr-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🏆</span>
-              <h3 className="font-heading font-bold text-[18px] sm:text-[20px] text-[#E8EDD4]">
-                Winner Selection
-              </h3>
+      {/* Draggable Modal Card */}
+      <div
+        ref={modalRef}
+        style={modalStyle}
+        className={`fixed top-1/2 left-1/2 w-[95vw] sm:max-w-[540px] md:max-w-[620px] bg-[#111210] border border-[#2D3C13] rounded-[20px] p-5 sm:p-7 ${
+          isDragging ? "shadow-2xl ring-2 ring-[#8CB34A]/50 select-none" : "shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
+        } flex flex-col gap-5 z-10 max-h-[85vh] overflow-y-auto custom-scrollbar select-none animate-fadeIn`}
+      >
+        {/* Header Row - Draggable Bar */}
+        <div
+          {...dragHandleProps}
+          title="Click and drag to move window • Double-click to re-center"
+          className="flex items-start justify-between border-b border-[#2D3C13] pb-4 shrink-0 cursor-grab active:cursor-grabbing select-none"
+        >
+          <div className="flex items-start gap-3 pr-2">
+            <div className="p-1 rounded text-[#8CB34A] opacity-70 shrink-0 mt-0.5">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+              </svg>
             </div>
-            <p className="font-sans text-[12px] text-[#72943A]">
-              {raffle.title}
-            </p>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🏆</span>
+                <h3 className="font-heading font-bold text-[18px] sm:text-[20px] text-[#E8EDD4]">
+                  Winner Selection
+                </h3>
+              </div>
+              <p className="font-sans text-[12px] text-[#72943A]">
+                {raffle.title}
+              </p>
+              {isMoved && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    resetPosition();
+                  }}
+                  className="text-[11px] text-[#8CB34A] hover:underline font-semibold cursor-pointer text-left"
+                >
+                  (Reset position to center)
+                </button>
+              )}
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-button text-[#72943A] hover:text-[#E8EDD4] hover:bg-[#1A230A] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shrink-0"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            {isMoved && (
+              <button
+                type="button"
+                onClick={resetPosition}
+                title="Reset window to center"
+                className="p-1.5 rounded-button text-[#72943A] hover:text-[#E8EDD4] hover:bg-[#1A230A] transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center cursor-pointer text-xs"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-button text-[#72943A] hover:text-[#E8EDD4] hover:bg-[#1A230A] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer shrink-0"
+              aria-label="Close modal"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Competition Info Badges */}

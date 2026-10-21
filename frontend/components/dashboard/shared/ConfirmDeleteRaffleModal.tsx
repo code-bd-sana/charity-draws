@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useDraggableModal } from "../../../hooks/useDraggableModal";
 
 export interface RaffleDeleteTarget {
   id: string;
@@ -33,6 +34,14 @@ export default function ConfirmDeleteRaffleModal({
   isLoading = false,
   raffle,
 }: ConfirmDeleteRaffleModalProps) {
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isOpen, { resetKey: raffle?.id });
 
   // Close on Escape key press
   useEffect(() => {
@@ -65,27 +74,73 @@ export default function ConfirmDeleteRaffleModal({
   const hostEmail = raffle.host?.user?.email || null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 select-none">
+    <div className="fixed inset-0 z-[9999] select-none">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-text-primary/40 backdrop-blur-sm transition-opacity animate-fadeIn"
         onClick={!isLoading ? onClose : undefined}
       />
 
-      {/* Modal Box */}
-      <div className="relative w-full max-w-[460px] bg-surface border border-border rounded-card shadow-2xl z-10 animate-scaleUp overflow-hidden flex flex-col p-6 sm:p-8">
-        
-        {/* Close Button */}
-        <button
-          onClick={!isLoading ? onClose : undefined}
-          disabled={isLoading}
-          className="absolute top-5 right-5 text-text-muted hover:text-text-primary transition-colors p-1.5 rounded-lg hover:bg-accent-bg disabled:opacity-50 cursor-pointer"
-          aria-label="Close modal"
+      {/* Draggable Modal Box */}
+      <div
+        ref={modalRef}
+        style={modalStyle}
+        className={`fixed top-1/2 left-1/2 w-[90vw] max-w-[460px] bg-surface border border-border rounded-card ${
+          isDragging ? "shadow-2xl ring-2 ring-red-500/40 select-none" : "shadow-2xl"
+        } z-10 animate-scaleUp overflow-hidden flex flex-col p-6 sm:p-8`}
+      >
+        {/* Header Drag Bar */}
+        <div
+          {...dragHandleProps}
+          title="Click and drag to move window • Double-click to re-center"
+          className="flex items-center justify-between -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 px-6 sm:px-8 py-3 bg-accent-bg/40 border-b border-border mb-5 cursor-grab active:cursor-grabbing select-none"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-text-muted opacity-70" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+            </svg>
+            <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+              Move Window
+            </span>
+            {isMoved && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetPosition();
+                }}
+                className="text-[11px] text-text-brand hover:underline font-semibold ml-1 cursor-pointer"
+              >
+                (Reset)
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1">
+            {isMoved && (
+              <button
+                type="button"
+                onClick={resetPosition}
+                title="Reset window to center"
+                className="p-1 rounded text-text-muted hover:text-text-brand hover:bg-accent-bg cursor-pointer text-xs"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={!isLoading ? onClose : undefined}
+              disabled={isLoading}
+              className="text-text-muted hover:text-text-primary transition-colors p-1 rounded hover:bg-accent-bg disabled:opacity-50 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
         {/* Warning Icon Badge */}
         <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mb-5 shadow-sm shrink-0">

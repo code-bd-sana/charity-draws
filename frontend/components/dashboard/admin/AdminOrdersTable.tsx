@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import ProcessRefundModal, { OrderData } from "./ProcessRefundModal";
+import AdminOrderDetailModal from "./AdminOrderDetailModal";
 import { useAdminOrders } from "../../../hooks/useAdminHooks";
 import EmptyState from "../../ui/EmptyState";
 
@@ -9,12 +10,19 @@ export default function AdminOrdersTable() {
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [detailOrder, setDetailOrder] = useState<OrderData | null>(null);
 
   const { data: response, isLoading } = useAdminOrders({ page, limit: 10 });
 
   const handleRefund = (order: OrderData) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
+  };
+
+  const handleViewDetails = (order: OrderData) => {
+    setDetailOrder(order);
+    setIsDetailModalOpen(true);
   };
 
   const getStatusPill = (status: string) => {
@@ -81,7 +89,14 @@ export default function AdminOrdersTable() {
               orders.map((order: OrderData, i: number) => (
                 <tr key={order.id} className={`${i !== orders.length - 1 ? 'border-b border-divider' : ''} hover:bg-accent-bg/30 transition-colors`}>
                   <td className="py-4 px-6">
-                    <span className="font-sans font-semibold text-[13px] text-text-brand">#{order.orderId || order.id.slice(-6).toUpperCase()}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleViewDetails(order)}
+                      className="font-sans font-semibold text-[13px] text-text-brand hover:underline cursor-pointer"
+                      title="View Details"
+                    >
+                      #{order.orderId || order.id.slice(-6).toUpperCase()}
+                    </button>
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
@@ -114,8 +129,14 @@ export default function AdminOrdersTable() {
                     <span className="font-sans text-[13px] text-text-muted font-medium">{formatDate(order.date)}</span>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="flex items-center justify-end gap-4">
-                      <button className="text-text-muted hover:text-text-brand transition-colors cursor-pointer" title="View Details">
+                    <div className="flex items-center justify-end gap-3">
+                      <button 
+                        type="button"
+                        onClick={() => handleViewDetails(order)}
+                        className="text-text-muted hover:text-text-brand p-1.5 rounded-button hover:bg-accent-bg transition-colors cursor-pointer" 
+                        title="View Order Details"
+                        aria-label="View Order Details"
+                      >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -168,6 +189,13 @@ export default function AdminOrdersTable() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         order={selectedOrder} 
+      />
+
+      <AdminOrderDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        order={detailOrder}
+        onRefundClick={handleRefund}
       />
     </div>
   );

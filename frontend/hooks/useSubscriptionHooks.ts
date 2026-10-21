@@ -35,6 +35,18 @@ export const useCancelSubscriptionMutation = () => {
   });
 };
 
+export const useCancelSubscriptionAdminMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (subscriptionId: string) => subscriptionService.cancelSubscriptionAdmin(subscriptionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminAll() });
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.adminStats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.overviewStats() });
+    },
+  });
+};
+
 export const useAllSubscriptionsAdmin = () => {
   return useQuery({
     queryKey: subscriptionKeys.adminAll(),

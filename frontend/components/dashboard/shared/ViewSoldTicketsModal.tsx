@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { raffleService } from "../../../services/raffle.service";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useDraggableModal } from "../../../hooks/useDraggableModal";
 
 export interface TicketDetail {
   id: string;
@@ -49,6 +50,15 @@ export default function ViewSoldTicketsModal({
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isOpen, { resetKey: raffle?.id });
 
   useEffect(() => {
     if (isOpen && raffle?.id) {
@@ -167,27 +177,74 @@ export default function ViewSoldTicketsModal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-[95vw] sm:max-w-[540px] md:max-w-4xl max-h-[85vh] bg-[#161810] border border-[#2D3C13] rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden text-[#E8EDD4] select-none">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-[#2D3C13] bg-[#111210] shrink-0">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]">
-                🎟️ Ticket Details
-              </span>
-              <h2 className="font-heading font-bold text-base sm:text-lg text-[#E8EDD4] truncate max-w-[280px] sm:max-w-[450px]">
-                {raffle.title}
-              </h2>
+    <div className="fixed inset-0 z-50 select-none">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-fadeIn transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Draggable Modal Card */}
+      <div
+        ref={modalRef}
+        style={modalStyle}
+        className={`fixed top-1/2 left-1/2 w-[95vw] sm:max-w-[540px] md:max-w-4xl max-h-[85vh] bg-[#161810] border border-[#2D3C13] rounded-[20px] ${
+          isDragging ? "shadow-2xl ring-2 ring-[#8CB34A]/50 select-none" : "shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+        } flex flex-col overflow-hidden text-[#E8EDD4] select-none z-10 animate-fadeIn`}
+      >
+        {/* Header - Draggable Bar */}
+        <div
+          {...dragHandleProps}
+          title="Click and drag to move window • Double-click to re-center"
+          className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-[#2D3C13] bg-[#111210] shrink-0 cursor-grab active:cursor-grabbing select-none"
+        >
+          <div className="flex items-center gap-3 min-w-0 pr-2">
+            <div className="p-1 rounded text-[#8CB34A] opacity-70 shrink-0">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+              </svg>
             </div>
-            <p className="font-sans text-xs text-[#72943A]">
-              Total Sold: <strong className="text-[#E8EDD4]">{tickets.length}</strong> / {raffle.totalTickets} tickets
-              {raffle.pricePerTicket && ` • £${Number(raffle.pricePerTicket).toFixed(2)} per ticket`}
-            </p>
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]">
+                  🎟️ Ticket Details
+                </span>
+                <h2 className="font-heading font-bold text-base sm:text-lg text-[#E8EDD4] truncate max-w-[240px] sm:max-w-[400px]">
+                  {raffle.title}
+                </h2>
+                {isMoved && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      resetPosition();
+                    }}
+                    className="text-[11px] text-[#8CB34A] hover:underline font-semibold cursor-pointer"
+                  >
+                    (Reset position)
+                  </button>
+                )}
+              </div>
+              <p className="font-sans text-xs text-[#72943A]">
+                Total Sold: <strong className="text-[#E8EDD4]">{tickets.length}</strong> / {raffle.totalTickets} tickets
+                {raffle.pricePerTicket && ` • £${Number(raffle.pricePerTicket).toFixed(2)} per ticket`}
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {isMoved && (
+              <button
+                type="button"
+                onClick={resetPosition}
+                title="Reset window to center"
+                className="p-1.5 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] text-[#72943A] hover:text-[#E8EDD4] cursor-pointer text-xs min-h-[38px] min-w-[38px] flex items-center justify-center"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            )}
             <button
               onClick={handleExportCSV}
               disabled={tickets.length === 0}

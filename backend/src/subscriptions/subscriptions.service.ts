@@ -98,11 +98,35 @@ export class SubscriptionsService {
   }
 
   async getAllSubscriptions() {
+    // Auto-expire subscriptions whose endDate has passed
+    await this.prisma.hostSubscription.updateMany({
+      where: {
+        status: 'ACTIVE',
+        endDate: { lt: new Date() },
+      },
+      data: {
+        status: 'EXPIRED',
+      },
+    });
+
     const subscriptions = await this.prisma.hostSubscription.findMany({
       include: {
         plan: true,
         host: {
-          include: { user: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                phone: true,
+                role: true,
+                isBlocked: true,
+              },
+            },
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -119,39 +143,81 @@ export class SubscriptionsService {
     );
   }
 
+  async cancelSubscriptionAdmin(subscriptionId: string) {
+    const sub = await this.prisma.hostSubscription.findUnique({
+      where: { id: subscriptionId },
+    });
+    if (!sub) {
+      throw new NotFoundException('Subscription not found');
+    }
+
+    return this.prisma.hostSubscription.update({
+      where: { id: subscriptionId },
+      data: { status: 'CANCELLED' },
+    });
+  }
+
   async getAdminStats() {
-    // Get all active subscriptions
-    const activeSubscriptions = await this.prisma.hostSubscription.findMany({
-      where: { status: 'ACTIVE' },
-      include: { plan: true },
+    // Auto-expire subscriptions whose endDate has passed
+    await this.prisma.hostSubscription.updateMany({
+      where: {
+        status: 'ACTIVE',
+        endDate: { lt: new Date() },
+      },
+      data: {
+        status: 'EXPIRED',
+      },
     });
 
+    // Fetch active subscriptions, total count, and all plans
+    const [allSubscriptions, activeSubscriptions, allPlans] = await Promise.all([
+      this.prisma.hostSubscription.findMany({
+        include: { plan: true },
+      }),
+      this.prisma.hostSubscription.findMany({
+        where: { status: 'ACTIVE' },
+        include: { plan: true },
+      }),
+      this.prisma.subscriptionPlan.findMany({
+        orderBy: { price: 'asc' },
+      }),
+    ]);
+
     let mrr = 0;
+    let paidActive = 0;
+    let freeActive = 0;
     const planCounts: Record<string, number> = {};
     const planNames: Record<string, string> = {};
 
-    activeSubscriptions.forEach((sub) => {
-      // Calculate MRR (assuming price is per month)
-      if (sub.plan && sub.plan.price) {
-        mrr += Number(sub.plan.price);
-      }
-
-      // Count plans
-      const planId = sub.planId;
-      if (!planCounts[planId]) {
-        planCounts[planId] = 0;
-        planNames[planId] = sub.plan?.name || 'Unknown';
-      }
-      planCounts[planId]++;
+    // Initialize all existing plans with 0 count
+    allPlans.forEach((p) => {
+      planCounts[p.id] = 0;
+      planNames[p.id] = p.name;
     });
 
-    // Format plan distribution for the pie chart
+    activeSubscriptions.forEach((sub) => {
+      const price = Number(sub.plan?.price || 0);
+      mrr += price;
+      if (price > 0) {
+        paidActive++;
+      } else {
+        freeActive++;
+      }
+
+      const planId = sub.planId;
+      planCounts[planId] = (planCounts[planId] || 0) + 1;
+      if (sub.plan?.name) {
+        planNames[planId] = sub.plan.name;
+      }
+    });
+
     const totalActive = activeSubscriptions.length;
     const planDistribution = Object.keys(planCounts).map((planId) => {
       const count = planCounts[planId];
       const percentage =
         totalActive > 0 ? Math.round((count / totalActive) * 100) : 0;
       return {
+        id: planId,
         name: planNames[planId],
         value: count,
         percentage: `${percentage}%`,
@@ -159,8 +225,11 @@ export class SubscriptionsService {
     });
 
     return {
-      mrr,
+      mrr: Number(mrr.toFixed(2)),
       totalActive,
+      totalSubscriptions: allSubscriptions.length,
+      paidActive,
+      freeActive,
       planDistribution,
     };
   }

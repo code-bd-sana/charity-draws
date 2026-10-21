@@ -45,8 +45,8 @@ export class AdminOrdersService {
 
     const mappedOrders = transactions.map((tx) => {
       const ticketsCount = tx.tickets?.length || 0;
-      const competitionName =
-        ticketsCount > 0 ? tx.tickets[0].raffle.title : 'Unknown Competition';
+      const raffle = tx.tickets?.[0]?.raffle;
+      const competitionName = raffle?.title || 'Unknown Competition';
 
       let buyerName = 'Unknown Buyer';
       let buyerInitials = 'U';
@@ -64,10 +64,17 @@ export class AdminOrdersService {
           tx.gatewayTransactionId?.substring(0, 8) || tx.id.substring(0, 8),
         buyerName,
         buyerInitials,
+        buyerEmail: tx.user?.email || 'N/A',
+        buyerPhone: tx.user?.phone || 'N/A',
         competition: competitionName,
+        competitionId: raffle?.id || null,
+        competitionSlug: raffle?.slug || null,
         tickets: ticketsCount,
+        ticketNumbers: tx.tickets?.map((t) => t.ticketNumber) || [],
         amount: Number(tx.amount),
         payment: tx.paymentGateway || 'Card',
+        gatewayTransactionId: tx.gatewayTransactionId || null,
+        adminNotes: tx.adminNotes || null,
         status:
           tx.status === 'COMPLETED'
             ? 'Paid'
@@ -84,6 +91,64 @@ export class AdminOrdersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getOrderById(id: string) {
+    const tx = await this.prisma.transaction.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        tickets: {
+          include: {
+            raffle: true,
+          },
+        },
+      },
+    });
+
+    if (!tx) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const ticketsCount = tx.tickets?.length || 0;
+    const raffle = tx.tickets?.[0]?.raffle;
+    const competitionName = raffle?.title || 'Unknown Competition';
+
+    let buyerName = 'Unknown Buyer';
+    let buyerInitials = 'U';
+
+    if (tx.user) {
+      buyerName =
+        `${tx.user.firstName || ''} ${tx.user.lastName || ''}`.trim() ||
+        tx.user.email;
+      buyerInitials = buyerName.substring(0, 2).toUpperCase();
+    }
+
+    return {
+      id: tx.id,
+      orderId:
+        tx.gatewayTransactionId?.substring(0, 8) || tx.id.substring(0, 8),
+      buyerName,
+      buyerInitials,
+      buyerEmail: tx.user?.email || 'N/A',
+      buyerPhone: tx.user?.phone || 'N/A',
+      competition: competitionName,
+      competitionId: raffle?.id || null,
+      competitionSlug: raffle?.slug || null,
+      tickets: ticketsCount,
+      ticketNumbers: tx.tickets?.map((t) => t.ticketNumber) || [],
+      amount: Number(tx.amount),
+      payment: tx.paymentGateway || 'Card',
+      gatewayTransactionId: tx.gatewayTransactionId || null,
+      adminNotes: tx.adminNotes || null,
+      status:
+        tx.status === 'COMPLETED'
+          ? 'Paid'
+          : tx.status === 'REFUNDED'
+            ? 'Refunded'
+            : 'Failed',
+      date: tx.createdAt.toISOString(),
     };
   }
 
