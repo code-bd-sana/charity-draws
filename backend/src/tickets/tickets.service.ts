@@ -390,41 +390,137 @@ export class TicketsService {
     };
   }
 
-  async getUserTickets(userId: string) {
-    return this.prisma.ticket.findMany({
-      where: { userId },
-      include: {
-        raffle: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            mainImage: true,
-            endDate: true,
-            status: true,
-            prizeName: true,
-            description: true,
-            pricePerTicket: true,
-            totalTickets: true,
-            ticketsSold: true,
-            instantWins: true,
-            host: {
-              include: { user: true },
-            },
-          },
-        },
-        winners: true,
-        transaction: {
-          select: {
-            id: true,
-            paymentGateway: true,
-            amount: true,
-            createdAt: true,
+  async getUserTickets(
+    userId: string,
+    query?: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      search?: string;
+    },
+  ) {
+    const includeQuery = {
+      raffle: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          mainImage: true,
+          endDate: true,
+          status: true,
+          prizeName: true,
+          description: true,
+          pricePerTicket: true,
+          totalTickets: true,
+          ticketsSold: true,
+          instantWins: true,
+          host: {
+            include: { user: true },
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
-    });
+      winners: true,
+      transaction: {
+        select: {
+          id: true,
+          paymentGateway: true,
+          amount: true,
+          createdAt: true,
+        },
+      },
+    };
+
+    if (!query) {
+      return this.prisma.ticket.findMany({
+        where: { userId },
+        include: includeQuery,
+        orderBy: { createdAt: 'desc' },
+      });
+    }
+
+    const where: any = { userId };
+
+    if (query.search && query.search.trim()) {
+      const s = query.search.trim();
+      const numericTicket = parseInt(s.replace(/^#?TKT-?/i, ''), 10);
+      if (!isNaN(numericTicket)) {
+        where.OR = [
+          { ticketNumber: numericTicket },
+          { raffle: { title: { contains: s, mode: 'insensitive' } } },
+        ];
+      } else {
+        where.raffle = {
+          title: { contains: s, mode: 'insensitive' },
+        };
+      }
+    }
+
+    if (query.status && query.status !== 'all') {
+      if (query.status === 'live') {
+        where.raffle = {
+          ...(where.raffle || {}),
+          status: { not: 'ENDED' },
+        };
+      } else if (query.status === 'instant-win') {
+        where.winners = {
+          some: { winType: 'INSTANT_WIN' },
+        };
+      } else if (query.status === 'drawn-won') {
+        where.raffle = {
+          ...(where.raffle || {}),
+          status: 'ENDED',
+        };
+        where.winners = {
+          some: {},
+        };
+      } else if (query.status === 'drawn-lost') {
+        where.raffle = {
+          ...(where.raffle || {}),
+          status: 'ENDED',
+        };
+        where.winners = {
+          none: {},
+        };
+      }
+    }
+
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.max(1, Math.min(100, query.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const [tickets, totalCount, totalOwned, activeTickets, wonTickets] =
+      await Promise.all([
+        this.prisma.ticket.findMany({
+          where,
+          include: includeQuery,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        this.prisma.ticket.count({ where }),
+        this.prisma.ticket.count({ where: { userId } }),
+        this.prisma.ticket.count({
+          where: { userId, raffle: { status: { not: 'ENDED' } } },
+        }),
+        this.prisma.ticket.count({
+          where: { userId, winners: { some: {} } },
+        }),
+      ]);
+
+    return {
+      tickets,
+      pagination: {
+        total: totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit) || 1,
+      },
+      stats: {
+        totalOwned,
+        activeTickets,
+        wonTickets,
+      },
+    };
   }
 
   async createCashflowsTicketCheckout(

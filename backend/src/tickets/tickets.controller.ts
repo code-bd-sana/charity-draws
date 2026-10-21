@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Body,
+  Query,
   UseGuards,
   Req,
   UnauthorizedException,
@@ -18,6 +19,7 @@ import {
   ApiOperation,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
@@ -98,10 +100,35 @@ export class TicketsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all tickets purchased by the current user' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'status', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiResponse({ status: 200, description: 'List of purchased tickets' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getMyTickets(@Req() req: Request) {
+  async getMyTickets(
+    @Req() req: Request,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+  ) {
     const userId = this.extractUserId(req);
+    const hasParams =
+      page !== undefined ||
+      limit !== undefined ||
+      status !== undefined ||
+      search !== undefined;
+
+    if (hasParams) {
+      return this.ticketsService.getUserTickets(userId, {
+        page: page ? parseInt(page, 10) : 1,
+        limit: limit ? parseInt(limit, 10) : 10,
+        status,
+        search,
+      });
+    }
+
     return this.ticketsService.getUserTickets(userId);
   }
 }

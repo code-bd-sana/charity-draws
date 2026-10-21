@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Ticket } from "./TicketsTable";
 import { formatUKDateTime } from "../../lib/uk-date";
+import { useDraggableModal } from "../../hooks/useDraggableModal";
 
 interface CompetitionDetailsModalProps {
   isOpen: boolean;
@@ -19,6 +20,15 @@ export default function CompetitionDetailsModal({
   allTickets = [],
 }: CompetitionDetailsModalProps) {
   const [mounted, setMounted] = useState(false);
+
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isOpen, { resetKey: ticket?.id });
 
   useEffect(() => {
     setMounted(true);
@@ -76,48 +86,83 @@ export default function CompetitionDetailsModal({
   const hostName = raffle.host?.user ? `${raffle.host.user.firstName} ${raffle.host.user.lastName}` : "Host";
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-      {/* Modal Container */}
-      <div className="bg-surface border border-border rounded-card w-full max-w-[900px] max-h-[90vh] overflow-y-auto shadow-card flex flex-col relative z-[10000] animate-slideUp custom-scrollbar select-none">
-        
-        {/* Header Bar */}
-        <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 bg-surface z-10">
-          <div className="flex items-center gap-3">
-            <button 
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Draggable Modal Container */}
+      <div
+        ref={modalRef}
+        style={modalStyle}
+        className={`fixed top-1/2 left-1/2 w-[95vw] max-w-[900px] max-h-[90vh] bg-surface border border-border rounded-card ${
+          isDragging ? "shadow-2xl ring-2 ring-primary/40 select-none" : "shadow-card"
+        } z-[9999] animate-fadeIn flex flex-col font-sans select-none overflow-hidden`}
+      >
+        {/* Draggable Header Bar */}
+        <div
+          {...dragHandleProps}
+          title="Click and drag to move window • Double-click to re-center"
+          className={`flex items-center justify-between px-5 py-4 border-b border-border bg-accent-bg/30 shrink-0 select-none cursor-grab active:cursor-grabbing transition-colors ${
+            isDragging ? "bg-accent-bg/60" : ""
+          }`}
+        >
+          <div className="flex items-center gap-3 min-w-0 pr-4">
+            <div className="p-1 rounded text-text-muted opacity-70 shrink-0">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+              </svg>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0">
+              <h2 className="font-heading font-bold text-[16px] text-text-primary line-clamp-1 max-w-[200px] sm:max-w-xs leading-tight">
+                {raffle.title}
+              </h2>
+              <span className="font-sans text-[12px] text-text-muted font-medium hidden sm:block truncate">
+                {ticket.ticketId} • Hosted by {hostName}
+              </span>
+              {isMoved && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    resetPosition();
+                  }}
+                  className="text-[11px] text-text-brand hover:underline font-semibold cursor-pointer shrink-0"
+                >
+                  (Reset position)
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div
+              className={`px-2.5 py-0.5 rounded-badge border shadow-sm ${
+                raffle.status === "ACTIVE"
+                  ? "border-amber-200 bg-amber-50 text-amber-700"
+                  : "border-red-200 bg-red-50 text-red-700"
+              }`}
+            >
+              <span className="font-sans font-semibold text-[10px] uppercase tracking-wide">
+                {raffle.status === "ACTIVE" ? "Live" : raffle.status}
+              </span>
+            </div>
+            <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-accent-bg border border-border-medium flex items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-surface border border-border hover:bg-accent-bg flex items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+              title="Close"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-              <h2 className="font-heading font-bold text-[15px] text-text-primary line-clamp-1 max-w-[200px] sm:max-w-xs">
-                {raffle.title}
-              </h2>
-              <span className="font-sans text-[13px] text-text-muted font-medium hidden sm:block">
-                {ticket.ticketId} • Hosted by {hostName}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <button className="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-button bg-surface border border-border hover:bg-accent-bg text-text-muted hover:text-text-primary font-sans font-semibold text-[12px] transition-colors cursor-pointer shadow-sm">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-              </svg>
-              Share
-            </button>
-            <div className={`px-3 py-1 rounded-badge border shadow-sm ${raffle.status === 'ACTIVE' ? 'border-amber-200 bg-amber-50 text-amber-700' : 'border-red-200 bg-red-50 text-red-700'}`}>
-              <span className="font-sans font-semibold text-[10px] uppercase tracking-wide">
-                {raffle.status === 'ACTIVE' ? 'Live' : raffle.status}
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="flex flex-col md:flex-row p-6 gap-6">
+        {/* Scrollable Main Content Grid */}
+        <div className="flex flex-col md:flex-row p-6 gap-6 overflow-y-auto max-h-[calc(90vh-70px)] custom-scrollbar">
           
           {/* Left Column (Competition Info) */}
           <div className="flex-1 flex flex-col gap-4">
@@ -304,7 +349,7 @@ export default function CompetitionDetailsModal({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   return createPortal(modalContent, document.body);

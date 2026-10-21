@@ -30,7 +30,10 @@ export const raffleKeys = {
 
 export const ticketKeys = {
   all: ['tickets'] as const,
-  my: () => [...ticketKeys.all, 'my'] as const,
+  my: (params?: unknown) =>
+    params !== undefined
+      ? ([...ticketKeys.all, 'my', params] as const)
+      : ([...ticketKeys.all, 'my'] as const),
 };
 
 export const winnerKeys = {
