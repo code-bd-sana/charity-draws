@@ -1317,8 +1317,8 @@ export class RafflesService {
       where: { status: 'ENDED' },
     });
 
-    // 2. Winning Operators (Count of HostProfiles)
-    const winningOperators = await this.prisma.hostProfile.count();
+    // 2. Verified Charities (Count of HostProfiles)
+    const verifiedCharities = await this.prisma.hostProfile.count();
 
     // 3. Won in prizes! (Total sum of prizes awarded / ended raffles)
     const endedRaffles = await this.prisma.raffle.findMany({
@@ -1349,8 +1349,8 @@ export class RafflesService {
       },
       {
         id: 2,
-        value: `${winningOperators}`,
-        label: 'Winning Operators',
+        value: `${verifiedCharities}`,
+        label: 'Verified Charities',
       },
       {
         id: 3,

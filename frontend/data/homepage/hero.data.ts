@@ -15,7 +15,7 @@ export interface HeroData {
 
 export const heroData: HeroData = {
   badgeText: "CHARITY PRIZE COMPETITIONS",
-  headingText: "Win Premium Charity Gear For Less",
+  headingText: "Win Premium Charity Prizes For Less",
   paragraphText: "Enter transparent prize competitions to win incredible prizes and cash rewards while supporting great causes. 100% fair, verified, and secure.",
   primaryCtaLabel: "Browse Live Draws",
   primaryCtaHref: "#live-draws",
@@ -30,7 +30,7 @@ export const heroData: HeroData = {
     {
       id: "hero-stat-2",
       value: "0",
-      label: "Winning Operators",
+      label: "Verified Charities",
     },
     {
       id: "hero-stat-3",
@@ -40,16 +40,16 @@ export const heroData: HeroData = {
   ],
   featuredDraw: {
     id: "hero-feat-1",
-    title: "VFC HK416 GBBR Bundle",
-    description: "Worth £1,200. Comes with 4 leak-free green gas magazines, tactical reflex sight, suppressor, and hard transport case.",
-    image: "https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=800&auto=format&fit=crop",
+    title: "Luxury Tech & Cash Bundle",
+    description: "Worth £2,500. Includes Apple iPhone 16 Pro Max, MacBook Air M3, and £1,000 Tax-Free Cash.",
+    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop",
     ticketPrice: 2.50,
-    totalTickets: 500,
-    soldTickets: 342,
-    endDate: "Ends in 2d 4h",
+    totalTickets: 1000,
+    soldTickets: 0,
+    endDate: "Launching Soon",
     status: "live",
-    category: "bundles",
-    worthPrice: 1200,
+    category: "tech-gadgets",
+    worthPrice: 2500,
     isFeatured: true,
   },
 };

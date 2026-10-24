@@ -114,7 +114,7 @@ export function validateRegisterStep2(values: Pick<HostRegistrationFormValues, "
   } = {};
 
   if (!values.businessName?.trim()) {
-    errors.businessName = "Business / Brand name is required";
+    errors.businessName = "Charity, Promoter, or Brand name is required";
   }
 
   if (!values.firstName.trim()) {

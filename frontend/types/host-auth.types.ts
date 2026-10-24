@@ -17,7 +17,7 @@ export interface HostRegistrationFormValues {
   confirmPassword: string;
 
   // Step 2: Host Profile
-  hostType: "individual" | "business";
+  hostType: "individual" | "business" | "promoter";
   profilePhoto: string | null; // Data URL or filename placeholder
   businessName: string;
   firstName: string;

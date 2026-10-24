@@ -56,10 +56,14 @@ async function main() {
   // 2. Seed Categories
   console.log('Seeding Categories...');
   const categories = [
-    { name: 'AEG Rifles', slug: 'aeg-rifles' },
-    { name: 'GBB Pistols', slug: 'gbb-pistols' },
-    { name: 'Sniper Rifles', slug: 'sniper-rifles' },
-    { name: 'Tactical Gear', slug: 'tactical-gear' },
+    { name: 'Cash Prizes', slug: 'cash-prizes' },
+    { name: 'Tech & Gadgets', slug: 'tech-gadgets' },
+    { name: 'Luxury Watches', slug: 'luxury-watches' },
+    { name: 'Holidays & Travel', slug: 'holidays-travel' },
+    { name: 'Gaming & Consoles', slug: 'gaming-consoles' },
+    { name: 'Home & Living', slug: 'home-living' },
+    { name: 'Gift Cards & Vouchers', slug: 'gift-cards' },
+    { name: 'Mystery Boxes & Hampers', slug: 'mystery-boxes' },
   ];
 
   for (const cat of categories) {
@@ -76,117 +80,28 @@ async function main() {
 
   // 3. Seed Admin Account
   console.log('Seeding Admin Account...');
-  const adminPassword = await bcrypt.hash('admin@gmail.com', salt);
+  const adminPassword = await bcrypt.hash('Admin@charitydraws2026!', salt);
   await prisma.user.upsert({
-    where: { email: 'admin@gmail.com' },
+    where: { email: 'info@charitydraws.co.uk' },
     update: {
       passwordHash: adminPassword,
       role: 'ADMIN',
       isEmailVerified: true,
-      firstName: 'System',
+      firstName: 'Charity Draws',
       lastName: 'Admin',
     },
     create: {
-      email: 'admin@gmail.com',
+      email: 'info@charitydraws.co.uk',
       passwordHash: adminPassword,
       role: 'ADMIN',
       isEmailVerified: true,
-      firstName: 'System',
+      firstName: 'Charity Draws',
       lastName: 'Admin',
     },
   });
-  console.log('✅ Admin Account ready (Email: admin@gmail.com | Pass: admin@gmail.com)');
+  console.log('✅ Admin Account ready (Email: info@charitydraws.co.uk)');
 
-  // 4. Seed Host Account
-  console.log('Seeding Host Account...');
-  const hostPassword = await bcrypt.hash('host@gmail.com', salt);
-  const hostUser = await prisma.user.upsert({
-    where: { email: 'host@gmail.com' },
-    update: {
-      passwordHash: hostPassword,
-      role: 'HOST',
-      isEmailVerified: true,
-      firstName: 'Tactical',
-      lastName: 'Host',
-    },
-    create: {
-      email: 'host@gmail.com',
-      passwordHash: hostPassword,
-      role: 'HOST',
-      isEmailVerified: true,
-      firstName: 'Tactical',
-      lastName: 'Host',
-    },
-  });
-
-  // Ensure Host Profile exists
-  let hostProfile = await prisma.hostProfile.findUnique({
-    where: { userId: hostUser.id },
-  });
-
-  if (!hostProfile) {
-    hostProfile = await prisma.hostProfile.create({
-      data: {
-        userId: hostUser.id,
-        businessName: 'Charity Tactical Armory',
-        slug: 'charity-tactical-armory',
-        bio: 'Official verified supplier of custom charity builds.',
-        isVerified: true,
-        walletBalance: 150.00,
-      },
-    });
-    console.log('✅ Created Host Profile');
-  }
-
-  // Active Host Subscription
-  const proPlan = createdPlans.find((p) => p.name === 'Pro') || createdPlans[0];
-  const existingSub = await prisma.hostSubscription.findFirst({
-    where: { hostId: hostProfile.id, status: 'ACTIVE' },
-  });
-
-  if (!existingSub && proPlan) {
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
-
-    await prisma.hostSubscription.create({
-      data: {
-        hostId: hostProfile.id,
-        planId: proPlan.id,
-        status: 'ACTIVE',
-        startDate,
-        endDate,
-      },
-    });
-    console.log('✅ Created Active Host Subscription');
-  }
-
-  console.log('✅ Host Account ready (Email: host@gmail.com | Pass: host@gmail.com)');
-
-  // 5. Seed Client Account
-  console.log('Seeding Client Account...');
-  const clientPassword = await bcrypt.hash('client@gmail.com', salt);
-  await prisma.user.upsert({
-    where: { email: 'client@gmail.com' },
-    update: {
-      passwordHash: clientPassword,
-      role: 'CLIENT',
-      isEmailVerified: true,
-      firstName: 'John',
-      lastName: 'Player',
-    },
-    create: {
-      email: 'client@gmail.com',
-      passwordHash: clientPassword,
-      role: 'CLIENT',
-      isEmailVerified: true,
-      firstName: 'John',
-      lastName: 'Player',
-    },
-  });
-  console.log('✅ Client Account ready (Email: client@gmail.com | Pass: client@gmail.com)');
-
-  console.log('🚀 Seeding Completed Successfully!');
+  console.log('🚀 Seeding Completed Successfully! Admin account ready.');
 }
 
 main()

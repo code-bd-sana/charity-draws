@@ -10,7 +10,7 @@ export default function HowItWorksSection() {
     {
       stepNumber: 1,
       title: "Choose Your Draw",
-      description: "Browse our active competitions. Select from premium rifles, pistols, tactical gear bundles, or cash prize draws.",
+      description: "Browse our active competitions. Select from tech gadgets, luxury watches, holidays, gift sets, or cash prize draws.",
       renderIcon: () => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +54,7 @@ export default function HowItWorksSection() {
 
 
       stepNumber: 3,
-      title: "Win Your Gear",
+      title: "Win Amazing Prizes",
       description: "A winner is then selected either automatically by our system or live on our Instagram using our lottery ball machine depending on the competition.",
       renderIcon: () => (
         <svg
@@ -101,7 +101,7 @@ export default function HowItWorksSection() {
         <SectionHeader
           badgeText="SIMPLE PROCESS"
           headingText="How Charity Draws Works"
-          paragraphText="Enter draws in three straightforward steps and win high-end gear. Transparent draws, secure payouts."
+          paragraphText="Enter draws in three straightforward steps and win high-end prizes while supporting registered charities. Transparent draws, secure payouts."
         />
 
         {/* Steps Grid */}

@@ -188,28 +188,28 @@ export default function ViewSoldTicketsModal({
       <div
         ref={modalRef}
         style={modalStyle}
-        className={`fixed top-1/2 left-1/2 w-[95vw] sm:max-w-[540px] md:max-w-4xl max-h-[85vh] bg-[#161810] border border-[#2D3C13] rounded-[20px] ${
-          isDragging ? "shadow-2xl ring-2 ring-[#8CB34A]/50 select-none" : "shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-        } flex flex-col overflow-hidden text-[#E8EDD4] select-none z-10 animate-fadeIn`}
+        className={`fixed top-1/2 left-1/2 w-[95vw] sm:max-w-[540px] md:max-w-4xl max-h-[85vh] bg-surface border border-border rounded-[20px] ${
+          isDragging ? "shadow-2xl ring-2 ring-primary/50 select-none" : "shadow-card"
+        } flex flex-col overflow-hidden text-text-primary select-none z-10 animate-fadeIn`}
       >
         {/* Header - Draggable Bar */}
         <div
           {...dragHandleProps}
           title="Click and drag to move window • Double-click to re-center"
-          className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-[#2D3C13] bg-[#111210] shrink-0 cursor-grab active:cursor-grabbing select-none"
+          className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-divider bg-elevated/80 shrink-0 cursor-grab active:cursor-grabbing select-none"
         >
           <div className="flex items-center gap-3 min-w-0 pr-2">
-            <div className="p-1 rounded text-[#8CB34A] opacity-70 shrink-0">
+            <div className="p-1 rounded text-text-brand opacity-70 shrink-0">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
               </svg>
             </div>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A]">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold bg-accent-bg border border-border text-text-brand">
                   🎟️ Ticket Details
                 </span>
-                <h2 className="font-heading font-bold text-base sm:text-lg text-[#E8EDD4] truncate max-w-[240px] sm:max-w-[400px]">
+                <h2 className="font-heading font-bold text-base sm:text-lg text-text-primary truncate max-w-[240px] sm:max-w-[400px]">
                   {raffle.title}
                 </h2>
                 {isMoved && (
@@ -219,14 +219,14 @@ export default function ViewSoldTicketsModal({
                       e.stopPropagation();
                       resetPosition();
                     }}
-                    className="text-[11px] text-[#8CB34A] hover:underline font-semibold cursor-pointer"
+                    className="text-[11px] text-text-brand hover:underline font-semibold cursor-pointer"
                   >
                     (Reset position)
                   </button>
                 )}
               </div>
-              <p className="font-sans text-xs text-[#72943A]">
-                Total Sold: <strong className="text-[#E8EDD4]">{tickets.length}</strong> / {raffle.totalTickets} tickets
+              <p className="font-sans text-xs text-text-muted">
+                Total Sold: <strong className="text-text-primary">{tickets.length}</strong> / {raffle.totalTickets} tickets
                 {raffle.pricePerTicket && ` • £${Number(raffle.pricePerTicket).toFixed(2)} per ticket`}
               </p>
             </div>
@@ -238,7 +238,7 @@ export default function ViewSoldTicketsModal({
                 type="button"
                 onClick={resetPosition}
                 title="Reset window to center"
-                className="p-1.5 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] text-[#72943A] hover:text-[#E8EDD4] cursor-pointer text-xs min-h-[38px] min-w-[38px] flex items-center justify-center"
+                className="p-1.5 rounded-[8px] bg-accent-bg border border-border text-text-muted hover:text-text-primary cursor-pointer text-xs min-h-[38px] min-w-[38px] flex items-center justify-center"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -248,7 +248,7 @@ export default function ViewSoldTicketsModal({
             <button
               onClick={handleExportCSV}
               disabled={tickets.length === 0}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] font-sans font-medium text-[12px] transition-colors disabled:opacity-50 cursor-pointer min-h-[44px]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-accent-bg border border-border hover:border-primary text-text-brand font-sans font-medium text-[12px] transition-colors disabled:opacity-50 cursor-pointer min-h-[44px]"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -257,7 +257,7 @@ export default function ViewSoldTicketsModal({
             </button>
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#0D0D0B] border border-[#2D3C13] text-[#72943A] hover:text-[#E8EDD4] hover:border-[#43581E] transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-surface border border-border text-text-muted hover:text-text-primary hover:border-border-medium transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
             >
               ✕
             </button>
@@ -265,9 +265,9 @@ export default function ViewSoldTicketsModal({
         </div>
 
         {/* Toolbar (Search & View Toggle) */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-3 border-b border-[#2D3C13] bg-[#161810]">
-          <div className="flex items-center h-[36px] w-full sm:w-[320px] bg-[#0D0D0B] border border-[#2D3C13] rounded-[8px] px-3">
-            <svg className="w-4 h-4 text-[#72943A] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-3 border-b border-divider bg-surface">
+          <div className="flex items-center h-[36px] w-full sm:w-[320px] bg-bg border border-border rounded-[8px] px-3">
+            <svg className="w-4 h-4 text-text-muted shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
@@ -275,17 +275,17 @@ export default function ViewSoldTicketsModal({
               placeholder="Search by ticket #, buyer name, or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent border-none outline-none text-[#E8EDD4] text-[12px] placeholder:text-[#5A752A] w-full ml-2 font-sans"
+              className="bg-transparent border-none outline-none text-text-primary text-[12px] placeholder:text-text-muted w-full ml-2 font-sans"
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-[#0D0D0B] p-1 rounded-[8px] border border-[#2D3C13]">
+          <div className="flex items-center gap-1 bg-surface p-1 rounded-[8px] border border-border">
             <button
               onClick={() => setViewMode("table")}
               className={`px-3 py-1 rounded-[6px] text-[11px] font-sans font-medium transition-colors cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-[#8CB34A] text-[#0D0D0B]"
-                  : "text-[#72943A] hover:text-[#E8EDD4]"
+                  ? "bg-primary text-white"
+                  : "text-text-muted hover:text-text-primary"
               }`}
             >
               📋 Table View
@@ -294,8 +294,8 @@ export default function ViewSoldTicketsModal({
               onClick={() => setViewMode("grid")}
               className={`px-3 py-1 rounded-[6px] text-[11px] font-sans font-medium transition-colors cursor-pointer ${
                 viewMode === "grid"
-                  ? "bg-[#8CB34A] text-[#0D0D0B]"
-                  : "text-[#72943A] hover:text-[#E8EDD4]"
+                  ? "bg-primary text-white"
+                  : "text-text-muted hover:text-text-primary"
               }`}
             >
               🔢 Ticket Badges
@@ -307,16 +307,16 @@ export default function ViewSoldTicketsModal({
         <div className="flex-1 overflow-y-auto p-6 max-h-[60vh]">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="w-8 h-8 border-2 border-[#8CB34A] border-t-transparent rounded-full animate-spin"></div>
-              <p className="font-sans text-xs text-[#72943A]">Loading competition tickets...</p>
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="font-sans text-xs text-text-muted">Loading competition tickets...</p>
             </div>
           ) : filteredTickets.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <span className="text-3xl mb-2">🎟️</span>
-              <p className="font-heading font-medium text-sm text-[#E8EDD4] mb-1">
+              <p className="font-heading font-medium text-sm text-text-primary mb-1">
                 {tickets.length === 0 ? "No tickets have been sold yet" : "No matching tickets found"}
               </p>
-              <p className="font-sans text-xs text-[#5A752A]">
+              <p className="font-sans text-xs text-text-muted">
                 {tickets.length === 0 ? "Tickets will appear here as soon as buyers enter this raffle." : "Try adjusting your search criteria."}
               </p>
             </div>
@@ -327,11 +327,11 @@ export default function ViewSoldTicketsModal({
                 const isMainWin = t.winStatus?.includes("Main");
                 const isInstantWin = t.winStatus?.includes("Instant");
 
-                let badgeColor = "bg-[#0D0D0B] border-[#2D3C13] text-[#E8EDD4]";
+                let badgeColor = "bg-surface border-border text-text-primary";
                 if (isMainWin) {
-                  badgeColor = "bg-[#4ADE80]/20 border-[#4ADE80] text-[#4ADE80] font-bold shadow-[0_0_10px_rgba(74,222,128,0.2)]";
+                  badgeColor = "bg-emerald-50 border-emerald-500 text-emerald-700 font-bold shadow-sm";
                 } else if (isInstantWin) {
-                  badgeColor = "bg-[#F59E0B]/20 border-[#F59E0B] text-[#F59E0B] font-bold";
+                  badgeColor = "bg-amber-50 border-amber-500 text-amber-700 font-bold";
                 }
 
                 return (
@@ -341,7 +341,7 @@ export default function ViewSoldTicketsModal({
                     className={`flex flex-col items-center justify-center p-2 rounded-[10px] border transition-all hover:scale-105 cursor-pointer ${badgeColor}`}
                   >
                     <span className="font-sans font-bold text-xs">#{t.ticketNumber}</span>
-                    <span className="font-sans text-[10px] text-[#72943A] truncate max-w-full">
+                    <span className="font-sans text-[10px] text-text-muted truncate max-w-full">
                       {t.buyerName?.split(" ")[0] || "User"}
                     </span>
                   </div>
@@ -350,10 +350,10 @@ export default function ViewSoldTicketsModal({
             </div>
           ) : (
             /* Full Table View */
-            <div className="w-full border border-[#2D3C13] rounded-[12px] overflow-hidden">
+            <div className="w-full border border-border rounded-[12px] overflow-hidden">
               <table className="w-full text-left border-collapse text-[12px]">
                 <thead>
-                  <tr className="border-b border-[#2D3C13] bg-[#111210] text-[#5A752A] font-sans font-medium text-[10px] uppercase">
+                  <tr className="border-b border-divider bg-elevated/70 text-text-muted font-sans font-medium text-[10px] uppercase">
                     <th className="py-3 px-4">TICKET #</th>
                     <th className="py-3 px-4">BUYER / CLIENT NAME</th>
                     <th className="py-3 px-4">BUYER EMAIL</th>
@@ -370,38 +370,38 @@ export default function ViewSoldTicketsModal({
                     return (
                       <tr
                         key={t.id}
-                        className={`${idx !== filteredTickets.length - 1 ? "border-b border-[#2D3C13]" : ""} hover:bg-[#1A230A] transition-colors`}
+                        className={`${idx !== filteredTickets.length - 1 ? "border-b border-divider" : ""} hover:bg-accent-bg/30 transition-colors`}
                       >
                         <td className="py-3 px-4">
-                          <span className="px-2 py-0.5 rounded-[4px] bg-[#1A230A] border border-[#8CB34A] text-[#8CB34A] font-sans font-bold text-[11px]">
+                          <span className="px-2 py-0.5 rounded-[4px] bg-accent-bg border border-border text-text-brand font-sans font-bold text-[11px]">
                             #{t.ticketNumber}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-medium text-[#E8EDD4]">
+                        <td className="py-3 px-4 font-medium text-text-primary">
                           {t.buyerName || t.userName || "N/A"}
                         </td>
-                        <td className="py-3 px-4 text-[#72943A]">
+                        <td className="py-3 px-4 text-text-secondary">
                           {t.userEmail || "N/A"}
                         </td>
-                        <td className="py-3 px-4 text-[#72943A]">
+                        <td className="py-3 px-4 text-text-secondary">
                           {t.userPhone || "N/A"}
                         </td>
                         <td className="py-3 px-4 text-center">
                           {isMainWin ? (
-                            <span className="px-2 py-0.5 rounded-full bg-[#4ADE80]/15 border border-[#4ADE80]/40 text-[#4ADE80] text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[10px] font-bold">
                               🏆 Main Winner
                             </span>
                           ) : isInstantWin ? (
-                            <span className="px-2 py-0.5 rounded-full bg-[#F59E0B]/15 border border-[#F59E0B]/40 text-[#F59E0B] text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300 text-amber-700 text-[10px] font-bold">
                               ⚡ Instant Winner
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-[#0D0D0B] border border-[#2D3C13] text-[#5A752A] text-[10px]">
+                            <span className="px-2 py-0.5 rounded-full bg-elevated border border-border text-text-muted text-[10px]">
                               Regular Entry
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-[#72943A]">
+                        <td className="py-3 px-4 text-right text-text-muted">
                           {t.createdAt ? format(new Date(t.createdAt), "dd MMM yyyy HH:mm") : "N/A"}
                         </td>
                       </tr>
@@ -414,13 +414,13 @@ export default function ViewSoldTicketsModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#2D3C13] bg-[#111210] shrink-0">
-          <p className="font-sans text-xs text-[#5A752A]">
-            Showing <span className="text-[#E8EDD4] font-medium">{filteredTickets.length}</span> of {tickets.length} total sold tickets
+        <div className="flex items-center justify-between px-6 py-4 border-t border-divider bg-elevated/60 shrink-0">
+          <p className="font-sans text-xs text-text-muted">
+            Showing <span className="text-text-primary font-medium">{filteredTickets.length}</span> of {tickets.length} total sold tickets
           </p>
           <button
             onClick={onClose}
-            className="min-h-[44px] px-5 py-2 rounded-[8px] bg-[#1A230A] border border-[#2D3C13] hover:border-[#8CB34A] text-[#8CB34A] hover:text-[#E8EDD4] font-sans font-medium text-xs transition-colors cursor-pointer flex items-center justify-center"
+            className="min-h-[44px] px-5 py-2 rounded-[8px] bg-surface border border-border hover:border-primary text-text-brand hover:text-text-primary font-sans font-medium text-xs transition-colors cursor-pointer flex items-center justify-center"
           >
             Close
           </button>

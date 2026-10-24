@@ -37,43 +37,88 @@ export const entrantSteps: HowItWorksStep[] = [
 ];
 
 /**
- * Step content lists for 'I Want to Host Draws' (hosts)
+ * Step content lists for 'We Are a Registered Charity' (Charities hosting draws)
  */
-export const hostSteps: HowItWorksStep[] = [
+export const charitySteps: HowItWorksStep[] = [
   {
-    id: "host-step-1",
+    id: "charity-step-1",
     stepNumber: 1,
-    title: "Register Host Account",
-    description: "Create your host account with your business details. We verify all hosts before they go live on the platform.",
+    title: "Register Registered Charity Account",
+    description: "Create your verified charity account with your official Charity Commission, OSCR, or CCNI registration number.",
   },
   {
-    id: "host-step-2",
+    id: "charity-step-2",
     stepNumber: 2,
-    title: "Complete Host Profile",
-    description: "Add your brand, contact info, logo, and bio. A complete profile builds trust with potential entrants.",
+    title: "Complete Charity Profile",
+    description: "Add your official brand, logo, mission statement, and cause description. A verified profile builds instant trust with supporters.",
   },
   {
-    id: "host-step-3",
+    id: "charity-step-3",
     stepNumber: 3,
-    title: "Choose Subscription Plan",
-    description: "Select the Free, Premium, or Pro plan. You can start free and upgrade as your draws grow.",
+    title: "Choose Charity Plan",
+    description: "Select our dedicated charity plan with zero setup barriers and tailored commission rates maximizing your fundraising return.",
   },
   {
-    id: "host-step-4",
+    id: "charity-step-4",
     stepNumber: 4,
     title: "Submit Competition for Admin Review",
-    description: "Fill in the draw details: prize, ticket price, total tickets, closing date. Our team reviews within 24h.",
+    description: "Fill in the draw details: prize, ticket price, total tickets, and closing date. Our UK compliance team reviews and verifies within 24h.",
   },
   {
-    id: "host-step-5",
+    id: "charity-step-5",
     stepNumber: 5,
     title: "Go Live on the Public Board",
-    description: "Once approved, your draw is published to the competition board and visible to all users immediately. Then you can promote this on our own social medias/website.",
+    description: "Once approved, your charity draw is published to the public competition board and visible to thousands of eager entrants nationwide.",
   },
   {
-    id: "host-step-6",
+    id: "charity-step-6",
     stepNumber: 6,
-    title: "Manage Tickets & Payout",
-    description: "Monitor sales from your host dashboard. When the draw closes, Charity Draws will conduct the draw live and provide you with the winners details and receive your payout the next working day.",
+    title: "Live Draw & Guaranteed Payout",
+    description: "Charity Draws conducts the draw live via compliant RNG. Winner details are processed securely and your net fundraising proceeds are paid out the next working day.",
   },
 ];
+
+/**
+ * Step content lists for 'I Am a Promoter' (Promoters running draws in Host A Draw group)
+ */
+export const promoterSteps: HowItWorksStep[] = [
+  {
+    id: "promoter-step-1",
+    stepNumber: 1,
+    title: "Register as an Official Promoter",
+    description: "Create your promoter account to host compliant prize competitions supporting registered UK charities.",
+  },
+  {
+    id: "promoter-step-2",
+    stepNumber: 2,
+    title: "Nominate Beneficiary Charity",
+    description: "Partner with an existing registered charity from our directory or nominate your chosen registered good cause.",
+  },
+  {
+    id: "promoter-step-3",
+    stepNumber: 3,
+    title: "Set Up Prize & Competition Details",
+    description: "Define your prize, ticket quantity, pricing, and draw date. All ticket funds are held in secure escrow protection.",
+  },
+  {
+    id: "promoter-step-4",
+    stepNumber: 4,
+    title: "Fast Compliance Review",
+    description: "Our legal and admin team reviews your draw structure to ensure full UK Gambling Act 2005 regulatory compliance within 24 hours.",
+  },
+  {
+    id: "promoter-step-5",
+    stepNumber: 5,
+    title: "Launch & Drive Ticket Sales",
+    description: "Promote your live draw across your website and social channels while tracking ticket volume in real time from your dashboard.",
+  },
+  {
+    id: "promoter-step-6",
+    stepNumber: 6,
+    title: "Live Draw & Streamlined Distribution",
+    description: "Charity Draws conducts the live stream random draw. The winner receives the prize and agreed charity donations are disbursed transparently.",
+  },
+];
+
+// Alias for backwards compatibility
+export const hostSteps = charitySteps;

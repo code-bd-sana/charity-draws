@@ -102,29 +102,29 @@ export default function FreePostalEntryModal({
               </button>
             </div>
 
-            <div className="font-mono text-xs text-[#E8EDD4] bg-[#161810] p-4 rounded-xl border border-[#2D3C13] space-y-1">
-              <p className="font-bold text-[#8CB34A]">{promoterName}</p>
+            <div className="font-mono text-xs text-text-primary bg-accent-bg/40 p-4 rounded-xl border border-border space-y-1">
+              <p className="font-bold text-text-brand">{promoterName}</p>
               <p>{promoterAddress.line1}</p>
               <p>{promoterAddress.line2}</p>
               <p>{promoterAddress.city}</p>
               <p className="font-bold">{promoterAddress.postcode}</p>
-              <p className="text-[#72943A]">{promoterAddress.country}</p>
+              <p className="text-text-muted">{promoterAddress.country}</p>
             </div>
           </div>
 
           {/* Required Postcard Details */}
           <div className="space-y-2">
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#A0D056]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-text-brand">
               📝 Required Postcard Details:
             </h3>
-            <p className="text-[#72943A]">
+            <p className="text-text-muted">
               Write the following details clearly on your postcard:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               {postcardDetails.map((item, idx) => (
-                <div key={idx} className="bg-[#161810] border border-[#2D3C13] p-2.5 rounded-xl flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#8CB34A] shrink-0" />
-                  <span className="font-sans font-medium text-[#E8EDD4]">{item}</span>
+                <div key={idx} className="bg-surface border border-border p-2.5 rounded-xl flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <span className="font-sans font-medium text-text-primary">{item}</span>
                 </div>
               ))}
             </div>
@@ -132,13 +132,13 @@ export default function FreePostalEntryModal({
 
           {/* Postal Rules & Regulations */}
           <div className="space-y-2.5">
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#A0D056]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-text-brand">
               📜 Terms & Rules:
             </h3>
             <ul className="space-y-2">
               {rulesList.map((rule, idx) => (
-                <li key={idx} className="flex items-start gap-2.5 text-[#B3B8AA]">
-                  <span className="font-bold text-[#8CB34A]">{idx + 1}.</span>
+                <li key={idx} className="flex items-start gap-2.5 text-text-secondary">
+                  <span className="font-bold text-text-brand">{idx + 1}.</span>
                   <span>{rule}</span>
                 </li>
               ))}
@@ -146,18 +146,18 @@ export default function FreePostalEntryModal({
           </div>
 
           {/* Placeholder Notice Callout */}
-          <div className="bg-[#161810] border border-[#2D3C13] rounded-xl p-4 text-[11px] text-[#72943A]">
+          <div className="bg-accent-bg/30 border border-border rounded-xl p-4 text-[11px] text-text-muted">
             ℹ️ <strong>Notice:</strong> {noticeText}
           </div>
 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-5 sm:p-6 border-t border-[#2D3C13] bg-[#0D0D0B] flex items-center justify-end">
+        <div className="p-5 sm:p-6 border-t border-border bg-surface flex items-center justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl bg-[#8CB34A] hover:bg-[#A0D056] text-[#0D0D0B] font-sans font-bold text-xs shadow-[0_0_20px_rgba(140,179,74,0.3)] transition-all"
+            className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-sans font-bold text-xs shadow-glow transition-all cursor-pointer"
           >
             I Understand & Close
           </button>

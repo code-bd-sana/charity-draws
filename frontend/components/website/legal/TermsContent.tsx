@@ -12,13 +12,11 @@ const SECTIONS = [
   { id: "choosing-winner", title: "4. Choosing a Winner" },
   { id: "eligibility", title: "5. Eligibility" },
   { id: "prize", title: "6. The Prize" },
-  { id: "winners", title: "7. Winners" },
-  { id: "claiming-prize", title: "8. Claiming the Prize" },
-  { id: "liability", title: "9. Limitation of Liability" },
-  { id: "data-protection", title: "10. Data Protection & Publicity" },
-  { id: "general", title: "11. General Terms" },
-  { id: "aml-policy", title: "12. Anti-Money Laundering (AML)" },
-  { id: "fair-play", title: "13. Fair Play & One Account Policy" },
+  { id: "winners", title: "7. Winners & Claiming Prizes" },
+  { id: "liability", title: "8. Limitation of Liability & Data Protection" },
+  { id: "general", title: "9. General Terms & Governing Law" },
+  { id: "aml-policy", title: "10. Anti-Money Laundering (AML)" },
+  { id: "fair-play", title: "11. Fair Play & Strict One Account Policy" },
 ];
 
 export default function TermsContent() {
@@ -53,25 +51,25 @@ export default function TermsContent() {
   };
 
   return (
-    <div className="w-full bg-[#0D0D0B] text-[#E8EDD4] pt-24 pb-20">
+    <div className="w-full bg-surface text-text-primary pt-24 pb-20">
       
       {/* Top Banner */}
-      <div className="border-b border-[#2D3C13] bg-[#111210]/60 backdrop-blur-md py-12 mb-12">
+      <div className="border-b border-divider bg-elevated/60 backdrop-blur-md py-12 mb-12">
         <div className="container-custom max-w-6xl mx-auto px-4">
           <div className="flex flex-col gap-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A230A] border border-[#43581E] text-[#8CB34A] text-xs font-semibold w-fit">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-badge bg-accent-bg border border-border text-text-brand text-xs font-semibold w-fit">
               <span>📜 Official Legal Documentation</span>
             </div>
-            <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#E8EDD4] tracking-tight">
+            <h1 className="font-heading font-extrabold text-3xl sm:text-5xl text-text-primary tracking-tight">
               Terms & Conditions
             </h1>
-            <p className="font-sans text-sm sm:text-base text-[#72943A] max-w-2xl">
+            <p className="font-sans text-sm sm:text-base text-text-muted max-w-2xl">
               Official rules governing all prize competitions, free postal entries, eligibility, anti-money laundering policies, and fair play on Charity Draws.
             </p>
-            <div className="flex items-center gap-4 text-xs font-sans text-[#5A752A] pt-2">
-              <span>Last Updated: July 2026</span>
+            <div className="flex items-center gap-4 text-xs font-sans text-text-muted pt-2">
+              <span>Last Updated: October 2026</span>
               <span>•</span>
-              <span>Effective Version: 2.4</span>
+              <span>Effective Version: 3.0</span>
             </div>
           </div>
         </div>
@@ -83,8 +81,8 @@ export default function TermsContent() {
           
           {/* Left Table of Contents */}
           <aside className="lg:col-span-4 hidden lg:block">
-            <div className="sticky top-28 bg-[#161810] border border-[#2D3C13] rounded-2xl p-5 space-y-2">
-              <h3 className="font-heading font-bold text-xs text-[#8CB34A] uppercase tracking-wider mb-3 px-2">
+            <div className="sticky top-28 bg-surface border border-border rounded-card p-5 space-y-2 shadow-card">
+              <h3 className="font-heading font-bold text-xs text-text-brand uppercase tracking-wider mb-3 px-2">
                 Table of Contents
               </h3>
               <nav className="flex flex-col space-y-1">
@@ -93,10 +91,10 @@ export default function TermsContent() {
                     key={sec.id}
                     onClick={() => scrollTo(sec.id)}
                     className={cn(
-                      "text-left px-3 py-2 rounded-xl text-xs font-sans transition-all duration-200 truncate",
+                      "text-left px-3 py-2 rounded-xl text-xs font-sans transition-all duration-200 truncate cursor-pointer",
                       activeSection === sec.id
-                        ? "bg-[#1A230A] text-[#A0D056] font-semibold border-l-2 border-[#8CB34A] pl-3"
-                        : "text-[#72943A] hover:bg-[#111210] hover:text-[#E8EDD4]"
+                        ? "bg-accent-bg text-text-brand font-semibold border-l-2 border-primary pl-3"
+                        : "text-text-muted hover:bg-elevated hover:text-text-primary"
                     )}
                   >
                     {sec.title}
@@ -104,10 +102,10 @@ export default function TermsContent() {
                 ))}
               </nav>
               
-              <div className="pt-4 border-t border-[#2D3C13] mt-4">
+              <div className="pt-4 border-t border-divider mt-4">
                 <Link
                   href="/contact"
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#1A230A] hover:bg-[#2D3C13] border border-[#43581E] text-[#A0D056] text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-accent-bg hover:bg-elevated border border-border text-text-brand text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   ✉️ Need Legal Help? Contact Us
                 </Link>
@@ -116,41 +114,41 @@ export default function TermsContent() {
           </aside>
 
           {/* Right Main Text Content */}
-          <main className="lg:col-span-8 space-y-12 text-sm leading-relaxed text-[#B3B8AA]">
+          <main className="lg:col-span-8 space-y-12 text-sm leading-relaxed text-text-secondary">
             
             {/* 1. The Promoter */}
-            <section id="promoter" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="promoter" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 1. The Promoter
               </h2>
               <p>
-                1.1. The Promoter is: <strong className="text-[#E8EDD4]">Charity Draws Ltd</strong> ("Charity Draws") whose registered office is at Synergy House, Lawson Street, North Shields NE29 6TG.
+                1.1. The Promoter is: <strong className="text-text-primary">Charity Draws Ltd</strong> ("Charity Draws"), a company registered in England & Wales (Company Number: Pending Registration), whose registered office is at Synergy House, Lawson Street, North Shields NE29 6TG.
               </p>
               <p>
-                1.2. Our correspondence address is: <span className="text-[#E8EDD4]">Synergy House, Lawson Street, North Shields NE29 6TG</span>.
+                1.2. Our correspondence address is: <span className="text-text-primary font-medium">Synergy House, Lawson Street, North Shields NE29 6TG</span>.
               </p>
               <p>
                 1.3. If you wish to contact us for any reason, please email us at{" "}
-                <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] font-semibold hover:underline">
+                <a href="mailto:info@charitydraws.co.uk" className="text-text-brand font-semibold hover:underline">
                   info@charitydraws.co.uk
                 </a>.
               </p>
             </section>
 
             {/* 2. The Competition */}
-            <section id="competition" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="competition" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 2. The Competition
               </h2>
               <p>
                 2.1. These terms and conditions apply to all competitions listed on the Promoter’s website at{" "}
-                <a href="https://charitydraws.co.uk" className="text-[#8CB34A] font-semibold hover:underline">
+                <a href="https://charitydraws.co.uk" className="text-text-brand font-semibold hover:underline">
                   https://charitydraws.co.uk
                 </a>{" "}
                 (the “Website”).
               </p>
               <p>
-                2.2. All competitions are skill-based competitions. Entry fees for online entries are payable each time you enter. Where the Promoter offers an easy or multiple choice question, a free postal entry route is available.
+                2.2. All competitions are skill-based prize competitions operated in compliance with the UK Gambling Act 2005. Entry fees for online entries are payable each time you enter. Where the Promoter offers a question or problem, a free postal entry route is available.
               </p>
               <p>
                 2.3. To be in with a chance of winning, everyone who enters the competition (an “Entrant”) will be required to correctly answer a question or solve a problem set by the Promoter (the “Competition Question”).
@@ -158,8 +156,8 @@ export default function TermsContent() {
             </section>
 
             {/* 3. How to Enter */}
-            <section id="how-to-enter" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="how-to-enter" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 3. How to Enter
               </h2>
               <p>
@@ -175,22 +173,22 @@ export default function TermsContent() {
                 3.4. The maximum number of entries to the competition will be stated on the Website. The number of entries you are able to make may be limited if the maximum number of entries is reached.
               </p>
               <p>
-                3.5. Entrants can enter each competition as many times as they wish until the maximum per-user ticket limit is submitted.
+                3.5. Entrants can enter each competition as many times as they wish until the maximum per-user ticket limit is reached.
               </p>
               <p>
                 3.6. To enter online: (a) view the Competition on the Website; (b) select ticket quantity & answer the skill question; (c) complete checkout payment to receive your order confirmation & allocated ticket number(s).
               </p>
 
               {/* Free Postal Entry Box */}
-              <div id="free-entry" className="mt-6 bg-[#111210] border border-[#8CB34A]/40 rounded-xl p-5 space-y-3">
-                <h3 className="font-heading font-bold text-base text-[#A0D056] flex items-center gap-2">
+              <div id="free-entry" className="mt-6 bg-accent-bg/40 border border-border rounded-xl p-5 space-y-3">
+                <h3 className="font-heading font-bold text-base text-text-brand flex items-center gap-2">
                   <span>✉️ 3.11. Free Postal Entry Route Method</span>
                 </h3>
-                <p className="text-xs leading-relaxed text-[#B3B8AA]">
+                <p className="text-xs leading-relaxed text-text-muted">
                   You may enter any competition for free by post by complying with the following conditions:
                 </p>
-                <ul className="list-disc list-inside space-y-1.5 text-xs text-[#E8EDD4] pl-2">
-                  <li>Send your entry on an unenclosed postcard by 1st or 2nd class post to: <strong className="text-[#A0D056]">Charity Draws Ltd, Synergy House, Lawson Street, North Shields NE29 6TG</strong>.</li>
+                <ul className="list-disc list-inside space-y-1.5 text-xs text-text-secondary pl-2">
+                  <li>Send your entry on an unenclosed postcard by 1st or 2nd class post to: <strong className="text-text-primary">Charity Draws Ltd, Synergy House, Lawson Street, North Shields NE29 6TG</strong>.</li>
                   <li>Include your full name, postal address, contact phone number, email address, and the exact Competition Name.</li>
                   <li><strong>Mandatory Requirement:</strong> You MUST have created a free registered account on the Website for the free entry to be processed. Details on the postcard MUST correspond exactly to your registered account.</li>
                   <li>Each free entry must be posted separately in an individual postcard. Bulk entries in an envelope will count as only one single entry.</li>
@@ -200,26 +198,26 @@ export default function TermsContent() {
             </section>
 
             {/* 4. Choosing a Winner */}
-            <section id="choosing-winner" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="choosing-winner" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 4. Choosing a Winner
               </h2>
               <p>
                 4.1. All valid Entrants will be placed into a draw and the winner will be chosen by a secure random number generator (RNG) live draw within 7 days of the Closing Date (“Draw Date”).
               </p>
               <p>
-                4.2. All Entrants will have their names and entry numbers included in a entry spreadsheet published on the Website during the live draw. If you wish to censor your name on the live spreadsheet, notify us at{" "}
-                <a href="mailto:info@charitydraws.co.uk" className="text-[#8CB34A] underline">info@charitydraws.co.uk</a> at least 48 hours prior to the draw.
+                4.2. All Entrants will have their names and entry numbers included in an entry spreadsheet published on the Website during the live draw. If you wish to censor your name on the live spreadsheet, notify us at{" "}
+                <a href="mailto:info@charitydraws.co.uk" className="text-text-brand underline">info@charitydraws.co.uk</a> at least 48 hours prior to the draw.
               </p>
             </section>
 
             {/* 5. Eligibility */}
-            <section id="eligibility" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="eligibility" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 5. Eligibility
               </h2>
               <p>
-                5.1. Competitions are open to residents in the United Kingdom aged <strong className="text-[#E8EDD4]">18 years or over</strong>, except employees of Charity Draws, their immediate families, or agents directly connected with competition administration.
+                5.1. Competitions are open to residents in the United Kingdom aged <strong className="text-text-primary">18 years or over</strong>, except employees of Charity Draws, their immediate families, or agents directly connected with competition administration.
               </p>
               <p>
                 5.2. Proof of age and UK residency will be required prior to releasing any major prize.
@@ -230,95 +228,92 @@ export default function TermsContent() {
             </section>
 
             {/* 6. The Prize */}
-            <section id="prize" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            <section id="prize" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 6. The Prize
               </h2>
               <p>
                 6.1. The prize details are described on the Website. Prizes are non-transferable and subject to availability.
               </p>
               <p>
-                6.2. Vehicle & Special Category Prizes: For vehicle or high-value experiential prizes, winners are solely responsible for ensuring valid driving licences, road tax, comprehensive insurance, safety compliance, and lawful operation under UK regulations.
-              </p>
-              <p>
-                6.3. Charity Draws reserves the right to substitute a prize with an equivalent cash alternative if circumstances beyond reasonable control make it necessary.
+                6.2. Charity Draws reserves the right to substitute a prize with an equivalent cash alternative if circumstances beyond reasonable control make it necessary.
               </p>
             </section>
 
-            {/* 7. Winners & 8. Claiming */}
-            <section id="winners" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
+            {/* 7. Winners & Claiming */}
+            <section id="winners" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
                 7. Winners & Claiming Prizes
               </h2>
               <p>
                 7.1. Winners will be contacted personally via phone or email within 7 days of the Draw Date.
               </p>
               <p>
-                7.2. <strong className="text-[#E8EDD4]">21-Day Claim Limit:</strong> Winners have 21 days from notification to claim their prize. If uncontactable after 21 days, an alternate winner will be selected via random redraw.
+                7.2. <strong className="text-text-primary">21-Day Claim Limit:</strong> Winners have 21 days from notification to claim their prize. If uncontactable after 21 days, an alternate winner will be selected via random redraw.
               </p>
               <p>
                 7.3. Cash prizes will be transferred directly to the winner's verified UK bank account. The winner must prove sole or joint beneficiary ownership of the account.
               </p>
             </section>
 
-            {/* 9. Limitation of Liability & 10. Data */}
-            <section id="liability" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
-                9. Limitation of Liability & Data Protection
+            {/* 8. Limitation of Liability & Data Protection */}
+            <section id="liability" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
+                8. Limitation of Liability & Data Protection
               </h2>
               <p>
-                9.1. Charity Draws accepts no liability for technical failures, network outages, or delayed entries.
+                8.1. Charity Draws accepts no liability for technical failures, network outages, or delayed entries beyond our direct control.
               </p>
               <p>
-                10.1. Personal information provided will be processed strictly in accordance with our Privacy Policy and UK GDPR regulations.
+                8.2. Personal information provided will be processed strictly in accordance with our Privacy Policy and UK GDPR regulations.
               </p>
               <p>
-                10.2. Winners consent to the publication of their full name and town for statutory Advertising Standards Authority (ASA) compliance proof.
+                8.3. Winners consent to the publication of their full name and town for statutory Advertising Standards Authority (ASA) compliance proof.
               </p>
             </section>
 
-            {/* 11. General Terms */}
-            <section id="general" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
-                11. General Terms & Governing Law
+            {/* 9. General Terms & Governing Law */}
+            <section id="general" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
+                9. General Terms & Governing Law
               </h2>
               <p>
-                11.1. Competitions are governed by English Law and the exclusive jurisdiction of the courts of England & Wales.
+                9.1. Competitions are governed by English Law and the exclusive jurisdiction of the courts of England & Wales.
               </p>
               <p>
-                11.2. Competitions on Charity Draws are in no way sponsored, endorsed, or administered by Meta (Facebook/Instagram).
+                9.2. Competitions on Charity Draws are in no way sponsored, endorsed, or administered by Meta (Facebook/Instagram).
               </p>
             </section>
 
-            {/* 12. AML Policy */}
-            <section id="aml-policy" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
-                12. Anti-Money Laundering (AML) Policy
+            {/* 10. AML Policy */}
+            <section id="aml-policy" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
+                10. Anti-Money Laundering (AML) Policy
               </h2>
               <p>
-                12.1. Charity Draws enforces strict anti-money laundering measures under UK regulations and the Gambling Act 2005.
+                10.1. Charity Draws enforces strict anti-money laundering measures under UK regulations and the Gambling Act 2005.
               </p>
               <p>
-                12.2. A designated Money Laundering Reporting Officer (MLRO) oversees platform compliance.
+                10.2. A designated Money Laundering Reporting Officer (MLRO) oversees platform compliance.
               </p>
               <p>
-                12.3. Anonymous accounts, cash payments, or registrations under 18 years of age are strictly prohibited. Refunds & prize transfers are executed back to the original funding route.
+                10.3. Anonymous accounts, cash payments, or registrations under 18 years of age are strictly prohibited. Refunds & prize transfers are executed back to the original funding route.
               </p>
             </section>
 
-            {/* 13. Fair Play */}
-            <section id="fair-play" className="bg-[#161810] border border-[#2D3C13] rounded-2xl p-6 sm:p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[#E8EDD4] border-b border-[#2D3C13] pb-3">
-                13. Fair Play & Strict One Account Policy
+            {/* 11. Fair Play */}
+            <section id="fair-play" className="bg-surface border border-border rounded-card p-6 sm:p-8 space-y-4 shadow-card">
+              <h2 className="font-heading font-bold text-xl text-text-primary border-b border-divider pb-3">
+                11. Fair Play & Strict One Account Policy
               </h2>
               <p>
-                13.1. <strong className="text-[#E8EDD4]">One Account Per Person:</strong> Each participant is strictly limited to one user account on Charity Draws.
+                11.1. <strong className="text-text-primary">One Account Per Person:</strong> Each participant is strictly limited to one user account on Charity Draws.
               </p>
               <p>
-                13.2. Creating duplicate accounts to gain an unfair advantage in free giveaways or ticket limits is strictly forbidden.
+                11.2. Creating duplicate accounts to gain an unfair advantage in free giveaways or ticket limits is strictly forbidden.
               </p>
               <p>
-                13.3. If duplicate accounts are detected, all entries will be rendered void and forfeited without refund, and offending accounts will be permanently banned.
+                11.3. If duplicate accounts are detected, all entries will be rendered void and forfeited without refund, and offending accounts will be permanently banned.
               </p>
             </section>
 

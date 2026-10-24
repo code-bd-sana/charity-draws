@@ -8,7 +8,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Winners", href: "/winners" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Verified Hosts", href: "/verified-hosts" },
+  { label: "Verified Charities", href: "/verified-hosts" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -25,15 +25,16 @@ export const FOOTER_SECTIONS = [
       { label: "Cash Prizes", href: "/live-raffles?category=cash-prizes" },
       { label: "Tech & Gadgets", href: "/live-raffles?category=tech-gadgets" },
       { label: "Luxury Watches", href: "/live-raffles?category=luxury-watches" },
-      { label: "Cars & Vehicles", href: "/live-raffles?category=cars-vehicles" },
+      { label: "Holidays & Travel", href: "/live-raffles?category=holidays-travel" },
     ],
   },
   {
-    title: "For Hosts",
+    title: "Host A Draw",
     links: [
-      { label: "Start Hosting", href: "/host/register" },
+      { label: "Start Hosting (Charity / Promoter)", href: "/host/register" },
       { label: "Pricing & Fees", href: "/pricing" },
-      { label: "Verified Hosts", href: "/verified-hosts" },
+      { label: "Verified Charities", href: "/verified-hosts" },
+      { label: "Host Rules & Guidelines", href: "/host-rules" },
     ],
   },
   {

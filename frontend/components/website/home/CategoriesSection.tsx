@@ -40,7 +40,7 @@ export default function CategoriesSection() {
   };
 
   return (
-    <section className="py-20 bg-[#0A0B07] border-t border-[#161810] relative">
+    <section className="py-20 bg-surface border-t border-divider relative">
       <div className="container-custom">
         
         {/* Header & Controls Row */}
@@ -55,7 +55,7 @@ export default function CategoriesSection() {
           <div className="hidden md:flex items-center gap-3 shrink-0 pb-2">
             <button 
               onClick={scrollLeft}
-              className="w-12 h-12 rounded-full border border-[#2D3C13] flex items-center justify-center bg-[#111210] text-[#72943A] hover:border-[#8CB34A] hover:text-[#8CB34A] transition-all duration-300 shadow-sm"
+              className="w-12 h-12 rounded-full border border-border flex items-center justify-center bg-surface text-text-muted hover:border-primary hover:text-text-brand hover:bg-accent-bg/40 transition-all duration-300 shadow-sm"
               aria-label="Scroll left"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -64,7 +64,7 @@ export default function CategoriesSection() {
             </button>
             <button 
               onClick={scrollRight}
-              className="w-12 h-12 rounded-full border border-[#2D3C13] flex items-center justify-center bg-[#111210] text-[#72943A] hover:border-[#8CB34A] hover:text-[#8CB34A] transition-all duration-300 shadow-sm"
+              className="w-12 h-12 rounded-full border border-border flex items-center justify-center bg-surface text-text-muted hover:border-primary hover:text-text-brand hover:bg-accent-bg/40 transition-all duration-300 shadow-sm"
               aria-label="Scroll right"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

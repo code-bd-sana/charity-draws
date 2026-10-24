@@ -17,18 +17,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "api.airsoftdraws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "airsoftdraws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "**.airsoftdraws.com",
-      },
-      {
-        protocol: "https",
         hostname: "placehold.co",
       },
       {
@@ -85,6 +73,15 @@ const nextConfig: NextConfig = {
       {
         source: '/uploads/:path*',
         destination: `${uploadsBaseUrl}/uploads/:path*`,
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/verified-charities',
+        destination: '/verified-hosts',
+        permanent: true,
       },
     ];
   },

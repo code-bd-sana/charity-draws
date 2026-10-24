@@ -105,7 +105,7 @@ export default function WebsiteFooter() {
         <div className="border-t border-divider pt-8 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 text-[10px] text-text-muted leading-relaxed">
           <div className="max-w-3xl">
             <p className="mb-2">
-              © {new Date().getFullYear()} {BRAND_NAME}. All rights reserved. Registered in England & Wales.
+              © {new Date().getFullYear()} Charity Draws Ltd. All rights reserved. Registered in England & Wales (Company Number: Pending Registration).
             </p>
             <p>
               Prize draws are operated in accordance with the UK Gambling Act 2005 as compliant prize competitions. Participation is limited to individuals resident in eligible jurisdictions. Ticket purchases are final.
