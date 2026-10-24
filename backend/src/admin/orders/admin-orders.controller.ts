@@ -63,6 +63,22 @@ export class AdminOrdersController {
     return this.adminOrdersService.getOrdersStats();
   }
 
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get single order details by transaction ID (Admin only)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The transaction ID of the order',
+  })
+  @ApiResponse({ status: 200, description: 'Order details successfully retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  async getOrderById(@Param('id') id: string) {
+    return this.adminOrdersService.getOrderById(id);
+  }
+
   @Post(':id/refund')
   @ApiOperation({ summary: 'Process a refund for a ticket order (Admin only)' })
   @ApiParam({

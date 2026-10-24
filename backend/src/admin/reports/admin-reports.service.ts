@@ -282,58 +282,69 @@ export class AdminReportsService {
       .sort((a, b) => b.revenue - a.revenue || b.percent - a.percent || b.rafflesCount - a.rafflesCount)
       .slice(0, 5);
 
-    // 7. Geographic Distribution
-    const regionCounts: Record<string, number> = {
-      England: 0,
-      Scotland: 0,
-      Wales: 0,
-      'N. Ireland': 0,
-      Other: 0,
-    };
+    // 7. Geographic Distribution (Real Country & Region Mapping from Registered Users & Buyers)
+    const regionCounts: Record<string, number> = {};
 
     userList.forEach((u) => {
-      const loc = `${u.location || ''} ${u.address || ''}`.toLowerCase();
-      if (
+      const loc = `${u.location || ''} ${u.address || ''}`.toLowerCase().trim();
+      let region = 'Unspecified';
+
+      if (!loc) {
+        region = 'Unspecified';
+      } else if (
+        loc.includes('united kingdom') ||
+        loc.includes('uk') ||
         loc.includes('england') ||
+        loc.includes('scotland') ||
+        loc.includes('wales') ||
         loc.includes('london') ||
         loc.includes('manchester') ||
         loc.includes('birmingham') ||
         loc.includes('leeds') ||
         loc.includes('bristol')
       ) {
-        regionCounts.England++;
+        region = 'United Kingdom';
       } else if (
-        loc.includes('scotland') ||
-        loc.includes('edinburgh') ||
-        loc.includes('glasgow') ||
-        loc.includes('aberdeen')
+        loc.includes('united states') ||
+        loc.includes('usa') ||
+        loc.includes('u.s.') ||
+        loc.includes('america')
       ) {
-        regionCounts.Scotland++;
-      } else if (
-        loc.includes('wales') ||
-        loc.includes('cardiff') ||
-        loc.includes('swansea')
-      ) {
-        regionCounts.Wales++;
+        region = 'United States';
       } else if (
         loc.includes('ireland') ||
-        loc.includes('belfast') ||
-        loc.includes('derry')
+        loc.includes('dublin') ||
+        loc.includes('belfast')
       ) {
-        regionCounts['N. Ireland']++;
+        region = 'Ireland';
+      } else if (
+        loc.includes('bangladesh') ||
+        loc.includes('dhaka')
+      ) {
+        region = 'Bangladesh';
+      } else if (
+        loc.includes('canada') ||
+        loc.includes('australia') ||
+        loc.includes('germany') ||
+        loc.includes('france') ||
+        loc.includes('spain')
+      ) {
+        region = 'International';
       } else {
-        regionCounts.Other++;
+        region = 'Other';
       }
+
+      regionCounts[region] = (regionCounts[region] || 0) + 1;
     });
 
-    const totalGeos = Object.values(regionCounts).reduce((a, b) => a + b, 0);
-    const geographicDistribution = Object.entries(regionCounts).map(
-      ([name, count]) => ({
+    const totalGeos = userList.length || 1;
+    const geographicDistribution = Object.entries(regionCounts)
+      .map(([name, count]) => ({
         name,
         count,
-        value: totalGeos > 0 ? Math.round((count / totalGeos) * 100) : 0,
-      }),
-    );
+        value: Math.round((count / totalGeos) * 100),
+      }))
+      .sort((a, b) => b.count - a.count);
 
     return {
       period: normalizedPeriod(period),

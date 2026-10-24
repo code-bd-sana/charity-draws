@@ -138,7 +138,7 @@ export default function HostRegistrationForm({
     if (step === 2) onChangeStep(1);
     else if (step === 3) onChangeStep(2);
     else if (step === 8) {
-      if (formData.hostType === "business") {
+      if (formData.hostType === "business" || formData.hostType === "promoter") {
         onChangeStep(3);
       } else {
         onChangeStep(2);
@@ -461,36 +461,50 @@ export default function HostRegistrationForm({
                 <label className="font-sans font-medium text-xs md:text-sm text-text-primary">
                   Host Type
                 </label>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, hostType: "individual" }))}
-                    className={cn(
-                      "flex-1 font-sans text-xs md:text-sm font-medium py-2.5 rounded-badge border text-center transition-all duration-200 cursor-pointer",
-                      formData.hostType === "individual"
-                        ? "bg-accent-bg border-primary text-text-brand shadow-glow"
-                        : "bg-surface border-border text-text-secondary hover:text-text-primary"
-                    )}
-                  >
-                    Individual
-                  </button>
+                <div className="flex flex-col sm:flex-row gap-2.5">
                   <button
                     type="button"
                     onClick={() => setFormData((prev) => ({ ...prev, hostType: "business" }))}
                     className={cn(
-                      "flex-1 font-sans text-xs md:text-sm font-medium py-2.5 rounded-badge border text-center transition-all duration-200 cursor-pointer",
+                      "flex-1 font-sans text-xs font-medium py-2.5 px-3 rounded-badge border text-center transition-all duration-200 cursor-pointer",
                       formData.hostType === "business"
                         ? "bg-accent-bg border-primary text-text-brand shadow-glow"
                         : "bg-surface border-border text-text-secondary hover:text-text-primary"
                     )}
                   >
-                    Business / Organisation
+                    Registered Charity
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, hostType: "promoter" }))}
+                    className={cn(
+                      "flex-1 font-sans text-xs font-medium py-2.5 px-3 rounded-badge border text-center transition-all duration-200 cursor-pointer",
+                      formData.hostType === "promoter"
+                        ? "bg-accent-bg border-primary text-text-brand shadow-glow"
+                        : "bg-surface border-border text-text-secondary hover:text-text-primary"
+                    )}
+                  >
+                    Promoter (Host A Draw)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, hostType: "individual" }))}
+                    className={cn(
+                      "flex-1 font-sans text-xs font-medium py-2.5 px-3 rounded-badge border text-center transition-all duration-200 cursor-pointer",
+                      formData.hostType === "individual"
+                        ? "bg-accent-bg border-primary text-text-brand shadow-glow"
+                        : "bg-surface border-border text-text-secondary hover:text-text-primary"
+                    )}
+                  >
+                    Individual Host
                   </button>
                 </div>
                 <span className="font-sans text-[11px] text-text-muted font-medium">
-                  {formData.hostType === "individual"
-                    ? "You are hosting as a private individual."
-                    : "You are hosting as a registered business entity."}
+                  {formData.hostType === "business"
+                    ? "You are hosting as a registered UK charity or non-profit organisation."
+                    : formData.hostType === "promoter"
+                    ? "You are hosting draws as an authorized promoter or fundraising partner."
+                    : "You are hosting as an individual registered host."}
                 </span>
               </div>
 

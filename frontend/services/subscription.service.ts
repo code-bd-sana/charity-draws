@@ -26,10 +26,55 @@ export interface HostSubscription {
   };
 }
 
+export interface AdminSubscriptionItem {
+  id: string;
+  hostId: string;
+  planId: string;
+  status: 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  plan: SubscriptionPlan;
+  host: {
+    id: string;
+    userId: string;
+    businessName: string;
+    slug?: string | null;
+    bio?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    walletBalance?: string | number;
+    isVerified?: boolean;
+    user?: {
+      id: string;
+      email: string;
+      firstName: string | null;
+      lastName: string | null;
+      avatarUrl: string | null;
+      phone: string | null;
+      role: string;
+      isBlocked?: boolean;
+    };
+  };
+  transaction?: {
+    id: string;
+    userId?: string;
+    amount: string;
+    status: string;
+    paymentGateway: string;
+    gatewayTransactionId?: string;
+    createdAt: string;
+  } | null;
+}
+
 export interface AdminSubscriptionStats {
   mrr: number;
   totalActive: number;
+  totalSubscriptions: number;
+  paidActive: number;
+  freeActive: number;
   planDistribution: {
+    id?: string;
     name: string;
     value: number;
     percentage: string;
@@ -57,8 +102,13 @@ export const subscriptionService = {
     return response.data;
   },
 
-  async getAllSubscriptionsForAdmin(): Promise<any[]> {
+  async getAllSubscriptionsForAdmin(): Promise<AdminSubscriptionItem[]> {
     const response = await api.get('/subscriptions/admin');
+    return response.data;
+  },
+
+  async cancelSubscriptionAdmin(subscriptionId: string): Promise<any> {
+    const response = await api.post(`/subscriptions/admin/${subscriptionId}/cancel`);
     return response.data;
   },
 

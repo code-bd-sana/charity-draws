@@ -71,7 +71,10 @@ export class AdminWithdrawalsService {
       throw new NotFoundException('Withdrawal request not found');
     }
 
-    if (withdrawal.status === status) {
+    const isStatusChanging = withdrawal.status !== status;
+    const isNotesChanging = adminNotes !== undefined && adminNotes !== withdrawal.adminNotes;
+
+    if (!isStatusChanging && !isNotesChanging) {
       return withdrawal;
     }
 
@@ -92,12 +95,12 @@ export class AdminWithdrawalsService {
         where: { id },
         data: {
           status,
-          adminNotes: adminNotes || withdrawal.adminNotes,
+          adminNotes: adminNotes !== undefined ? adminNotes : withdrawal.adminNotes,
         },
       });
     });
 
-    if (this.notificationsService && withdrawal.host?.userId) {
+    if (isStatusChanging && this.notificationsService && withdrawal.host?.userId) {
       const formattedAmount = Number(withdrawal.amount).toFixed(2);
       const title =
         status === 'COMPLETED'

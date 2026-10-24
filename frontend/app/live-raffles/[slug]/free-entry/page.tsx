@@ -26,7 +26,7 @@ export default async function FreeEntryPage({ params }: PageProps) {
             ← Back to Competition
           </Link>
           
-          <div className="bg-[#161810] border border-border rounded-card p-6 md:p-10">
+          <div className="bg-surface border border-border rounded-card p-6 md:p-10 shadow-card">
             <h1 className="font-heading font-bold text-3xl text-text-primary mb-6">
               Free Postal Entry
             </h1>
@@ -36,7 +36,7 @@ export default async function FreeEntryPage({ params }: PageProps) {
                 To enter this competition for free by post, you must send an unenclosed postcard containing the following information:
               </p>
               
-              <ul className="list-disc pl-5 space-y-2 text-[#72943a]">
+              <ul className="list-disc pl-5 space-y-2 text-text-secondary">
                 <li>The name of the competition you wish to enter.</li>
                 <li>Your full name and address.</li>
                 <li>Your date of birth (you must be 18 or older).</li>
@@ -44,13 +44,14 @@ export default async function FreeEntryPage({ params }: PageProps) {
                 <li>The correct answer to the competition question (if applicable).</li>
               </ul>
               
-              <div className="bg-accent-bg border border-border p-5 rounded-md my-6">
-                <h3 className="font-heading font-bold text-text-primary mb-2">Send your entry to:</h3>
-                <p className="text-text-secondary">
-                  [TODO: CLIENT APPROVED LEGAL ADDRESS]<br />
-                  PO Box 1234<br />
-                  London<br />
-                  EC1A 1BB
+              <div className="bg-accent-bg border border-border p-5 rounded-xl my-6">
+                <h3 className="font-heading font-bold text-text-brand mb-2">Send your postal entry to:</h3>
+                <p className="text-text-primary font-medium text-xs leading-relaxed">
+                  Charity Draws Ltd<br />
+                  Synergy House, Lawson Street<br />
+                  North Shields<br />
+                  NE29 6TG<br />
+                  United Kingdom
                 </p>
               </div>
               

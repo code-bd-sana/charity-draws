@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Category, categoryService } from '../../../../services/category.service';
+import { useDraggableModal } from '../../../../hooks/useDraggableModal';
 
 const AVAILABLE_ICONS = [
   'Sparkles',
@@ -27,6 +28,33 @@ export default function AdminCategoriesPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState('');
 
+  // Feature 3: Auto-slug state
+  const [isAutoSlug, setIsAutoSlug] = useState(true);
+
+  // Feature 4: Direct upload state
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  // Feature 5: Draggable modal hook
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isModalOpen, {
+    resetKey: currentCategory.id || (isEditMode ? 'edit' : 'new'),
+  });
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -47,6 +75,8 @@ export default function AdminCategoriesPage() {
     setIsEditMode(false);
     setCurrentCategory({ name: '', slug: '', icon: '', image: '', isActive: true });
     setImageFile(null);
+    setIsAutoSlug(true);
+    setIsDragOver(false);
     setError('');
     setIsModalOpen(true);
   };
@@ -55,12 +85,81 @@ export default function AdminCategoriesPage() {
     setIsEditMode(true);
     setCurrentCategory(category);
     setImageFile(null);
+    setIsAutoSlug(false);
+    setIsDragOver(false);
     setError('');
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleNameChange = (newName: string) => {
+    const updated: Partial<Category> = { ...currentCategory, name: newName };
+    if (isAutoSlug) {
+      updated.slug = generateSlug(newName);
+    }
+    setCurrentCategory(updated);
+  };
+
+  const handleSlugChange = (newSlug: string) => {
+    setIsAutoSlug(false);
+    setCurrentCategory({ ...currentCategory, slug: newSlug });
+  };
+
+  const handleToggleAutoSlug = () => {
+    if (!isAutoSlug) {
+      setIsAutoSlug(true);
+      setCurrentCategory({
+        ...currentCategory,
+        slug: generateSlug(currentCategory.name || ''),
+      });
+    } else {
+      setIsAutoSlug(false);
+    }
+  };
+
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload a valid image file');
+      return;
+    }
+    setError('');
+    setImageFile(file);
+    setCurrentCategory({
+      ...currentCategory,
+      image: URL.createObjectURL(file),
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleImageFile(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setCurrentCategory({ ...currentCategory, image: undefined });
+    const el = document.getElementById('categoryImageInput') as HTMLInputElement;
+    if (el) el.value = '';
   };
 
   const handleSave = async () => {
@@ -82,7 +181,13 @@ export default function AdminCategoriesPage() {
         }
       }
 
-      const payload = { ...currentCategory, image: finalImageUrl };
+      const finalSlug = currentCategory.slug?.trim() || generateSlug(currentCategory.name);
+
+      const payload = {
+        ...currentCategory,
+        slug: finalSlug,
+        image: finalImageUrl,
+      };
 
       if (isEditMode && currentCategory.id) {
         await categoryService.updateCategory(currentCategory.id, payload);
@@ -297,14 +402,50 @@ export default function AdminCategoriesPage() {
             className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity'
             onClick={closeModal}
           />
-          <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[500px] bg-surface border border-border rounded-card shadow-card z-50 animate-fadeIn flex flex-col overflow-hidden max-h-[90vh] overflow-y-auto'>
-            <div className='flex items-center justify-between p-6 border-b border-border bg-surface sticky top-0 z-10'>
-              <h2 className='font-heading font-bold text-[20px] text-text-primary'>
-                {isEditMode ? 'Edit Category' : 'Add New Category'}
-              </h2>
+          {/* Draggable Modal Window */}
+          <div
+            ref={modalRef}
+            style={modalStyle}
+            className={`fixed top-1/2 left-1/2 w-[92vw] max-w-[520px] max-h-[90vh] bg-surface border border-border rounded-card ${
+              isDragging ? 'shadow-2xl ring-2 ring-primary/40 select-none' : 'shadow-card'
+            } z-50 animate-fadeIn flex flex-col font-sans select-none overflow-hidden`}
+          >
+            {/* Draggable Header */}
+            <div
+              {...dragHandleProps}
+              title='Click and drag to move window • Double-click to re-center'
+              className={`flex items-center justify-between px-6 py-4 border-b border-border bg-accent-bg/30 shrink-0 select-none cursor-grab active:cursor-grabbing transition-colors ${
+                isDragging ? 'bg-accent-bg/60' : ''
+              }`}
+            >
+              <div className='flex items-center gap-3 min-w-0 pr-4'>
+                <div className='p-1 rounded text-text-muted opacity-70 shrink-0'>
+                  <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                    <path d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className='font-heading font-bold text-[18px] text-text-primary leading-tight'>
+                    {isEditMode ? 'Edit Category' : 'Add New Category'}
+                  </h2>
+                  {isMoved && (
+                    <button
+                      type='button'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetPosition();
+                      }}
+                      className='text-[11px] text-text-brand hover:underline font-semibold cursor-pointer'
+                    >
+                      (Reset position)
+                    </button>
+                  )}
+                </div>
+              </div>
               <button
                 onClick={closeModal}
-                className='text-text-muted hover:text-text-primary transition-colors cursor-pointer'
+                className='text-text-muted hover:text-text-primary p-1.5 rounded-button hover:bg-accent-bg transition-colors cursor-pointer'
+                title='Close'
               >
                 <svg
                   className='w-5 h-5'
@@ -318,37 +459,109 @@ export default function AdminCategoriesPage() {
               </button>
             </div>
 
-            <div className='p-6 space-y-5'>
+            {/* Scrollable Form Body */}
+            <div className='p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-140px)]'>
               {error && (
                 <div className='p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-button font-sans font-semibold'>
                   {error}
                 </div>
               )}
 
-              <div>
-                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>Name *</label>
-                <input
-                  type='text'
-                  value={currentCategory.name || ''}
-                  onChange={(e) => setCurrentCategory({ ...currentCategory, name: e.target.value })}
-                  className='w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-sans text-[14px] placeholder:text-text-muted transition-colors'
-                  placeholder='e.g. Rifles'
-                />
-              </div>
-
+              {/* Name Field */}
               <div>
                 <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
-                  Slug (Optional)
+                  Name *
                 </label>
                 <input
                   type='text'
-                  value={currentCategory.slug || ''}
-                  onChange={(e) => setCurrentCategory({ ...currentCategory, slug: e.target.value })}
+                  value={currentCategory.name || ''}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   className='w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-sans text-[14px] placeholder:text-text-muted transition-colors'
-                  placeholder='e.g. rifles'
+                  placeholder='e.g. Luxury Watches'
                 />
               </div>
 
+              {/* Feature 3: Slug with Auto-generate / Manual edit toggle */}
+              <div>
+                <div className='flex items-center justify-between mb-1.5'>
+                  <label className='block text-[13px] font-sans text-text-muted font-semibold'>
+                    Slug
+                  </label>
+                  <button
+                    type='button'
+                    onClick={handleToggleAutoSlug}
+                    className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                      isAutoSlug
+                        ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                        : 'bg-accent-bg text-text-muted hover:text-text-primary'
+                    }`}
+                    title={
+                      isAutoSlug
+                        ? 'Auto-generating from name (click to edit manually)'
+                        : 'Click to sync automatically with name'
+                    }
+                  >
+                    {isAutoSlug ? (
+                      <>
+                        <svg
+                          className='w-3 h-3'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          stroke='currentColor'
+                          strokeWidth={2.5}
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'
+                          />
+                        </svg>
+                        <span>Auto-generating</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className='w-3 h-3'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          stroke='currentColor'
+                          strokeWidth={2.5}
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
+                          />
+                        </svg>
+                        <span>Manual editing</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <div className='relative'>
+                  <input
+                    type='text'
+                    value={currentCategory.slug || ''}
+                    onChange={(e) => handleSlugChange(e.target.value)}
+                    className={`w-full h-[44px] px-4 bg-bg border border-border rounded-button focus:outline-none focus:border-primary text-text-primary font-mono text-[13px] placeholder:text-text-muted transition-colors ${
+                      isAutoSlug ? 'text-text-muted bg-accent-bg/40' : ''
+                    }`}
+                    placeholder='e.g. luxury-watches'
+                  />
+                  {isAutoSlug && (
+                    <span className='absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-sans text-primary font-medium pointer-events-none'>
+                      Synced
+                    </span>
+                  )}
+                </div>
+                <p className='text-[11px] text-text-muted mt-1'>
+                  {isAutoSlug
+                    ? 'Generated automatically from category name. Click "Auto-generating" to customize.'
+                    : 'Custom URL path identifier.'}
+                </p>
+              </div>
+
+              {/* Icon Selection */}
               <div>
                 <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
                   Icon Selection (Optional)
@@ -381,107 +594,142 @@ export default function AdminCategoriesPage() {
                 </div>
               </div>
 
-              {/* Image Upload Area */}
+              {/* Direct Category Image Upload (Drag & Drop + File Select) */}
               <div>
-                <label className='block text-[13px] font-sans text-text-muted font-semibold mb-1.5'>
-                  Category Image (Optional)
-                </label>
-                <div
-                  onClick={() =>
-                    !currentCategory.image && !imageFile
-                      ? document.getElementById('categoryImageInput')?.click()
-                      : undefined
-                  }
-                  className={`w-full h-[140px] border-2 border-dashed rounded-button flex flex-col items-center justify-center transition-colors relative overflow-hidden group ${
-                    currentCategory.image || imageFile
-                      ? 'border-border bg-bg'
-                      : 'border-border hover:border-primary hover:bg-accent-bg/40 cursor-pointer bg-bg'
-                  }`}
-                >
-                  {currentCategory.image || imageFile ? (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={imageFile ? URL.createObjectURL(imageFile) : currentCategory.image!}
-                        alt='Preview'
-                        className='w-full h-full object-cover'
-                      />
-                      <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setImageFile(null);
-                            setCurrentCategory({ ...currentCategory, image: undefined });
-                            const el = document.getElementById(
-                              'categoryImageInput',
-                            ) as HTMLInputElement;
-                            if (el) el.value = '';
-                          }}
-                          className='h-[32px] px-[12px] bg-red-600 text-white font-sans font-semibold text-[12px] rounded-button hover:bg-red-700 transition-colors cursor-pointer'
-                        >
-                          Remove Image
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className='w-6 h-6 text-text-brand mb-2'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        stroke='currentColor'
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          d='M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z'
-                        />
-                      </svg>
-                      <span className='font-sans font-semibold text-[12px] text-text-primary'>
-                        Click to upload image
-                      </span>
-                    </>
+                <div className='flex items-center justify-between mb-2'>
+                  <label className='block text-[13px] font-sans text-text-muted font-semibold'>
+                    Category Image (Optional)
+                  </label>
+                  {currentCategory.image && (
+                    <button
+                      type='button'
+                      onClick={handleRemoveImage}
+                      className='text-[12px] font-sans text-red-600 hover:text-red-700 font-semibold cursor-pointer transition-colors'
+                    >
+                      Remove
+                    </button>
                   )}
-                  <input
-                    id='categoryImageInput'
-                    type='file'
-                    accept='image/*'
-                    className='hidden'
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setImageFile(file);
-                        setCurrentCategory({
-                          ...currentCategory,
-                          image: URL.createObjectURL(file),
-                        });
-                      }
-                    }}
-                  />
                 </div>
+
+                {/* Instant Preview if image exists */}
+                {currentCategory.image ? (
+                  <div className='relative w-full h-[150px] rounded-button overflow-hidden border border-border bg-bg group'>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={currentCategory.image}
+                      alt='Category preview'
+                      className='w-full h-full object-cover'
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src =
+                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+                      }}
+                    />
+                    <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
+                      <button
+                        type='button'
+                        onClick={() => document.getElementById('categoryImageInput')?.click()}
+                        className='h-[32px] px-3 bg-white/95 text-text-primary font-sans font-semibold text-[12px] rounded-button hover:bg-white transition-colors cursor-pointer shadow-sm'
+                      >
+                        Change Image
+                      </button>
+                      <button
+                        type='button'
+                        onClick={handleRemoveImage}
+                        className='h-[32px] px-3 bg-red-600 text-white font-sans font-semibold text-[12px] rounded-button hover:bg-red-700 transition-colors cursor-pointer shadow-sm'
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                    <div className='absolute bottom-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[10px] font-sans px-2 py-0.5 rounded'>
+                      Current Image
+                    </div>
+                  </div>
+                ) : (
+                  /* Drag & Drop Upload Zone */
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => document.getElementById('categoryImageInput')?.click()}
+                    className={`w-full h-[130px] border-2 border-dashed rounded-button flex flex-col items-center justify-center transition-all cursor-pointer relative overflow-hidden ${
+                      isDragOver
+                        ? 'border-primary bg-primary/10 scale-[1.01]'
+                        : 'border-border hover:border-primary hover:bg-accent-bg/40 bg-bg'
+                    }`}
+                  >
+                    <svg
+                      className={`w-7 h-7 mb-1.5 transition-colors ${
+                        isDragOver ? 'text-primary' : 'text-text-muted'
+                      }`}
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z'
+                      />
+                    </svg>
+                    <span className='font-sans font-semibold text-[13px] text-text-primary'>
+                      {isDragOver ? 'Drop image here' : 'Drag & drop image here or browse'}
+                    </span>
+                    <span className='font-sans text-[11px] text-text-muted mt-1'>
+                      Supports PNG, JPG, WEBP, SVG (max 5MB)
+                    </span>
+                  </div>
+                )}
+
+                <input
+                  id='categoryImageInput'
+                  type='file'
+                  accept='image/*'
+                  className='hidden'
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageFile(file);
+                  }}
+                />
               </div>
 
-              <div className='flex items-center mt-2'>
-                <input
-                  type='checkbox'
-                  id='isActive'
-                  checked={currentCategory.isActive !== false}
-                  onChange={(e) =>
-                    setCurrentCategory({ ...currentCategory, isActive: e.target.checked })
+              {/* Feature 6: Modern iOS-style animated toggle switch for Active status */}
+              <div className='flex items-center justify-between p-3.5 bg-accent-bg/30 border border-border rounded-button'>
+                <div className='flex flex-col gap-0.5'>
+                  <span className='text-[13px] font-sans font-semibold text-text-primary'>
+                    Category Visibility
+                  </span>
+                  <span className='text-[12px] font-sans text-text-muted'>
+                    {currentCategory.isActive !== false
+                      ? 'Active • Visible to all public shoppers'
+                      : 'Hidden • Only visible in admin dashboard'}
+                  </span>
+                </div>
+                <button
+                  type='button'
+                  role='switch'
+                  aria-checked={currentCategory.isActive !== false}
+                  onClick={() =>
+                    setCurrentCategory({
+                      ...currentCategory,
+                      isActive: currentCategory.isActive === false ? true : false,
+                    })
                   }
-                  className='h-4 w-4 rounded border-border bg-bg text-primary focus:ring-primary'
-                />
-                <label
-                  htmlFor='isActive'
-                  className='ml-2 block text-[13px] font-sans text-text-primary font-medium'
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                    currentCategory.isActive !== false ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-700'
+                  }`}
                 >
-                  Active (visible to public)
-                </label>
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      currentCategory.isActive !== false ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
 
-            <div className='p-6 border-t border-border bg-surface flex justify-end gap-3 sticky bottom-0 z-10'>
+            {/* Modal Actions Footer */}
+            <div className='p-5 border-t border-border bg-surface flex justify-end gap-3 shrink-0'>
               <button
                 onClick={closeModal}
                 className='px-5 py-2.5 rounded-button bg-surface border border-border hover:bg-accent-bg text-text-primary font-sans font-semibold text-[14px] transition-colors cursor-pointer'

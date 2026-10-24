@@ -25,6 +25,7 @@ async function main() {
     'tactical-vests',
     'bbs-and-gas',
     'bbs-gas',
+    'cars-vehicles',
   ];
 
   await prisma.category.deleteMany({
@@ -52,13 +53,6 @@ async function main() {
       icon: 'Watch',
       isActive: true,
       image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      name: 'Cars & Vehicles',
-      slug: 'cars-vehicles',
-      icon: 'Car',
-      isActive: true,
-      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
     },
     {
       name: 'Holidays & Travel',

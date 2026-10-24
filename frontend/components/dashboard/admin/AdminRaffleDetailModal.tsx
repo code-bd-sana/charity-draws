@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { formatUKDateTime, formatUKDate, getRaffleTimingStatus } from "../../../lib/uk-date";
 import { cn, formatCurrency } from "../../../lib/utils";
+import { useDraggableModal } from "../../../hooks/useDraggableModal";
 
 interface AdminRaffleDetailModalProps {
   isOpen: boolean;
@@ -25,6 +26,15 @@ export default function AdminRaffleDetailModal({
 }: AdminRaffleDetailModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>("overview");
   const [isImageZoomed, setIsImageZoomed] = useState(false);
+
+  const {
+    modalRef,
+    isDragging,
+    isMoved,
+    dragHandleProps,
+    modalStyle,
+    resetPosition,
+  } = useDraggableModal(isOpen, { resetKey: raffle?.id });
 
   if (!isOpen || !raffle) return null;
 
@@ -117,48 +127,98 @@ export default function AdminRaffleDetailModal({
       />
 
       {/* Modal Dialog */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-[920px] max-h-[92vh] bg-surface border border-border rounded-card shadow-card z-50 animate-fadeIn flex flex-col font-sans select-none overflow-hidden">
+      <div
+        ref={modalRef}
+        style={modalStyle}
+        className={`fixed top-1/2 left-1/2 w-[95vw] max-w-[920px] max-h-[92vh] bg-surface border border-border rounded-card ${
+          isDragging ? "shadow-2xl ring-2 ring-primary/40 select-none" : "shadow-card"
+        } z-50 animate-fadeIn flex flex-col font-sans select-none overflow-hidden`}
+      >
         
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-accent-bg/30 shrink-0">
-          <div className="flex flex-col gap-1 min-w-0 pr-4">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {getHeaderStatusBadge(raffle.status)}
-              {raffle.category && (
-                <span className="px-2.5 py-0.5 rounded-badge bg-elevated text-text-brand border border-border-medium text-[11px] font-semibold">
-                  {raffle.category}
-                </span>
-              )}
-              <span className="text-[12px] text-text-muted font-medium">
-                ID: <span className="font-mono text-[11px] text-text-primary">{raffle.id}</span>
-              </span>
-              {raffle.slug && (
-                <a
-                  href={`/live-raffles/${raffle.slug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2 py-0.5 rounded-badge bg-surface hover:bg-elevated text-text-brand border border-border text-[11px] font-semibold flex items-center gap-1 transition-colors"
-                  title="Open live public competition page"
-                >
-                  <span>Public View</span>
-                  <span>↗</span>
-                </a>
-              )}
+        {/* Header - Draggable Title Bar */}
+        <div
+          {...dragHandleProps}
+          title="Click and drag to move window • Double-click to re-center"
+          className={`flex items-center justify-between px-6 py-4 border-b border-border bg-accent-bg/30 shrink-0 select-none cursor-grab active:cursor-grabbing transition-colors ${
+            isDragging ? "bg-accent-bg/60" : ""
+          }`}
+        >
+          <div className="flex items-center gap-3 min-w-0 pr-4">
+            {/* Grip handle icon */}
+            <div className="flex items-center text-text-muted hover:text-text-brand transition-colors p-1 rounded shrink-0">
+              <svg className="w-4 h-4 text-text-muted opacity-70" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+              </svg>
             </div>
-            <h2 className="font-heading font-bold text-[18px] sm:text-[20px] text-text-primary truncate">
-              {raffle.title}
-            </h2>
+
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {getHeaderStatusBadge(raffle.status)}
+                {raffle.category && (
+                  <span className="px-2.5 py-0.5 rounded-badge bg-elevated text-text-brand border border-border-medium text-[11px] font-semibold">
+                    {raffle.category}
+                  </span>
+                )}
+                <span className="text-[12px] text-text-muted font-medium">
+                  ID: <span className="font-mono text-[11px] text-text-primary">{raffle.id}</span>
+                </span>
+                {raffle.slug && (
+                  <a
+                    href={`/live-raffles/${raffle.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2 py-0.5 rounded-badge bg-surface hover:bg-elevated text-text-brand border border-border text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                    title="Open live public competition page"
+                  >
+                    <span>Public View</span>
+                    <span>↗</span>
+                  </a>
+                )}
+                <span className="text-[11px] text-text-muted flex items-center gap-1 font-sans">
+                  <span>• Hold &amp; drag to move</span>
+                  {isMoved && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetPosition();
+                      }}
+                      className="text-text-brand hover:underline font-semibold ml-1 cursor-pointer"
+                    >
+                      (Reset position)
+                    </button>
+                  )}
+                </span>
+              </div>
+              <h2 className="font-heading font-bold text-[18px] sm:text-[20px] text-text-primary truncate">
+                {raffle.title}
+              </h2>
+            </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-surface border border-border hover:bg-accent-bg text-text-muted hover:text-text-primary transition-colors flex items-center justify-center shrink-0 cursor-pointer"
-            aria-label="Close modal"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {isMoved && (
+              <button
+                type="button"
+                onClick={resetPosition}
+                title="Reset window to center"
+                className="text-text-muted hover:text-text-brand p-1.5 rounded-button hover:bg-accent-bg transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center text-xs"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-full bg-surface border border-border hover:bg-accent-bg text-text-muted hover:text-text-primary transition-colors flex items-center justify-center shrink-0 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}

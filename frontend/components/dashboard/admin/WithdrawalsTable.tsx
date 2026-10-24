@@ -54,7 +54,7 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
 
   return (
     <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto scrollbar-thin mt-2 animate-fadeIn select-none">
-      <table className="w-full min-w-[1100px] text-left border-collapse">
+      <table className="w-full min-w-[1250px] text-left border-collapse">
         <thead>
           <tr className="border-b border-border bg-accent-bg/50">
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider">HOST BUSINESS</th>
@@ -62,6 +62,7 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">FEE (10%)</th>
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">NET PAYOUT</th>
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">PAYMENT METHOD</th>
+            <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-left">ADMIN NOTES</th>
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">REQUEST DATE</th>
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">STATUS</th>
             <th className="py-4 px-6 font-sans text-[10px] font-bold text-text-muted uppercase tracking-wider text-right">ACTIONS</th>
@@ -70,7 +71,7 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
         <tbody>
           {withdrawals.length === 0 ? (
             <tr>
-              <td colSpan={8} className="py-8 px-6 text-center">
+              <td colSpan={9} className="py-8 px-6 text-center">
                 <EmptyState
                   title="No Withdrawal Requests"
                   description="There are currently no withdrawal or payout requests pending review."
@@ -103,6 +104,18 @@ export default function WithdrawalsTable({ withdrawals: propWithdrawals, isLoadi
                   </td>
                   <td className="py-4 px-6 text-center font-sans text-[13px] text-text-muted font-medium">
                     {payout.payoutMethod || 'Bank Transfer'}
+                  </td>
+                  <td className="py-4 px-6 text-left max-w-[200px]">
+                    {payout.adminNotes ? (
+                      <span 
+                        title={payout.adminNotes}
+                        className="inline-block px-2.5 py-1 rounded bg-accent-bg border border-border font-sans font-medium text-[11px] text-text-primary line-clamp-2 max-w-[190px] break-words cursor-help"
+                      >
+                        {payout.adminNotes}
+                      </span>
+                    ) : (
+                      <span className="font-sans text-[11px] text-text-muted/60 italic">—</span>
+                    )}
                   </td>
                   <td className="py-4 px-6 text-center font-sans text-[12px] text-text-muted font-medium">
                     {dateStr}

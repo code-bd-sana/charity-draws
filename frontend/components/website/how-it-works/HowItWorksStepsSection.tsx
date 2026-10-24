@@ -1,28 +1,45 @@
 "use client";
 
 import React, { useState } from "react";
-import { entrantSteps, hostSteps } from "../../../data/how-it-works/how-it-works-steps.data";
+import { entrantSteps, charitySteps, promoterSteps } from "../../../data/how-it-works/how-it-works-steps.data";
 import { cn } from "../../../lib/utils";
 
 /**
- * Interactive steps section allowing toggling between Entrant and Host guides.
+ * Interactive steps section allowing toggling between Entrants, Registered Charities, and Promoters.
  * Renders a responsive vertical timeline with circles and connecting vertical lines.
  */
 export default function HowItWorksStepsSection() {
-  const [activeTab, setActiveTab] = useState<"entrants" | "hosts">("entrants");
+  const [activeTab, setActiveTab] = useState<"entrants" | "charities" | "promoters">("entrants");
 
-  const steps = activeTab === "entrants" ? entrantSteps : hostSteps;
+  const getSteps = () => {
+    switch (activeTab) {
+      case "charities":
+        return charitySteps;
+      case "promoters":
+        return promoterSteps;
+      default:
+        return entrantSteps;
+    }
+  };
+
+  const steps = getSteps();
 
   return (
     <section className="py-16 md:py-24 bg-transparent select-none">
       <div className="container-custom">
         {/* Tab Swapper Segment Capsule */}
-        <div className="flex justify-center mb-16">
-          <div className="bg-surface border border-border p-1.5 rounded-badge flex gap-1.5 items-center select-none shadow-card hover:border-border-medium transition-all max-w-md mx-auto">
+        <div className="flex flex-col items-center justify-center mb-16 gap-3">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-text-muted flex items-center gap-2">
+            <span>Select Your Journey</span>
+            <span>•</span>
+            <span className="text-text-brand">Host A Draw Options Included</span>
+          </div>
+
+          <div className="bg-surface border border-border p-1.5 rounded-badge flex flex-wrap gap-1.5 items-center justify-center select-none shadow-card hover:border-border-medium transition-all max-w-2xl mx-auto">
             <button
               onClick={() => setActiveTab("entrants")}
               className={cn(
-                "flex-1 px-6 py-2.5 rounded-badge font-heading text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer select-none",
+                "px-5 py-2.5 rounded-badge font-heading text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer select-none",
                 activeTab === "entrants"
                   ? "bg-primary border-primary text-primary-text font-semibold shadow-glow"
                   : "text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
@@ -31,15 +48,26 @@ export default function HowItWorksStepsSection() {
               I Want to Enter Draws
             </button>
             <button
-              onClick={() => setActiveTab("hosts")}
+              onClick={() => setActiveTab("charities")}
               className={cn(
-                "flex-1 px-6 py-2.5 rounded-badge font-heading text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer select-none",
-                activeTab === "hosts"
+                "px-5 py-2.5 rounded-badge font-heading text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer select-none",
+                activeTab === "charities"
                   ? "bg-primary border-primary text-primary-text font-semibold shadow-glow"
                   : "text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
               )}
             >
-              I Want to Host Draws
+              We Are a Registered Charity
+            </button>
+            <button
+              onClick={() => setActiveTab("promoters")}
+              className={cn(
+                "px-5 py-2.5 rounded-badge font-heading text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer select-none",
+                activeTab === "promoters"
+                  ? "bg-primary border-primary text-primary-text font-semibold shadow-glow"
+                  : "text-text-secondary hover:text-text-primary hover:bg-accent-bg/40"
+              )}
+            >
+              Promoter (Host A Draw)
             </button>
           </div>
         </div>

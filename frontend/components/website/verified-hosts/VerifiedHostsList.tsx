@@ -58,10 +58,12 @@ export default function VerifiedHostsList({ hosts }: VerifiedHostsListProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3 bg-surface border border-border rounded-card w-full max-w-[600px] mx-auto shadow-card">
-          <span className="text-[32px]">🔍</span>
-          <h3 className="font-heading font-bold text-lg text-text-primary">No Hosts Found</h3>
+          <span className="text-[32px]">🤝</span>
+          <h3 className="font-heading font-bold text-lg text-text-primary">No Charities Found</h3>
           <p className="font-sans text-xs md:text-sm text-text-muted max-w-[320px] leading-relaxed">
-            We couldn&apos;t find any verified hosts starting with the letter &quot;{activeLetter}&quot;. Try selecting &quot;All&quot; to see the full directory.
+            {activeLetter === "ALL"
+              ? "Verified charity partners will appear here once approved by our verification team."
+              : `We couldn't find any verified charities starting with the letter "${activeLetter}". Try selecting "All" to see the full directory.`}
           </p>
         </div>
       )}

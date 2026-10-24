@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { adminService, HostData } from "../../../services/admin.service";
@@ -30,6 +30,109 @@ export default function ReviewHostModal({
   isToggleBlockLoading = false,
 }: ReviewHostModalProps) {
   const [activeTab, setActiveTab] = useState<"business" | "owner" | "activity">("business");
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number }>({
+    startX: 0,
+    startY: 0,
+    initialX: 0,
+    initialY: 0,
+  });
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Reset position whenever modal opens or active host changes
+  useEffect(() => {
+    if (isOpen) {
+      setPosition({ x: 0, y: 0 });
+      setIsDragging(false);
+    }
+  }, [isOpen, host?.id]);
+
+  // Window drag event listeners
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - dragStartRef.current.startX;
+      const dy = e.clientY - dragStartRef.current.startY;
+
+      let nextX = dragStartRef.current.initialX + dx;
+      let nextY = dragStartRef.current.initialY + dy;
+
+      if (modalRef.current) {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // Keep at least 80px visible horizontally and 40px vertically
+        const minX = -screenWidth / 2 + 80;
+        const maxX = screenWidth / 2 - 80;
+        const minY = -screenHeight / 2 + 40;
+        const maxY = screenHeight / 2 - 40;
+
+        nextX = Math.max(minX, Math.min(maxX, nextX));
+        nextY = Math.max(minY, Math.min(maxY, nextY));
+      }
+
+      setPosition({ x: nextX, y: nextY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - dragStartRef.current.startX;
+      const dy = touch.clientY - dragStartRef.current.startY;
+
+      let nextX = dragStartRef.current.initialX + dx;
+      let nextY = dragStartRef.current.initialY + dy;
+
+      if (modalRef.current) {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const minX = -screenWidth / 2 + 80;
+        const maxX = screenWidth / 2 - 80;
+        const minY = -screenHeight / 2 + 40;
+        const maxY = screenHeight / 2 - 40;
+        nextX = Math.max(minX, Math.min(maxX, nextX));
+        nextY = Math.max(minY, Math.min(maxY, nextY));
+      }
+
+      setPosition({ x: nextX, y: nextY });
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isDragging]);
+
+  const handleStartDrag = (clientX: number, clientY: number, target: EventTarget | null) => {
+    // Prevent dragging when clicking buttons, links, inputs
+    if (target instanceof HTMLElement && target.closest("button, a, input, select, textarea")) {
+      return;
+    }
+    dragStartRef.current = {
+      startX: clientX,
+      startY: clientY,
+      initialX: position.x,
+      initialY: position.y,
+    };
+    setIsDragging(true);
+  };
 
   // Fetch full host details with deep relations (raffles, subscriptions, withdrawals)
   const { data: fullHostDetails, isLoading: isDetailsLoading } = useQuery({
@@ -90,17 +193,49 @@ export default function ReviewHostModal({
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop overlay (subtle so user can view background content when modal is dragged) */}
       <div
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 z-50 bg-black/25 backdrop-blur-[1px] transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Dialog */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] sm:max-w-[720px] max-h-[90vh] bg-surface border border-border rounded-card shadow-2xl z-50 animate-fadeIn flex flex-col select-none overflow-hidden">
-        {/* Header Bar */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-border bg-accent-bg/30 shrink-0">
-          <div className="flex items-center gap-4">
+      {/* Modal Dialog - Draggable Window */}
+      <div
+        ref={modalRef}
+        style={{
+          transform: `translate3d(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px), 0)`,
+          transition: isDragging ? "none" : "transform 0.12s ease-out, box-shadow 0.2s ease",
+        }}
+        className={`fixed top-1/2 left-1/2 w-[95vw] sm:max-w-[720px] max-h-[90vh] bg-surface border border-border rounded-card ${
+          isDragging ? "shadow-2xl ring-2 ring-primary/40 select-none" : "shadow-card"
+        } z-50 animate-fadeIn flex flex-col font-sans overflow-hidden`}
+      >
+        {/* Header Bar - Windows-style Draggable Title Bar */}
+        <div
+          onMouseDown={(e) => {
+            if (e.button === 0) {
+              handleStartDrag(e.clientX, e.clientY, e.target);
+            }
+          }}
+          onTouchStart={(e) => {
+            if (e.touches.length === 1) {
+              handleStartDrag(e.touches[0].clientX, e.touches[0].clientY, e.target);
+            }
+          }}
+          onDoubleClick={() => setPosition({ x: 0, y: 0 })}
+          title="Click and drag to move window • Double-click to re-center"
+          className={`flex items-center justify-between p-6 pb-4 border-b border-border bg-accent-bg/30 shrink-0 select-none cursor-grab active:cursor-grabbing transition-colors ${
+            isDragging ? "bg-accent-bg/60" : ""
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            {/* Grip handle icon */}
+            <div className="flex items-center text-text-muted hover:text-text-brand transition-colors p-1 rounded shrink-0">
+              <svg className="w-4 h-4 text-text-muted opacity-70" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-12a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
+              </svg>
+            </div>
+
             <div className="w-[52px] h-[52px] rounded-full bg-accent-bg border border-border-medium flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
               {logoSrc ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -132,37 +267,70 @@ export default function ReviewHostModal({
                   </span>
                 )}
               </div>
-              <span className="font-sans text-[12px] text-text-muted flex items-center gap-2">
-                <span>{host.email}</span>
-                {slug && (
-                  <>
-                    <span>•</span>
-                    <Link
-                      href={`/hosts/${slug}`}
-                      target="_blank"
-                      className="text-primary hover:underline flex items-center gap-0.5 font-medium"
-                      title="Preview public profile"
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-sans text-[12px] text-text-muted flex items-center gap-2">
+                  <span>{host.email}</span>
+                  {slug && (
+                    <>
+                      <span>•</span>
+                      <Link
+                        href={`/hosts/${slug}`}
+                        target="_blank"
+                        className="text-primary hover:underline flex items-center gap-0.5 font-medium"
+                        title="Preview public profile"
+                      >
+                        <span>/hosts/{slug}</span>
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                      </Link>
+                    </>
+                  )}
+                </span>
+                <span className="text-[11px] text-text-muted flex items-center gap-1 font-sans">
+                  <span>• Hold &amp; drag to move</span>
+                  {(position.x !== 0 || position.y !== 0) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPosition({ x: 0, y: 0 });
+                      }}
+                      className="text-text-brand hover:underline font-semibold ml-1 cursor-pointer"
                     >
-                      <span>/hosts/{slug}</span>
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                      </svg>
-                    </Link>
-                  </>
-                )}
-              </span>
+                      (Reset position)
+                    </button>
+                  )}
+                </span>
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-button hover:bg-accent-bg cursor-pointer"
-            aria-label="Close dialog"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Reset to center button if window was dragged */}
+            {(position.x !== 0 || position.y !== 0) && (
+              <button
+                type="button"
+                onClick={() => setPosition({ x: 0, y: 0 })}
+                title="Reset window to center"
+                className="text-text-muted hover:text-text-brand p-1.5 rounded-button hover:bg-accent-bg transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center text-xs"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-button hover:bg-accent-bg cursor-pointer min-h-[40px] min-w-[40px] flex items-center justify-center"
+              aria-label="Close dialog"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* 3 Tabs Navigation Bar */}

@@ -266,22 +266,32 @@ export default function ReportsAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={salesByCategory}
+                      data={salesByCategory.filter(c => c.value > 0)}
                       cx="32%"
                       cy="50%"
                       innerRadius={55}
                       outerRadius={80}
                       stroke="none"
                       dataKey="value"
-                      paddingAngle={2}
+                      paddingAngle={salesByCategory.filter(c => c.value > 0).length > 1 ? 2 : 0}
                     >
-                      {salesByCategory.map((entry, index) => (
+                      {salesByCategory.filter(c => c.value > 0).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip suffix="%" />} />
                   </PieChart>
                 </ResponsiveContainer>
+
+                {/* Center Label in Donut */}
+                <div className="absolute left-[32%] top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="font-heading font-bold text-lg text-text-primary leading-none">
+                    {data?.summary.ticketsSold ?? 0}
+                  </span>
+                  <span className="font-sans text-[9px] text-text-muted uppercase font-semibold mt-0.5">
+                    Tickets
+                  </span>
+                </div>
                 
                 {/* Dynamic Category Legend */}
                 <div className="absolute right-[5%] top-1/2 -translate-y-1/2 flex flex-col gap-2.5 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
@@ -314,8 +324,10 @@ export default function ReportsAnalyticsDashboard() {
               </div>
             ) : (
               popularCompetitions.map((comp, i) => {
-                const maxVal = Math.max(...popularCompetitions.map(c => c.totalTickets || c.value), 1);
-                const width = maxVal > 0 && comp.value > 0 ? (comp.value / maxVal) * 100 : 0;
+                const percentSold =
+                  comp.totalTickets > 0
+                    ? Math.min(100, Math.round((comp.value / comp.totalTickets) * 100))
+                    : 0;
                 return (
                   <div key={i} className="flex flex-col gap-1 w-full">
                     <div className="flex items-center justify-between w-full">
@@ -328,13 +340,13 @@ export default function ReportsAnalyticsDashboard() {
                         </span>
                         {comp.totalTickets > 0 && (
                           <span className="font-sans text-[10px] text-text-muted">
-                            / {comp.totalTickets}
+                            ({percentSold}%)
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="w-full bg-bg h-[4px] rounded-badge overflow-hidden border border-divider">
-                      <div className="h-full bg-primary rounded-badge transition-all duration-500" style={{ width: `${width}%` }}></div>
+                      <div className="h-full bg-primary rounded-badge transition-all duration-500" style={{ width: `${percentSold}%` }}></div>
                     </div>
                   </div>
                 );

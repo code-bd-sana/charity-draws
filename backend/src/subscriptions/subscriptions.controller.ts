@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Req,
+  Param,
   UseGuards,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -120,5 +121,17 @@ export class SubscriptionsController {
   @ApiResponse({ status: 403, description: 'Forbidden - admin only access' })
   async getAdminStats() {
     return this.subscriptionsService.getAdminStats();
+  }
+
+  @Post('admin/:id/cancel')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cancel a subscription as admin' })
+  @ApiResponse({ status: 200, description: 'Subscription cancelled successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin only access' })
+  async cancelSubscriptionAdmin(@Param('id') id: string) {
+    return this.subscriptionsService.cancelSubscriptionAdmin(id);
   }
 }

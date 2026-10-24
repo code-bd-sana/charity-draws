@@ -26,11 +26,33 @@ export const usePurchaseTicketsMutation = (raffleId: string) => {
   });
 };
 
-export const useMyTicketsQuery = () => {
-  return useQuery({
-    queryKey: ticketKeys.my(),
+export interface UserTicketsQueryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}
+
+export interface UserTicketsResponse {
+  tickets: any[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  stats: {
+    totalOwned: number;
+    activeTickets: number;
+    wonTickets: number;
+  };
+}
+
+export const useMyTicketsQuery = (params?: UserTicketsQueryParams) => {
+  return useQuery<UserTicketsResponse | any[]>({
+    queryKey: ticketKeys.my(params),
     queryFn: async () => {
-      const response = await api.get('/tickets/my-tickets');
+      const response = await api.get('/tickets/my-tickets', { params });
       return response.data;
     },
   });

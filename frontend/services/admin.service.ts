@@ -81,10 +81,17 @@ export interface OrderData {
   orderId: string;
   buyerName: string;
   buyerInitials: string;
+  buyerEmail?: string;
+  buyerPhone?: string;
   competition: string;
+  competitionId?: string | null;
+  competitionSlug?: string | null;
   tickets: number;
+  ticketNumbers?: number[];
   amount: number;
   payment: string;
+  gatewayTransactionId?: string | null;
+  adminNotes?: string | null;
   status: string;
   date: string;
 }
@@ -276,6 +283,11 @@ export const adminService = {
 
   async getOrdersStats(): Promise<OrderStats> {
     const { data } = await api.get('/admin/orders/stats');
+    return data;
+  },
+
+  async getOrderById(id: string): Promise<OrderData> {
+    const { data } = await api.get(`/admin/orders/${id}`);
     return data;
   },
 

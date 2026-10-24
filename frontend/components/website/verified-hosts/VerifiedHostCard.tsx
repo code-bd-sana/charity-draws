@@ -49,7 +49,7 @@ export default function VerifiedHostCard({ host }: VerifiedHostCardProps) {
               ) : (
                 <span className="bg-accent-bg border border-border-medium text-text-muted px-2 py-0.5 rounded-badge text-[11px] font-semibold flex items-center gap-1 shadow-sm">
                   <span className="text-amber-500/70">★</span>
-                  <span>New Host</span>
+                  <span>New Charity</span>
                 </span>
               )}
               {host.isVerified && (

@@ -35,11 +35,19 @@ export default function ConfirmPayoutModal({
 }: ConfirmPayoutModalProps) {
   const [mounted, setMounted] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
   const updateStatusMutation = useUpdateWithdrawalStatusMutation();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (payout) {
+      setAdminNotes(payout.adminNotes || "");
+      setIsEditingNotes(false);
+    }
+  }, [payout, isOpen]);
 
   if (!isOpen || !payout || !mounted) return null;
 
@@ -57,6 +65,21 @@ export default function ConfirmPayoutModal({
       {
         onSuccess: () => {
           onClose();
+        },
+      }
+    );
+  };
+
+  const handleSaveNotesOnly = () => {
+    updateStatusMutation.mutate(
+      {
+        id: payout.id,
+        status: payout.status as "APPROVED" | "COMPLETED" | "REJECTED",
+        adminNotes: adminNotes.trim(),
+      },
+      {
+        onSuccess: () => {
+          setIsEditingNotes(false);
         },
       }
     );
@@ -160,14 +183,81 @@ export default function ConfirmPayoutModal({
             {renderPayoutAccountInfo()}
           </div>
 
-          {/* Optional Admin Note */}
-          {actionType !== "VIEW" && (
+          {/* Admin Notes / Accounting Reference Section */}
+          {actionType === "VIEW" ? (
+            <div className="bg-bg border border-border rounded-button p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-sans text-[11px] font-semibold text-text-muted uppercase tracking-wider block">
+                  Admin Notes & Accounting Reference
+                </span>
+                {!isEditingNotes && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingNotes(true)}
+                    className="font-sans text-[11px] text-text-brand hover:underline font-semibold cursor-pointer"
+                  >
+                    {payout.adminNotes ? "Edit Note" : "+ Add Note"}
+                  </button>
+                )}
+              </div>
+
+              {isEditingNotes ? (
+                <div className="space-y-2 pt-1">
+                  <textarea
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    placeholder="Enter internal accounting notes, payment transaction reference, etc."
+                    rows={3}
+                    className="w-full p-2.5 bg-surface border border-border rounded-button text-xs text-text-primary focus:outline-none focus:border-primary font-sans"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAdminNotes(payout.adminNotes || "");
+                        setIsEditingNotes(false);
+                      }}
+                      className="px-3 py-1.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveNotesOnly}
+                      disabled={updateStatusMutation.isPending}
+                      className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-semibold rounded-button shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {updateStatusMutation.isPending ? "Saving..." : "Save Note"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {payout.adminNotes ? (
+                    <div className="p-3 bg-surface border border-border rounded-button text-xs text-text-primary whitespace-pre-wrap font-sans">
+                      {payout.adminNotes}
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-surface/50 border border-dashed border-border rounded-button text-xs text-text-muted italic font-sans">
+                      No admin notes recorded for this request. Click &quot;+ Add Note&quot; above to add accounting reference notes.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
             <div>
-              <label className="block font-sans text-xs text-text-muted font-semibold mb-1">Admin Notes / Reference (Optional)</label>
+              <label className="block font-sans text-xs text-text-muted font-semibold mb-1">
+                Admin Notes / Reference (Optional)
+              </label>
               <textarea
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
-                placeholder="e.g. Bank transfer transaction ref #12345 or reason for rejection"
+                placeholder={
+                  actionType === "APPROVE"
+                    ? "e.g. Bank transfer transaction ref #12345 or accounting memo"
+                    : "e.g. Reason for rejection"
+                }
                 rows={2}
                 className="w-full p-3 bg-bg border border-border rounded-button text-xs text-text-primary focus:outline-none focus:border-primary font-sans"
               />
