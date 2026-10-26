@@ -78,8 +78,8 @@ async function main() {
 
   const salt = await bcrypt.genSalt(10);
 
-  // 3. Seed Admin Account
-  console.log('Seeding Admin Account...');
+  // 3. Seed Admin Accounts
+  console.log('Seeding Admin Accounts...');
   const adminPassword = await bcrypt.hash('Admin@charitydraws2026!', salt);
   await prisma.user.upsert({
     where: { email: 'info@charitydraws.co.uk' },
@@ -101,7 +101,28 @@ async function main() {
   });
   console.log('✅ Admin Account ready (Email: info@charitydraws.co.uk)');
 
-  console.log('🚀 Seeding Completed Successfully! Admin account ready.');
+  const secondaryAdminPassword = await bcrypt.hash('admin@gmail.com', salt);
+  await prisma.user.upsert({
+    where: { email: 'admin@gmail.com' },
+    update: {
+      passwordHash: secondaryAdminPassword,
+      role: 'ADMIN',
+      isEmailVerified: true,
+      firstName: 'System',
+      lastName: 'Admin',
+    },
+    create: {
+      email: 'admin@gmail.com',
+      passwordHash: secondaryAdminPassword,
+      role: 'ADMIN',
+      isEmailVerified: true,
+      firstName: 'System',
+      lastName: 'Admin',
+    },
+  });
+  console.log('✅ Secondary Admin Account ready (Email: admin@gmail.com)');
+
+  console.log('🚀 Seeding Completed Successfully! Both admin accounts ready.');
 }
 
 main()
