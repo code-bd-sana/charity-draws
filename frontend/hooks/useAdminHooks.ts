@@ -17,7 +17,7 @@ export const useAdminHostStats = () => {
   });
 };
 
-export const useAdminOrders = (params: { page?: number; limit?: number; search?: string }) => {
+export const useAdminOrders = (params: { page?: number; limit?: number; search?: string; status?: string }) => {
   return useQuery({
     queryKey: adminKeys.orders(params),
     queryFn: () => adminService.getOrders(params),

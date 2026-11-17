@@ -276,7 +276,7 @@ export const adminService = {
     return data;
   },
 
-  async getOrders(params: { page?: number; limit?: number; search?: string }): Promise<GetOrdersResponse> {
+  async getOrders(params: { page?: number; limit?: number; search?: string; status?: string }): Promise<GetOrdersResponse> {
     const { data } = await api.get('/admin/orders', { params });
     return data;
   },

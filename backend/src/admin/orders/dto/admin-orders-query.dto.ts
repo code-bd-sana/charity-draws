@@ -28,4 +28,12 @@ export class AdminOrdersQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional({
+    example: 'Paid',
+    description: 'Filter by order status (Paid, Completed, Refunded, Failed, or All)',
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
