@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProcessRefundModal, { OrderData } from "./ProcessRefundModal";
 import AdminOrderDetailModal from "./AdminOrderDetailModal";
 import { useAdminOrders } from "../../../hooks/useAdminHooks";
@@ -8,12 +8,39 @@ import EmptyState from "../../ui/EmptyState";
 
 export default function AdminOrdersTable() {
   const [page, setPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [detailOrder, setDetailOrder] = useState<OrderData | null>(null);
 
-  const { data: response, isLoading } = useAdminOrders({ page, limit: 10 });
+  // Debounce search input to avoid API spam on each keystroke
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchInput.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
+  const { data: response, isLoading } = useAdminOrders({
+    page,
+    limit: 10,
+    search: debouncedSearch || undefined,
+    status: activeFilter !== "All" ? activeFilter : undefined,
+  });
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    setPage(1);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
 
   const handleRefund = (order: OrderData) => {
     setSelectedOrder(order);
@@ -25,34 +52,182 @@ export default function AdminOrdersTable() {
     setIsDetailModalOpen(true);
   };
 
-  const getStatusPill = (status: string) => {
-    switch (status) {
-      case "Paid":
-      case "Completed":
-        return <span className="px-3 py-1 rounded-badge border border-emerald-200 bg-emerald-50 text-emerald-700 font-sans font-semibold text-[10px] shadow-sm">{status}</span>;
-      case "Refunded":
-        return <span className="px-3 py-1 rounded-badge border border-red-200 bg-red-50 text-red-700 font-sans font-semibold text-[10px] shadow-sm">{status}</span>;
-      case "Failed":
-        return <span className="px-3 py-1 rounded-badge border border-red-200 bg-red-50 text-red-700 font-sans font-semibold text-[10px] shadow-sm">{status}</span>;
-      default:
-        return <span className="px-3 py-1 rounded-badge border border-border bg-bg text-text-muted font-sans font-semibold text-[10px] shadow-sm">{status}</span>;
-    }
-  };
-
   const orders = response?.orders || [];
   const totalPages = response?.totalPages || 1;
 
   const formatDate = (isoString: string) => {
     try {
       const date = new Date(isoString);
-      return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(date);
     } catch {
-      return isoString || 'N/A';
+      return isoString || "N/A";
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (orders.length === 0) return;
+
+    const headers = [
+      "Order ID",
+      "Buyer Name",
+      "Buyer Email",
+      "Buyer Phone",
+      "Competition",
+      "Tickets Count",
+      "Amount (£)",
+      "Payment Method",
+      "Status",
+      "Date",
+    ];
+
+    const rows = orders.map((order: OrderData) => [
+      order.orderId || order.id,
+      order.buyerName,
+      order.buyerEmail,
+      order.buyerPhone,
+      order.competition,
+      order.tickets,
+      order.amount.toFixed(2),
+      order.payment,
+      order.status,
+      formatDate(order.date),
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row
+          .map((val) => `"${String(val ?? "").replace(/"/g, '""')}"`)
+          .join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `orders_export_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getStatusPill = (status: string) => {
+    switch (status) {
+      case "Paid":
+      case "Completed":
+        return (
+          <span className="px-3 py-1 rounded-badge border border-emerald-200 bg-emerald-50 text-emerald-700 font-sans font-semibold text-[10px] shadow-sm">
+            {status}
+          </span>
+        );
+      case "Refunded":
+        return (
+          <span className="px-3 py-1 rounded-badge border border-red-200 bg-red-50 text-red-700 font-sans font-semibold text-[10px] shadow-sm">
+            {status}
+          </span>
+        );
+      case "Failed":
+        return (
+          <span className="px-3 py-1 rounded-badge border border-red-200 bg-red-50 text-red-700 font-sans font-semibold text-[10px] shadow-sm">
+            {status}
+          </span>
+        );
+      default:
+        return (
+          <span className="px-3 py-1 rounded-badge border border-border bg-bg text-text-muted font-sans font-semibold text-[10px] shadow-sm">
+            {status}
+          </span>
+        );
     }
   };
 
   return (
     <div className="flex flex-col gap-6 select-none">
+      {/* Controls Row: Search, Status Filters & Export */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface p-4 rounded-card border border-border shadow-card">
+        {/* Left: Search & Filters */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+          {/* Search Input */}
+          <div className="flex items-center h-[40px] w-full sm:w-[320px] bg-bg border border-border rounded-button px-3 focus-within:border-primary transition-colors">
+            <svg
+              className="w-4 h-4 text-text-muted shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by buyer, email, order ID..."
+              value={searchInput}
+              onChange={handleSearchChange}
+              className="bg-transparent border-none outline-none text-text-primary text-[13px] placeholder:text-text-muted w-full ml-2 font-sans"
+            />
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {[
+              { label: "All", value: "All" },
+              { label: "Completed / Paid", value: "Paid" },
+              { label: "Refunded", value: "Refunded" },
+              { label: "Failed", value: "Failed" },
+            ].map((filter) => (
+              <button
+                key={filter.value}
+                onClick={() => handleFilterChange(filter.value)}
+                className={`px-4 py-1.5 rounded-badge text-[12px] font-sans font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  activeFilter === filter.value
+                    ? "bg-primary border-primary text-primary-text font-bold shadow-sm"
+                    : "bg-surface border border-border text-text-secondary hover:text-text-primary hover:border-border-medium hover:bg-accent-bg/40"
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Export CSV */}
+        <button
+          onClick={handleExportCSV}
+          disabled={orders.length === 0}
+          className="group h-[40px] px-4 bg-accent-bg border border-border-medium hover:bg-primary rounded-button flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0 shadow-sm"
+        >
+          <svg
+            className="w-4 h-4 text-text-brand group-hover:text-white transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+            />
+          </svg>
+          <span className="font-sans font-semibold text-[13px] text-text-brand group-hover:text-white transition-colors">
+            Export CSV
+          </span>
+        </button>
+      </div>
+
       {/* Table Container */}
       <div className="w-full bg-surface border border-border rounded-card overflow-hidden shadow-card overflow-x-auto scrollbar-thin mt-2">
         <table className="w-full min-w-[1050px] text-left border-collapse">
@@ -81,7 +256,7 @@ export default function AdminOrdersTable() {
                 <td colSpan={9} className="py-8 px-6 text-center">
                   <EmptyState
                     title="No Orders Found"
-                    description="There are currently no ticket purchase transactions recorded."
+                    description="No orders match the selected search or status criteria."
                   />
                 </td>
               </tr>

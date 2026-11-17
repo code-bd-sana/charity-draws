@@ -9,19 +9,46 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class AdminOrdersService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllOrders(page: number = 1, limit: number = 10, search?: string) {
+  async getAllOrders(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: string,
+  ) {
     const skip = (page - 1) * limit;
 
     const where: any = {
       type: 'TICKET_PURCHASE',
     };
 
-    if (search) {
+    if (status && status !== 'All' && status !== 'ALL') {
+      const normalized = status.toUpperCase();
+      if (normalized === 'PAID' || normalized === 'COMPLETED') {
+        where.status = 'COMPLETED';
+      } else if (normalized === 'REFUNDED') {
+        where.status = 'REFUNDED';
+      } else if (normalized === 'FAILED') {
+        where.status = 'FAILED';
+      }
+    }
+
+    if (search && search.trim()) {
+      const cleanSearch = search.trim();
       where.OR = [
-        { gatewayTransactionId: { contains: search, mode: 'insensitive' } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
-        { user: { firstName: { contains: search, mode: 'insensitive' } } },
-        { user: { lastName: { contains: search, mode: 'insensitive' } } },
+        { gatewayTransactionId: { contains: cleanSearch, mode: 'insensitive' } },
+        { id: { contains: cleanSearch, mode: 'insensitive' } },
+        { user: { email: { contains: cleanSearch, mode: 'insensitive' } } },
+        { user: { firstName: { contains: cleanSearch, mode: 'insensitive' } } },
+        { user: { lastName: { contains: cleanSearch, mode: 'insensitive' } } },
+        {
+          tickets: {
+            some: {
+              raffle: {
+                title: { contains: cleanSearch, mode: 'insensitive' },
+              },
+            },
+          },
+        },
       ];
     }
 

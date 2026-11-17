@@ -46,6 +46,7 @@ export class AdminOrdersController {
       pageNumber,
       limitNumber,
       query.search,
+      query.status,
     );
   }
 

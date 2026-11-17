@@ -913,7 +913,7 @@ export default function HostRegistrationForm({
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2 select-none">
                   <label htmlFor="vatNumber" className="font-sans font-medium text-xs md:text-sm text-text-primary">
-                    VAT Number
+                    Charity Number
                   </label>
                   <span className="text-[10px] md:text-xs bg-accent-bg border border-divider px-2.5 py-0.5 rounded-badge text-text-brand uppercase font-medium">
                     if VAT registered
