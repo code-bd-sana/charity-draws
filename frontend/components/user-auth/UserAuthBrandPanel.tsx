@@ -84,7 +84,7 @@ export default function UserAuthBrandPanel({ mode }: UserAuthBrandPanelProps) {
         {/* Hero Headlines */}
         <div className="flex flex-col gap-2 sm:gap-4">
           <h1 className="font-heading font-bold text-2xl sm:text-3xl md:text-[48px] text-text-primary leading-[1.15] md:leading-[1.2] tracking-wide select-none">
-            Win Premium Charity Gear
+        Support your local charities fundraising for amazing causes
           </h1>
           <p className="font-sans font-normal text-xs sm:text-sm md:text-xl text-text-secondary leading-relaxed">
             Create your free account to enter draws, track ticket purchases, and view winners.
